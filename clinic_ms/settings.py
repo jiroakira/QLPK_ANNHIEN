@@ -149,9 +149,9 @@ CHANNEL_LAYERS = {
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'QLPK_ANNHIEN',
-        'USER': 'jiroakira',
-        'PASSWORD': 'caongaytho',
+        'NAME': 'qlpk_annhien',
+        'USER': 'jiroakira249',
+        'PASSWORD': 'medotisadmin123',
         'HOST': 'localhost',
         'PORT': '',
     }
