@@ -1984,8 +1984,7 @@ def import_dich_vu_excel(request):
 
             group_phong_chuc_nang = PhongChucNang.objects.get_or_create(ten_phong_chuc_nang = phong_chuc_nang)[0]
             nhom_chi_phi = NhomChiPhi.objects.get(ma_nhom=ma_nhom)
-
-
+            
             if ma_gia_key in obj.keys():
                 ma_gia = obj[ma_gia_key]
             else:
