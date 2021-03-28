@@ -29,7 +29,7 @@ SECRET_KEY = '%=m%a_se_mvr^a&)4xyc@04(@cik9j9=9rq(4(a!xsfhwwk3zp'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['duockalpharm.vn', '68.183.227.19', '127.0.0.1', '10.0.2.2']
+ALLOWED_HOSTS = ['pkdkannhien.com', '161.35.239.43', '127.0.0.1', '10.0.2.2']
 
 # Application definition
 
@@ -62,7 +62,7 @@ MIDDLEWARE = [
 ]
 
 CORS_ALLOWED_ORIGINS = [
-    "https://duockalpharm.vn"
+    "http://161.35.239.43"
 ]
 
 CORS_ALLOW_ALL_ORIGINS = True
