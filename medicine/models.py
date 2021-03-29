@@ -72,6 +72,7 @@ class Thuoc(models.Model):
     )
 
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False, unique=True)
+    stt = models.CharField(max_length=50, null=True, blank=True)
     ma_thuoc = models.CharField(max_length=50, unique=True, blank=True, null=True)
     ma_hoat_chat = models.CharField(max_length=15, null=True, blank=True, verbose_name="Mã hoạt chất")
     ten_hoat_chat = models.CharField(max_length=255, null=True, blank=True, verbose_name="Tên hoạt chất")
@@ -104,10 +105,6 @@ class Thuoc(models.Model):
     # so_ke_tai_quay = models.CharField(max_length=255, null=True, blank=True, verbose_name="Số Kệ") # Để có thể biết được vị trí thuốc này đang được đặt chỗ nào trong quầy thuốc.
     han_su_dung = models.DateField(null=True, blank=True) # Hạn sử dụng
     ngay_san_xuat = models.DateField(null=True, blank=True) # Ngày sản xuất
-    # mo_ta = models.CharField(max_length=255, verbose_name="Mô tả")
-    # tac_dung_phu = models.CharField(max_length=255, verbose_name="Tác dụng phụ")
-    # quy_cach = models.IntegerField(verbose_name="Quy cách đóng gói") # số lượng đóng gói
-    # qty_in_strip=models.IntegerField() 
 
     nhom_chi_phi = models.ForeignKey(NhomChiPhi, on_delete=models.SET_NULL, null=True, blank=True)
     pham_vi = models.CharField(max_length=5, choices=PHAM_VI, null=True, blank=True)
@@ -155,11 +152,17 @@ class Thuoc(models.Model):
                 return False
 
     def get_don_gia(self):
-        don_gia = "{:,}".format(int(self.don_gia))
+        try:
+            don_gia = "{:,}".format(int(self.don_gia))
+        except ValueError:
+            don_gia = "{:,}".format(float(self.don_gia))
         return don_gia
 
     def get_don_gia_tt(self):
-        don_gia_tt = "{:,}".format(int(self.don_gia_tt))
+        try:
+            don_gia_tt = "{:,}".format(int(self.don_gia_tt))
+        except ValueError:
+            don_gia_tt = "{:,}".format(float(self.don_gia_tt))
         return don_gia_tt
 
     def get_so_luong_kha_dung(self):
