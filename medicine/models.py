@@ -79,7 +79,7 @@ class Thuoc(models.Model):
     duong_dung = models.CharField(max_length=255, null=True, blank=True, verbose_name="Đường dùng")
     # duong_dung = models.ForeignKey(DuongDungThuoc, on_delete=models.SET_NULL, null=True, blank=True)
 
-    ham_luong = models.CharField(max_length=50, null=True, blank=True, verbose_name="Hàm lượng")
+    ham_luong = models.CharField(max_length=255, null=True, blank=True, verbose_name="Hàm lượng")
     ten_thuoc = models.CharField(max_length=255, null=True, blank=True, verbose_name="Tên thuốc")    
     # ma_thuoc = models.CharField(max_length=200, null=True, blank=True, verbose_name="Mã thuốc") # mã thuốc được sử dụng khi tồn tại 2 loại thuốc giống nhau nhưng khác công ty
     # loai_thuoc = models.CharField(max_length=100, null=True, blank=True, verbose_name="Loại thuốc") # có rất nhiều loại thuốc khác nhau: viên nén/viên nang/siro/....
@@ -94,9 +94,9 @@ class Thuoc(models.Model):
     # Thuốc có thời hạn sử dụng là 3 năm nên tùy theo nhu cầu sử dụng và cách tiêu dùng mà cơ sở sản xuất có lịch sản xuất.. 
     ma_cskcb = models.CharField(max_length=50, null=True, blank=True)
     hang_sx = models.CharField(max_length=255, null=True, blank=True)
-    nuoc_sx = models.CharField(max_length=50, null=True, blank=True)
+    nuoc_sx = models.CharField(max_length=100, null=True, blank=True)
     cong_ty = models.ForeignKey(CongTy, on_delete=models.CASCADE, related_name="thuoc_cong_ty", null=True, blank=True)
-    quyet_dinh = models.CharField(max_length=10, null=True, blank=True)
+    quyet_dinh = models.CharField(max_length=255, null=True, blank=True)
     loai_thuoc = models.CharField(max_length=255, choices=TYPE_CHOICES_LOAI_THUOC, null=True, blank = True)
     cong_bo = models.CharField(max_length=50, null=True, blank=True)
     loai_thau = models.CharField(max_length=255, choices=TYPE_CHOICES_LOAI_THAU, null = True, blank = True)
