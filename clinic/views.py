@@ -1960,31 +1960,41 @@ def them_dich_vu_kham(request):
 
 from decimal import Decimal
 def import_dich_vu_excel(request):
+    import pandas as pd
     if request.method == 'POST':
-        data             = request.POST.get('data')  
-        list_objects     = json.loads(data)
+        # data             = request.POST.get('data')  
+        # list_objects     = json.loads(data)
         
+        file = FilePhongKham.objects.all()
+        file = file[0]
+        file_url = file.file.url[1:]
+        
+        excel_data_df = pd.read_excel(file_url, sheet_name='DuLieuMau')
+        json_str = excel_data_df.to_json(orient='records')
+        json_objects = json.loads(json_str)
+
         bulk_create_data = []
-        print(list_objects)
-        for obj in list_objects:
+        print(json_objects)
+        for obj in json_objects:
             stt             = obj['STT']
             ma_gia_key      = "MA_GIA"
             ma_cosokcb_key  = "MA_COSOKCB"
             ma_dvkt         = obj['MA_DVKT']
             ten_dvkt        = obj['TEN_DVKT']
             don_gia         = "DON_GIA"
-            don_gia         = Decimal('don_gia')
+
             don_gia_bhyt    = obj['DON_GIA_BHYT']
-            don_gia_bhyt    = Decimal('don_gia_bhyt')
+            don_gia_bhyt = int(don_gia_bhyt)
+            don_gia_bhyt    = Decimal(don_gia_bhyt)
             bao_hiem        = True
-            quyet_dinh      = obj['QUYET_DINH']
-            cong_bo         = obj['CONG_BO']
+            quyet_dinh      = 'QUYET_DINH'
+            cong_bo         = 'CONG_BO'
             phong_chuc_nang = obj['PHONG_CHUC_NANG']
-            ma_nhom = obj['MA_NHOM']
+            # ma_nhom = obj['MA_NHOM']
 
             group_phong_chuc_nang = PhongChucNang.objects.get_or_create(ten_phong_chuc_nang = phong_chuc_nang)[0]
-            nhom_chi_phi = NhomChiPhi.objects.get(ma_nhom=ma_nhom)
-            
+            # nhom_chi_phi = NhomChiPhi.objects.get(ma_nhom=ma_nhom)
+
             if ma_gia_key in obj.keys():
                 ma_gia = obj[ma_gia_key]
             else:
@@ -2000,8 +2010,17 @@ def import_dich_vu_excel(request):
                 gia     = Decimal(don_gia)
             else:
                 gia=0
+            
+            if quyet_dinh in obj.keys():
+                quyet_dinh = obj[quyet_dinh]
+            else:
+                quyet_dinh = ''
 
-                
+            if cong_bo in obj.keys():
+                cong_bo = obj[cong_bo]
+            else:
+                cong_bo = ''
+
             # print(ma_gia)
             model = DichVuKham(
                 stt             = stt,
@@ -2009,6 +2028,7 @@ def import_dich_vu_excel(request):
                 ten_dvkt        = ten_dvkt,
                 ma_gia          = ma_gia,
                 don_gia         = gia,
+                don_gia_bhyt = don_gia_bhyt,
                 bao_hiem        = bao_hiem,
                 quyet_dinh      = quyet_dinh,
                 cong_bo         = cong_bo,
@@ -2023,6 +2043,7 @@ def import_dich_vu_excel(request):
             'ten_dvkt',
             'ma_gia',
             'don_gia',
+            'don_gia_bhyt',
             'bao_hiem',
             'quyet_dinh',
             'cong_bo',
@@ -2050,12 +2071,22 @@ def them_thuoc_excel(request):
     return render(request, 'phong_tai_chinh/them_thuoc_excel.html', context = {'phong_chuc_nang': phong_chuc_nang})
 
 def import_thuoc_excel(request):
+    import pandas as pd
     if request.method == 'POST':
-        data = request.POST.get('data')
-        list_objects = json.loads(data)
-        bulk_create_data = []
+        # data = request.POST.get('data')
+        # list_objects = json.loads(data)
 
-        for obj in list_objects:
+        file = FilePhongKham.objects.all()
+        file = file[1]
+        file_url = file.file.url[1:]
+        
+        excel_data_df = pd.read_excel(file_url, sheet_name='DuLieuMau')
+        json_str = excel_data_df.to_json(orient='records')
+        json_objects = json.loads(json_str)
+        
+        bulk_create_data = []
+        for obj in json_objects:
+            stt = obj['STT']
             ma_thuoc_key      = "MA_THUOC_BV"
             ma_hoat_chat_key  = "MA_HOAT_CHAT"
             ma_cskcb_key      = "MA_CSKCB"
@@ -2076,14 +2107,14 @@ def import_thuoc_excel(request):
             loai_thuoc        = obj['LOAI_THUOC']
             loai_thau         = obj['LOAI_THAU']
             nhom_thau         = obj['NHOM_THAU']
-            nha_thau          = obj['NHA_THAU']
+            nha_thau          = 'NHA_THAU'
             bao_hiem          = True
 
-            nhom_chi_phi = obj['NHOM_CHI_PHI']
+            # nhom_chi_phi = obj['NHOM_CHI_PHI']
 
             group_nhom_thau = NhomThau.objects.get_or_create(ten_nhom_thau=nhom_thau)[0]
             group_cong_ty = CongTy.objects.get_or_create(ten_cong_ty=nha_thau)[0]
-            nhom_chi_phi = NhomChiPhi.objects.get(ma_nhom=nhom_chi_phi)
+            # nhom_chi_phi = NhomChiPhi.objects.get(ma_nhom=nhom_chi_phi)
             
             if ma_hoat_chat_key in obj.keys():
                 ma_hoat_chat = obj[ma_hoat_chat_key]
@@ -2115,7 +2146,13 @@ def import_thuoc_excel(request):
             else:
                 ham_luong = ""
 
+            if nha_thau in obj.keys():
+                nha_thau = obj[nha_thau]
+            else:
+                nha_thau = ''
+
             model = Thuoc(
+                stt = stt,
                 ma_thuoc          = ma_thuoc,
                 ma_hoat_chat      = ma_hoat_chat, 
                 ten_hoat_chat     = ten_hoat_chat, 
@@ -2139,12 +2176,13 @@ def import_thuoc_excel(request):
                 nhom_thau         = group_nhom_thau,
                 cong_ty           = group_cong_ty,
                 bao_hiem          = bao_hiem,
-                nhom_chi_phi = nhom_chi_phi
+                
             )
 
             bulk_create_data.append(model)
 
         Thuoc.objects.bulk_update_or_create(bulk_create_data, [
+            'stt',
             'ma_thuoc',
             'ma_hoat_chat', 
             'ten_hoat_chat', 
@@ -2164,8 +2202,8 @@ def import_thuoc_excel(request):
             'cong_bo',
             'loai_thau',
             'nhom_thau', 
-            'nhom_chi_phi'
-        ], match_field = 'ma_thuoc')
+
+        ], match_field = 'stt')
         response = {
             'status': 200,
             'message': 'Import Thanh Cong'
