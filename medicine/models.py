@@ -71,7 +71,7 @@ class Thuoc(models.Model):
         ('2', 'Thầu riêng tại BV')
     )
 
-    id = models.CharField(primary_key=True, unique=True, max_length=50)
+    id = models.AutoField(primary_key=True)
     stt = models.CharField(max_length=50, null=True, blank=True)
     ma_thuoc = models.CharField(max_length=50, unique=True, blank=True, null=True)
     ma_hoat_chat = models.CharField(max_length=15, null=True, blank=True, verbose_name="Mã hoạt chất")
@@ -111,8 +111,8 @@ class Thuoc(models.Model):
     tyle_tt = models.IntegerField(null=True, blank=True)
     muc_huong = models.IntegerField(null=True, blank=True)
 
-    ngay_gio_tao = models.DateTimeField(auto_now_add=True, verbose_name="Ngày giờ tạo")
-    thoi_gian_cap_nhat = models.DateTimeField(auto_now=True)
+    ngay_gio_tao = models.DateTimeField(auto_now_add=True, verbose_name="Ngày giờ tạo", null=True, blank=True)
+    thoi_gian_cap_nhat = models.DateTimeField(auto_now=True, null=True, blank=True)
     objects = BulkUpdateOrCreateQuerySet.as_manager()
 
     # UPDATE
