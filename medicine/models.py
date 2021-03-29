@@ -71,7 +71,7 @@ class Thuoc(models.Model):
         ('2', 'Thầu riêng tại BV')
     )
 
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False, unique=True)
+    id = models.CharField(primary_key=True, unique=True, max_length=50)
     stt = models.CharField(max_length=50, null=True, blank=True)
     ma_thuoc = models.CharField(max_length=50, unique=True, blank=True, null=True)
     ma_hoat_chat = models.CharField(max_length=15, null=True, blank=True, verbose_name="Mã hoạt chất")
