@@ -2037,7 +2037,7 @@ def import_dich_vu_excel(request):
             )
             bulk_create_data.append(model)
         
-        DichVuKham.objects.bulk_update_or_create(bulk_create_data,[
+        DichVuKham.objects.bulk_update_or_create(bulk_create_data, [
             'stt',
             'ma_dvkt',
             'ten_dvkt',
@@ -4550,3 +4550,262 @@ def update_staff_user(request):
     if request.user.is_superuser or request.user.is_admin:
         if request.method == "POST":
             pass
+
+def import_dich_vu_kham_view(request):
+    import openpyxl
+    if request.method == "GET":
+        return render(request, 'phong_tai_chinh/import_dich_vu_kham.html')
+    else:
+        excel_file = request.FILES["excel_file"]
+        wb = openpyxl.load_workbook(excel_file)
+        worksheet = wb["Sheet1"]
+
+        excel_data = list()
+        result = []
+
+        for row in worksheet.iter_rows():
+            row_data = list()
+            for cell in row:
+                row_data.append(str(cell.value))
+            excel_data.append(row_data)
+            # excel_data.pop(0)
+        list_title = excel_data[0]
+        excel_data.pop(0)
+
+        for row in excel_data:
+            res = dict(zip(list_title, row))
+            result.append(res)
+
+        response = {
+            'status': 200,
+            'data': result
+        }
+        return HttpResponse(json.dumps(response), content_type="application/json, charset=utf-8")
+
+def import_thuoc_view(request):
+    import openpyxl
+    if request.method == "GET":
+        return render(request, 'phong_tai_chinh/import_thuoc.html')
+    else:
+        excel_file = request.FILES["excel_file"]
+        wb = openpyxl.load_workbook(excel_file)
+        worksheet = wb["Sheet1"]
+
+        excel_data = list()
+        result = []
+
+        for row in worksheet.iter_rows():
+            row_data = list()
+            for cell in row:
+                row_data.append(str(cell.value))
+            excel_data.append(row_data)
+            # excel_data.pop(0)
+        list_title = excel_data[0]
+        excel_data.pop(0)
+
+        for row in excel_data:
+            res = dict(zip(list_title, row))
+            result.append(res)
+
+        response = {
+            'status': 200,
+            'data': result
+        }
+        return HttpResponse(json.dumps(response), content_type="application/json, charset=utf-8")
+
+def store_dich_vu_kham_excel(request):
+    import openpyxl
+    if request.method == "POST":
+        excel_file = request.FILES["excel_file"]
+        wb = openpyxl.load_workbook(excel_file)
+        worksheet = wb["Sheet1"]
+
+        excel_data = []
+        for row in worksheet.iter_rows():
+            row_data = []
+            for cell in row:
+                row_data.append(str(cell.value))
+            excel_data.append(row_data)
+        list_title = excel_data[0]
+        excel_data.pop(0)
+
+        bulk_create_data = []
+        for row in excel_data:
+            res = dict(zip(list_title, row))
+            stt = res['STT']
+            ma_dvkt = res['MA_DVKT']
+            ten_dvkt = res['TEN_DVKT']
+            don_gia_bhyt = res['DON_GIA_BHYT']
+            don_gia = res['DON_GIA']
+            quyet_dinh = res['QUYET_DINH']
+            cong_bo = res['CONG_BO']
+            ma_gia = res['MA_GIA']
+            phong_chuc_nang = res['PHONG_CHUC_NANG']
+            ma_cosokcb = res['MA_COSOKCB']
+            bao_hiem = True
+
+            group_phong_chuc_nang = PhongChucNang.objects.get_or_create(ten_phong_chuc_nang = phong_chuc_nang)[0]
+            model = DichVuKham(
+                stt             = stt,
+                ma_dvkt         = ma_dvkt,
+                ten_dvkt        = ten_dvkt,
+                ma_gia          = ma_gia,
+                don_gia         = Decimal(don_gia),
+                don_gia_bhyt = Decimal(don_gia_bhyt),
+                bao_hiem        = bao_hiem,
+                quyet_dinh      = quyet_dinh,
+                cong_bo         = cong_bo,
+                ma_cosokcb      = ma_cosokcb,
+                phong_chuc_nang = group_phong_chuc_nang
+            )
+            bulk_create_data.append(model)
+        DichVuKham.objects.bulk_update_or_create(bulk_create_data, [
+            'stt',
+            'ma_dvkt',
+            'ten_dvkt',
+            'ma_gia',
+            'don_gia',
+            'don_gia_bhyt',
+            'bao_hiem',
+            'quyet_dinh',
+            'cong_bo',
+            'ma_cosokcb',
+            'phong_chuc_nang' 
+        ], match_field = 'ma_dvkt', batch_size=10)
+
+        response = {
+            'status': 200,
+            'message': 'Thêm Dịch Vụ Khám Thành Công',
+            'url' : '/danh_sach_dich_vu_kham/'
+        }
+        return HttpResponse(json.dumps(response), content_type="application/json, charset=utf-8")
+    else:
+        response = {
+            'status': 404,
+            'message': 'Thêm Dịch Vụ Khám Thất Bại',
+        }
+        return HttpResponse(json.dumps(response), content_type="application/json, charset=utf-8")
+
+def store_thuoc_excel(request):
+    import openpyxl
+    if request.method == "POST":
+        excel_file = request.FILES["excel_file"]
+        wb = openpyxl.load_workbook(excel_file)
+        worksheet = wb["Sheet1"]
+
+        excel_data = []
+        for row in worksheet.iter_rows():
+            row_data = []
+            for cell in row:
+                row_data.append(str(cell.value))
+            excel_data.append(row_data)
+        list_title = excel_data[0]
+        excel_data.pop(0)
+
+        bulk_create_data = []
+        for row in excel_data:
+            res = dict(zip(list_title, row))
+            stt = res['STT']
+            ma_hoat_chat = res['MA_HOAT_CHAT']
+            hoat_chat = res['HOAT_CHAT']
+            ma_duong_dung = res['MA_DUONG_DUNG']
+            duong_dung = res['DUONG_DUNG']
+            ham_luong = res['HAM_LUONG']
+            ten_thuoc = res['TEN_THUOC']
+            so_dang_ky = res['SO_DANG_KY']
+            dong_goi = res['DONG_GOI']
+            don_vi_tinh = res['DON_VI_TINH']
+            don_gia = res['DON_GIA']
+            don_gia_tt = res['DON_GIA_TT']
+            so_luong = res['SO_LUONG']
+            ma_cskcb = res['MA_CSKCB']
+            hang_sx = res['HANG_SX']
+            nuoc_sx = res['NUOC_SX']
+            nha_thau = res['NHA_THAU']
+            quyet_dinh = res['QUYET_DINH']
+            cong_bo = res['CONG_BO']
+            loai_thuoc = res['LOAI_THUOC']
+            loai_thau = res['LOAI_THAU']
+            nhom_thau = res['NHOM_THAU']
+            bao_hiem = True
+
+            group_nhom_thau = NhomThau.objects.get_or_create(ten_nhom_thau=nhom_thau)[0]
+            group_cong_ty = CongTy.objects.get_or_create(ten_cong_ty=nha_thau)[0] 
+                    
+            model = Thuoc(
+                stt = stt,
+                ma_thuoc          = '',
+                ma_hoat_chat      = ma_hoat_chat, 
+                ten_hoat_chat     = hoat_chat, 
+                duong_dung        = duong_dung,
+                ham_luong         = ham_luong,
+                ten_thuoc         = ten_thuoc,
+                so_dang_ky        = so_dang_ky, 
+                dong_goi          = dong_goi,
+                don_vi_tinh       = don_vi_tinh,
+                don_gia           = Decimal(don_gia),
+                don_gia_tt        = Decimal(don_gia_tt),
+                so_lo             = "",
+                so_luong_kha_dung = int(so_luong),
+                ma_cskcb          = ma_cskcb, 
+                hang_sx           = hang_sx,
+                nuoc_sx           = nuoc_sx,
+                quyet_dinh        = quyet_dinh, 
+                loai_thuoc        = loai_thuoc, 
+                cong_bo           = cong_bo,
+                loai_thau         = loai_thau,
+                nhom_thau         = group_nhom_thau,
+                cong_ty           = group_cong_ty,
+                bao_hiem          = bao_hiem,
+                
+            )
+
+            bulk_create_data.append(model)
+
+        Thuoc.objects.bulk_update_or_create(bulk_create_data, [
+            'stt',
+            'ma_thuoc',
+            'ma_hoat_chat', 
+            'ten_hoat_chat', 
+            'duong_dung', 
+            'ham_luong', 
+            'ten_thuoc', 
+            'so_dang_ky', 
+            'dong_goi', 
+            'don_vi_tinh', 
+            'don_gia', 
+            'don_gia_tt',
+            'so_luong_kha_dung',
+            'ma_cskcb',
+            'hang_sx',
+            'nuoc_sx',
+            'quyet_dinh',
+            'cong_bo',
+            'loai_thau',
+            'nhom_thau', 
+
+        ], match_field = 'stt', batch_size=10)
+
+        response = {
+            'status': 200,
+            'message': 'Thêm Thuốc Thành Công',
+            'url' : '/phong_tai_chinh/danh_sach_thuoc/'
+        }
+        return HttpResponse(json.dumps(response), content_type="application/json, charset=utf-8")
+    else:
+        response = {
+            'status': 404,
+            'message': 'Thêm Thuốc Thất Bại',
+        }
+        return HttpResponse(json.dumps(response), content_type="application/json, charset=utf-8")
+
+
+            
+
+
+            
+
+
+
+
+        
