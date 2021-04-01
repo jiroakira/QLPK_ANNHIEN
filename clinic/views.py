@@ -530,6 +530,7 @@ def create_thuoc(request):
         don_vi_tinh       = request.POST.get('don_vi_tinh')
         don_gia           = request.POST.get("don_gia")
         don_gia_tt        = request.POST.get("don_gia_tt")
+        gia_bhyt        = request.POST.get("gia_bhyt")
         so_lo             = request.POST.get('so_lo')
         so_luong_kha_dung = request.POST.get("so_luong_kha_dung")
         hang_sx           = request.POST.get("hang_san_xuat")
@@ -924,6 +925,7 @@ def upload_files_chuyen_khoa(request):
         mo_ta         = request.POST.get('mo_ta', None)
         ket_luan      = request.POST.get('ket_qua', None)
         id_chuoi_kham = request.POST.get('id_chuoi_kham')
+        id_phan_khoa = request.POST.get('id_phan_khoa')
 
         if ma_ket_qua == '':
             HttpResponse({'status': 404, 'message': 'Mã Kết Quả Không Được Để Trống'})
@@ -935,8 +937,9 @@ def upload_files_chuyen_khoa(request):
             HttpResponse({'status': 404, 'message': 'Kết Luận Không Được Để Trống'})
 
         chuoi_kham = ChuoiKham.objects.get(id=id_chuoi_kham)
+        phan_khoa = get_object_or_404(PhanKhoaKham, id=id_phan_khoa)
         ket_qua_tong_quat = KetQuaTongQuat.objects.get_or_create(chuoi_kham=chuoi_kham)[0]
-        ket_qua_chuyen_khoa = KetQuaChuyenKhoa.objects.create(ket_qua_tong_quat=ket_qua_tong_quat, ma_ket_qua=ma_ket_qua, mo_ta=mo_ta, ket_luan=ket_luan)
+        ket_qua_chuyen_khoa = KetQuaChuyenKhoa.objects.create(phan_khoa_kham=phan_khoa, ket_qua_tong_quat=ket_qua_tong_quat, ma_ket_qua=ma_ket_qua, mo_ta=mo_ta, ket_luan=ket_luan)
 
         for value in request.FILES.values():
             
@@ -1397,35 +1400,37 @@ class ThanhToanHoaDonThuocToggle(APIView):
         date_time       = now.strftime("%m%d%y%H%M%S")
         ma_hoa_don      = "HDT-" + date_time
         
-        try:
-            for instance in danh_sach_thuoc:    
-                id_thuoc = instance.thuoc.id 
-                so_luong = instance.so_luong
-                if instance.bao_hiem == True:
-                    bao_hiem = True
-                # thuoc = Thuoc.objects.get(id=id_thuoc)
-                # ten_thuoc = thuoc.ten_thuoc
+        # try:
+        for instance in danh_sach_thuoc:    
+            id_thuoc = instance.thuoc.id
+        
+            so_luong = instance.so_luong
+    
+            if instance.bao_hiem == True:
+                bao_hiem = True
+            # thuoc = Thuoc.objects.get(id=id_thuoc)
+            # ten_thuoc = thuoc.ten_thuoc
 
-                xuat(request, id=id_thuoc, so_luong=so_luong)
-            trang_thai = TrangThaiDonThuoc.objects.get_or_create(trang_thai="Đã Thanh Toán")[0]
-            don_thuoc.trang_thai=trang_thai
-            don_thuoc.save()
+            xuat(request, id=id_thuoc, so_luong=so_luong)
+        trang_thai = TrangThaiDonThuoc.objects.get_or_create(trang_thai="Đã Thanh Toán")[0]
+        don_thuoc.trang_thai=trang_thai
+        don_thuoc.save()
 
-            hoa_don_thuoc = HoaDonThuoc.objects.create(don_thuoc=don_thuoc, ma_hoa_don=ma_hoa_don, tong_tien=tong_tien, bao_hiem=bao_hiem)
-            hoa_don_thuoc.save()
+        hoa_don_thuoc, created = HoaDonThuoc.objects.get_or_create(don_thuoc=don_thuoc, ma_hoa_don=ma_hoa_don, tong_tien=tong_tien, bao_hiem=bao_hiem)
+        hoa_don_thuoc.save()
 
-            channel_layer = get_channel_layer()
-            async_to_sync(channel_layer.group_send)(
-                f"charge_prescription_user_{don_thuoc.benh_nhan.id}", {
-                    'type':'charge_prescription_notification'
-                }
-            )
-            
-            response = {'status': 200, 'message': 'Thanh Toán Thành Công'}
-            return HttpResponse(json.dumps(response), content_type="application/json, charset=utf-8")
-        except:
-            response = {'status': 404, 'message': 'Xảy Ra Lỗi Trong Quá Trình Thanh Toán'}
-            return HttpResponse(json.dumps(response), content_type="application/json, charset=utf-8")
+        channel_layer = get_channel_layer()
+        async_to_sync(channel_layer.group_send)(
+            f"charge_prescription_user_{don_thuoc.benh_nhan.id}", {
+                'type':'charge_prescription_notification'
+            }
+        )
+        
+        response = {'status': 200, 'message': 'Thanh Toán Thành Công'}
+        return HttpResponse(json.dumps(response), content_type="application/json, charset=utf-8")
+        # except:
+        #     response = {'status': 404, 'message': 'Xảy Ra Lỗi Trong Quá Trình Thanh Toán'}
+        #     return HttpResponse(json.dumps(response), content_type="application/json, charset=utf-8")
 
 class ThanhToanHoaDonDichVuToggle(APIView):
     def get(self, request, format=None):
@@ -2788,6 +2793,7 @@ def upload_ket_qua_chuyen_khoa(request):
         mo_ta         = request.POST.get('mo_ta', None)
         ket_luan      = request.POST.get('ket_qua', None)
         id_chuoi_kham = request.POST.get('id_chuoi_kham')
+        id_phan_khoa = request.POST.get('id_phan_khoa')
 
         if ma_ket_qua == '':
             HttpResponse({'status': 404, 'message': 'Mã Kết Quả Không Được Để Trống'})
@@ -2799,8 +2805,14 @@ def upload_ket_qua_chuyen_khoa(request):
             HttpResponse({'status': 404, 'message': 'Kết Luận Không Được Để Trống'})
 
         chuoi_kham = ChuoiKham.objects.filter(id=id_chuoi_kham).first()
+        phan_khoa = PhanKhoaKham.objects.filter(id=id_phan_khoa).first()
         ket_qua_tong_quat = KetQuaTongQuat.objects.get_or_create(chuoi_kham=chuoi_kham)[0]
-        ket_qua_chuyen_khoa = KetQuaChuyenKhoa.objects.create(ket_qua_tong_quat=ket_qua_tong_quat, ma_ket_qua=ma_ket_qua, mo_ta=mo_ta, ket_luan=ket_luan)
+        ket_qua_chuyen_khoa = KetQuaChuyenKhoa.objects.create(
+            ket_qua_tong_quat=ket_qua_tong_quat, 
+            ma_ket_qua=ma_ket_qua, mo_ta=mo_ta, 
+            ket_luan=ket_luan,
+            phan_khoa_kham=phan_khoa
+        )
 
         response = {
             'status': 200,
@@ -3164,6 +3176,7 @@ def view_ket_qua_xet_nghiem(request, **kwargs):
             ho_ten_benh_nhan = benh_nhan.ho_ten
             now       = datetime.now()
             date_time = now.strftime("%m%d%y%H%M%S")
+            bac_si_chuyen_khoa = request.user
 
             ma_ket_qua = str(id_phong_chuc_nang) +'-'+ getSubName(ho_ten_benh_nhan) + '-' + str(date_time)
             context = {
@@ -3174,7 +3187,8 @@ def view_ket_qua_xet_nghiem(request, **kwargs):
                 'ma_ket_qua': ma_ket_qua,
                 'phong_chuc_nang': phong_chuc_nang,
                 'id_phong_chuc_nang': id_phong_chuc_nang,
-                'id_phan_khoa': id_phan_khoa
+                'id_phan_khoa': id_phan_khoa,
+                'bac_si_chuyen_khoa': bac_si_chuyen_khoa
             }
             return render(request, 'bac_si_chuyen_khoa/chi_so_xet_nghiem.html', context=context)
         elif dich_vu.check_html:
@@ -3184,7 +3198,9 @@ def view_ket_qua_xet_nghiem(request, **kwargs):
             now       = datetime.now()
             date_time = now.strftime("%m%d%y%H%M%S")
             mau_phieu = dich_vu.mau_phieu.all()[0]
-
+            bac_si_chuyen_khoa = request.user
+            ngay_kham = datetime.now()
+            bac_si_lam_sang = chuoi_kham.bac_si_dam_nhan
             ma_ket_qua = str(id_phong_chuc_nang) +'-'+ getSubName(ho_ten_benh_nhan) + '-' + str(date_time)
             context = {
                 'benh_nhan': [benh_nhan.ho_ten],
@@ -3198,6 +3214,9 @@ def view_ket_qua_xet_nghiem(request, **kwargs):
                 'id_phan_khoa': id_phan_khoa,
                 'dich_vu': dich_vu,
                 'mau_phieu': mau_phieu,
+                'bac_si_chuyen_khoa': ["CNSA : Bác Sỹ " + bac_si_chuyen_khoa.ho_ten],
+                'bac_si_lam_sang': ["Bác Sỹ " + bac_si_lam_sang.ho_ten],
+                'ngay_kham': ["Ngày " + str(ngay_kham.strftime('%d')) + " Tháng " + str(ngay_kham.strftime('%m')) + " Năm " + str(ngay_kham.strftime('%Y'))],
             }
             return render(request, 'bac_si_chuyen_khoa/upload_phieu_ket_qua.html', context=context)
         else:
@@ -3206,6 +3225,7 @@ def view_ket_qua_xet_nghiem(request, **kwargs):
             ho_ten_benh_nhan = benh_nhan.ho_ten
             now       = datetime.now()
             date_time = now.strftime("%m%d%y%H%M%S")
+            bac_si_chuyen_khoa = request.user
 
             ma_ket_qua = str(id_phong_chuc_nang) +'-'+ getSubName(ho_ten_benh_nhan) + '-' + str(date_time)
             context = {
@@ -3214,7 +3234,8 @@ def view_ket_qua_xet_nghiem(request, **kwargs):
                 'id_chuoi_kham': id_chuoi_kham,
                 'id_phong_chuc_nang': id_phong_chuc_nang,
                 'phong_chuc_nang': phong_chuc_nang,
-                'id_phan_khoa': id_phan_khoa
+                'id_phan_khoa': id_phan_khoa,
+                'bac_si_chuyen_khoa': bac_si_chuyen_khoa
             }
             return render(request, 'bac_si_chuyen_khoa/upload.html', context=context)
 
@@ -3384,12 +3405,19 @@ def import_ma_benh_excel(request):
 
 
 def danh_sach_mau_phieu(request):
-    return render(request, 'le_tan/danh_sach_mau_phieu.html')
+    phong_chuc_nang = PhongChucNang.objects.all()
+
+    data = {
+        'phong_chuc_nang' : phong_chuc_nang,
+    }
+    return render(request, 'le_tan/danh_sach_mau_phieu.html', context = data)
 
 def them_mau_phieu(request):
     dich_vu = DichVuKham.objects.all()
+    phong_chuc_nang = PhongChucNang.objects.all()
     context = {
         'dich_vu': dich_vu,
+        'phong_chuc_nang' : phong_chuc_nang,
     }
     return render(request, 'le_tan/them_mau_phieu.html', context=context)
 
@@ -3736,7 +3764,12 @@ def create_tieu_chuan(request):
     return HttpResponse(json.dumps(response), content_type='application/json; charset=utf-8')
     
 def list_tieu_chuan_dich_vu(request):
-    return render(request, 'le_tan/danh_sach_tieu_chuan_dich_vu.html')
+    phong_chuc_nang = PhongChucNang.objects.all()
+
+    data = {
+        'phong_chuc_nang' : phong_chuc_nang,
+    }
+    return render(request, 'le_tan/danh_sach_tieu_chuan_dich_vu.html', context = data)
 
 def chi_tiet_tieu_chuan_dich_vu(request, **kwargs):
     id_dich_vu = kwargs.get('id')
@@ -3746,6 +3779,7 @@ def chi_tiet_tieu_chuan_dich_vu(request, **kwargs):
     all_doi_tuong = DoiTuongXetNghiem.objects.all()
 
     doi_tuong = dich_vu.chi_so_xet_nghiem.all()[0].doi_tuong_xet_nghiem
+    phong_chuc_nang = PhongChucNang.objects.all()
 
     context = {
         'dich_vu': dich_vu,
@@ -3753,6 +3787,7 @@ def chi_tiet_tieu_chuan_dich_vu(request, **kwargs):
         'all_dich_vu': all_dich_vu,
         'all_doi_tuong': all_doi_tuong,
         'doi_tuong': doi_tuong,
+        'phong_chuc_nang' : phong_chuc_nang,
     }
     return render(request, 'le_tan/chi_tiet_tieu_chuan.html', context=context)
 
@@ -3944,7 +3979,12 @@ def export_thuoc_bao_hiem_excel(request):
     return response  
 
 def ket_qua_benh_nhan_view(request):
-    return render(request, 'le_tan/ket_qua_benh_nhan.html')
+    phong_chuc_nang = PhongChucNang.objects.all()
+
+    data = {
+        'phong_chuc_nang' : phong_chuc_nang,
+    }
+    return render(request, 'le_tan/ket_qua_benh_nhan.html', context = data)
 
 def chi_tiet_chuoi_kham_benh_nhan(request, **kwargs):
     id_chuoi_kham = kwargs.get('id_chuoi_kham')
@@ -4799,10 +4839,12 @@ def store_thuoc_excel(request):
         }
         return HttpResponse(json.dumps(response), content_type="application/json, charset=utf-8")
 
-
-            
-
-
+def nhap_them_thuoc(request):
+    phong_chuc_nang = PhongChucNang.objects.all()
+    data = {
+        'phong_chuc_nang' : phong_chuc_nang,
+    }
+    return render(request, 'phong_tai_chinh/nhap_them_thuoc.html', context = data)
             
 
 
