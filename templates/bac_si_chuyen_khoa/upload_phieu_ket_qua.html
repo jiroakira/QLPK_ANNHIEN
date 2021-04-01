@@ -148,15 +148,22 @@
         var dia_chi = {{ dia_chi|safe }};
         var tuoi = {{ tuoi|safe }};
         var gioi_tinh = {{ gioi_tinh|safe }};
-
+        var bac_si_chuyen_khoa = {{ bac_si_chuyen_khoa|safe }}
+        var bac_si_lam_sang = {{ bac_si_lam_sang|safe }}
+        var ngay_kham = {{ ngay_kham|safe }}
+        
         var fillPatientInfo = function() {
             var dataInfo = ""
             var dataAddr = ""
             var dataRes = ""
             var dataDr = ""
+            var dataDateTime = ""
+            var dataDr2 = ""
+
             $('table tr').each(function(){
                 if ($(this).find('td').eq(1).text() == '{benh_nhan}'){
                     var innerHtml = $(this).html()
+            
                     var start_tr = '<tr>'
                     var end_tr = '</tr>'
                     var c = start_tr + innerHtml + end_tr
@@ -172,6 +179,39 @@
 
                     dataAddr += c.replace(/{dia_chi}/, dia_chi[0])
                     $(this).replaceWith(dataAddr)
+                }
+
+                if ($(this).find('td').eq(1).text() == '{bac_si_lam_sang}'){
+                    var innerHtml = $(this).html()
+            
+                    var start_tr = '<tr>'
+                    var end_tr = '</tr>'
+                    var c = start_tr + innerHtml + end_tr
+
+                    dataDr2 += c.replace(/{bac_si_lam_sang}/, bac_si_lam_sang[0])
+                    $(this).replaceWith(dataDr2)
+                }
+
+                if ($(this).find('td').eq(1).text() == '{bac_si_chuyen_khoa}'){
+                    var innerHtml = $(this).html()
+                    console.log(innerHtml)                    
+                    var start_tr = '<tr>'
+                    var end_tr = '</tr>'
+                    var c = start_tr + innerHtml + end_tr
+
+                    dataDr += c.replace(/{bac_si_chuyen_khoa}/, bac_si_chuyen_khoa[0])
+                    $(this).replaceWith(dataDr)
+                }
+
+                if ($(this).find('td').eq(1).text() == '{ngay_kham}'){
+                    var innerHtml = $(this).html()
+                    console.log(innerHtml)                    
+                    var start_tr = '<tr>'
+                    var end_tr = '</tr>'
+                    var c = start_tr + innerHtml + end_tr
+
+                    dataDateTime += c.replace(/{ngay_kham}/, ngay_kham[0])
+                    $(this).replaceWith(dataDateTime)
                 }
                 
             })
