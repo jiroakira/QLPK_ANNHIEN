@@ -3196,7 +3196,7 @@ def view_ket_qua_xet_nghiem(request, **kwargs):
                 'phong_chuc_nang': phong_chuc_nang,
                 'id_phong_chuc_nang': id_phong_chuc_nang,
                 'id_phan_khoa': id_phan_khoa,
-                'bac_si_chuyen_khoa': bac_si_chuyen_khoa
+                'bac_si_chuyen_khoa': ["CNSA : Bác Sỹ " + bac_si_chuyen_khoa.ho_ten],
             }
             return render(request, 'bac_si_chuyen_khoa/chi_so_xet_nghiem.html', context=context)
         elif dich_vu.check_html:
@@ -3250,7 +3250,6 @@ def view_ket_qua_xet_nghiem(request, **kwargs):
     except ChuoiKham.DoesNotExist:
         return render(request, 'not_found.html')
 
-
 def store_ket_qua_xet_nghiem(request):
     if request.method == "POST":
         id_chuoi_kham = request.POST.get('id_chuoi_kham')
@@ -3264,9 +3263,6 @@ def store_ket_qua_xet_nghiem(request):
         chuoi_kham = ChuoiKham.objects.filter(id=id_chuoi_kham).first()
         phan_khoa_kham = PhanKhoaKham.objects.filter(id=id_phan_khoa).first()
 
-        for i in list_data:
-            print(i)
-
         ket_qua_tong_quat = KetQuaTongQuat.objects.get_or_create(chuoi_kham=chuoi_kham)[0]
         ket_qua_chuyen_khoa = KetQuaChuyenKhoa.objects.create(
             phan_khoa_kham = phan_khoa_kham,
@@ -3275,6 +3271,7 @@ def store_ket_qua_xet_nghiem(request):
             mo_ta=mo_ta, 
             ket_luan=ket_qua, 
             chi_so=True,
+            bac_si_chuyen_khoa = request.user
         )
 
         bulk_create_data = []
@@ -3573,7 +3570,9 @@ def chi_tiet_ket_qua_xet_nghiem(request, **kwargs):
         chi_so_binh_thuong = [f'{i.get_chi_so_min()} - {i.get_chi_so_max()}' for i in ket_qua_xet_nghiem]
         don_vi = [i.get_don_vi() for i in ket_qua_xet_nghiem]
         ket_qua = [i.get_ket_qua_xet_nghiem() for i in ket_qua_xet_nghiem]
-        
+        ngay_kham = ["Ngày " + str(ket_qua_chuyen_khoa.thoi_gian_tao.strftime('%d')) + " Tháng " + str(ket_qua_chuyen_khoa.thoi_gian_tao.strftime('%m')) + " Năm " + str(ket_qua_chuyen_khoa.thoi_gian_tao.strftime('%Y'))]
+        bac_si_chuyen_khoa = ["Bác Sỹ " + ket_qua_chuyen_khoa.bac_si_chuyen_khoa.ho_ten]
+
         context = {
             'mau_phieu': mau_phieu, 
             'list_ten_chi_so': ten_chi_so,
@@ -3586,6 +3585,8 @@ def chi_tiet_ket_qua_xet_nghiem(request, **kwargs):
             'gioi_tinh': gioi_tinh,
             'bac_si_chi_dinh': bac_si_chi_dinh,
             'chan_doan': chan_doan,
+            'ngay_kham': ngay_kham,
+            'bac_si_chuyen_khoa': bac_si_chuyen_khoa,
         }
         return render(request, 'mau_phieu.html', context=context)
 
@@ -4012,15 +4013,22 @@ def chi_tiet_chuoi_kham_benh_nhan(request, **kwargs):
         return render(request, '404.html')
    
     ket_qua_tong_quat = chuoi_kham.ket_qua_tong_quat.all().first()
-    ket_qua_chuyen_khoa = ket_qua_tong_quat.ket_qua_chuyen_khoa.all()
+    if ket_qua_tong_quat is not None:
+        ket_qua_chuyen_khoa = ket_qua_tong_quat.ket_qua_chuyen_khoa.all()
 
-    context = {
-        'benh_nhan': benh_nhan,
-        'chuoi_kham': chuoi_kham,
-        'ket_qua_tong_quat': ket_qua_tong_quat,
-        'ket_qua_chuyen_khoa': ket_qua_chuyen_khoa
-    }
-    return render(request, 'le_tan/chi_tiet_ket_qua_chuoi_kham.html', context=context)
+        context = {
+            'benh_nhan': benh_nhan,
+            'chuoi_kham': chuoi_kham,
+            'ket_qua_tong_quat': ket_qua_tong_quat,
+            'ket_qua_chuyen_khoa': ket_qua_chuyen_khoa
+        }
+        return render(request, 'le_tan/chi_tiet_ket_qua_chuoi_kham.html', context=context)
+    else:
+        context = {
+            'benh_nhan': benh_nhan,
+            'chuoi_kham': chuoi_kham,
+        }
+        return render(request, 'le_tan/chi_tiet_ket_qua_chuoi_kham.html', context=context)
 
 def xoa_chuoi_kham(request):
     id_chuoi_kham = request.POST.get('id_chuoi_kham')

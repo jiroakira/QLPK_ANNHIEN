@@ -755,7 +755,21 @@ class PhanKhoaKham(models.Model):
 
     def get_dia_chi_benh_nhan(self):
         if self.benh_nhan is not None:
-            return f"{self.benh_nhan.dia_chi}, {self.benh_nhan.xa.name}, {self.benh_nhan.huyen.name}, {self.benh_nhan.tinh.name}"
+            if self.benh_nhan.tinh is not None:
+                province = self.benh_nhan.tinh.name
+            else:
+                province = "-"
+
+            if self.benh_nhan.huyen is not None:
+                district = self.benh_nhan.huyen.name
+            else:
+                district = "-"
+
+            if self.benh_nhan.xa is not None:
+                ward = self.benh_nhan.xa.name
+            else:
+                ward = "-"
+            return f"{self.benh_nhan.dia_chi}, {ward}, {district}, {province}"
         else:
             return "Không có địa chỉ"
 
@@ -864,6 +878,8 @@ class KetQuaTongQuat(models.Model):
 
     ket_qua_dieu_tri = models.CharField(max_length=5, choices=RESULT_CHOICES, null=True, blank=True)
 
+    thoi_gian_tao = models.DateTimeField(auto_now_add=True, null=True, blank=True)
+
     class Meta:
         verbose_name = "Kết Quả Tổng Quát"
         verbose_name_plural = "Kết Quả Tổng Quát"
@@ -887,6 +903,7 @@ class KetQuaTongQuat(models.Model):
 class KetQuaChuyenKhoa(models.Model):
     """ Kết quả của khám chuyên khoa mà người dùng có thể nhận được """ 
     ma_ket_qua = models.CharField(max_length=50, null=True, blank=True, unique=True)
+    bac_si_chuyen_khoa = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
     phan_khoa_kham = models.ForeignKey(PhanKhoaKham, on_delete=models.CASCADE, null=True, blank=True, related_name="ket_qua_chuyen_khoa")
     ket_qua_tong_quat = models.ForeignKey(KetQuaTongQuat, on_delete=models.CASCADE, related_name="ket_qua_chuyen_khoa")
     mo_ta = models.CharField(max_length=255, null=True, blank=True)
@@ -894,6 +911,8 @@ class KetQuaChuyenKhoa(models.Model):
 
     chi_so = models.BooleanField(default = False)
     html = models.BooleanField(default=False)
+
+    thoi_gian_tao = models.DateTimeField(auto_now_add=True, null=True, blank=True)
 
     class Meta:
         verbose_name = "Kết Quả Chuyên Khoa"

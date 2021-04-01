@@ -252,8 +252,8 @@
                     toastr.warning(response.message, "Xảy Ra Lỗi")
                 }
             },
-            error: function () {
-                toastr.warning("Xảy Ra Lỗi Trong Quá Trình Thanh Toán", "Xảy Ra Lỗi")
+            error: function (e) {
+                toastr.warning(e, "Xảy Ra Lỗi")
                                                                                                                          
             }
         });
