@@ -574,7 +574,13 @@ var KTDatatableRemoteAjaxDemo = function() {
             }, {
                 field: 'benh_nhan.ho_ten',
                 title: 'Bệnh Nhân',
-                
+                template: function(row) {
+                    if (row.benh_nhan === null) {
+                        return row.benh_nhan_vang_lai
+                    } else {
+                        return row.benh_nhan.ho_ten
+                    }
+                }
             }, {
                 field: 'bac_si_ke_don.ho_ten',
                 title: 'Bác Sĩ',

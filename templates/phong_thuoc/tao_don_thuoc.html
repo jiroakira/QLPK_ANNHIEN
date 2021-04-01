@@ -143,17 +143,29 @@
                     <!--end: Table-->
 
                     <div class="form-group mt-3">
-                        <label>Chọn Bệnh Nhân<span class="text-danger">*</span></label>
-                        <select id="selectBenhNhan" class="form-control selectpicker" data-size="7" data-live-search="true">
-                            <option value="" disabled selected>Chọn bệnh nhân</option>
-                            {% comment %} {% for p in nguoi_dung %}
-                                <option value="{{ p.id }}">{{ p.ho_ten }} - {{ p.cmnd_cccd }}</option>
-                            {% endfor %} {% endcomment %}
+                        <label>Chọn kiểu<span class="text-danger">*</span></label>
+                        <select id="selectOption" class="form-control selectpicker" data-size="7" data-live-search="true" >
+                            <option value="" disabled selected>Chọn kiểu bệnh nhân</option>
                             <option value="vang_lai">Khách Vãng Lai</option>
                             <option value="benh_nhan">Bệnh Nhân Phòng Khám</option>
                         </select>
                     </div>
+
+                    <div class="form-group mt-3" style="display: none" id="benh_nhan_pk">
+                        <label>Chọn Bệnh Nhân <span class="text-danger">*</span></label>
+                        <select id="selectBenhNhan" name="selectBenhNhan" class="form-control selectpicker" data-size="7" data-live-search="true">
+                            <option value selected>Chọn bệnh nhân</option>
+                            {% for p in nguoi_dung %}
+                                <option value="{{ p.id }}">{{ p.ho_ten }} - {{ p.cmnd_cccd }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
                     <div class="form-group" id="thongTinBenhNhan"></div>
+                     
+                    <div class="form-group mt-3" style="display: none" id="khach_vang_lai">
+                        <label>Nhập tên người mua <span class="text-danger">*</span></label>
+                        <input type="text" class="form-control" id="ten_khach_vang_lai" />
+                    </div>
                 </div>
                 <div class="card-footer">
                     <div class="card-toolbar">
@@ -387,20 +399,32 @@ var KTDatatableRecordSelectionDemo = function() {
         var lstUsage = {};
         var lstNote = {};
 
+        
+        $('#selectOption').change(function(){
+            if($(this).val() === "vang_lai"){
+                $('#khach_vang_lai').show()
+                $('#benh_nhan_pk').hide()
+                $('#selectBenhNhan').prop('selectedIndex', 0)
+            }else{
+                $('#benh_nhan_pk').show()
+                $('#khach_vang_lai').hide()
+                $('#ten_khach_vang_lai').val('')
+            }
+        })
+
         $('#get-table-data').on('click', function (){
-            var user_id = $('#selectBenhNhan').val();
-            console.log(user_id)
-            var id_chuoi_kham = $(this).data('chuoi-kham-id');
-            lstCheckbox = {};
-            lstQuantity = {};
-            lstUsage = {};
-            lstNote = {};
+            var user_id            = $('#selectBenhNhan').val();
+            var ten_khach_vang_lai = $("#ten_khach_vang_lai").val()
+            lstCheckbox            = {};
+            lstQuantity            = {};
+            lstUsage               = {};
+            lstNote                = {};
             getCheckbox();
             getInputQuantity();
             getInputUsage();
             getInputNote();
-            getPostData(user_id);
-            postData(user_id, id_chuoi_kham); 
+            getPostData();
+            postData(user_id, ten_khach_vang_lai); 
         })
 
     
@@ -476,9 +500,9 @@ var KTDatatableRecordSelectionDemo = function() {
             }
         })
 
-        function postData(user_id, id_chuoi_kham){
+        function postData(user_id, ten_khach_vang_lai){
             var user_id = user_id
-            {% comment %} console.log(getPostData()); {% endcomment %}
+            var ten_khach_vang_lai = ten_khach_vang_lai
             var checkBoxObj = lstCheckbox;
 
             var csrftoken = jQuery("[name=csrfmiddlewaretoken]").val();
@@ -518,9 +542,10 @@ var KTDatatableRecordSelectionDemo = function() {
                 data: {
                     // here data should be a string so that
                     // in your views.py you can fetch the value using get('data')
-                    'data': JSON.stringify(getPostData(user_id)),
+                    'data': JSON.stringify(getPostData()),
                     'csrfmiddlewaretoken': csrftoken,
-                    'user': user_id,
+                    'user_id': user_id,
+                    'ten_khach_vang_lai' : ten_khach_vang_lai,
                 },
                 dataType: 'json',
                 safe: false,
@@ -530,6 +555,8 @@ var KTDatatableRecordSelectionDemo = function() {
                         setTimeout(function () {
                             window.location.href = '/phong_thuoc/'; //redirect về danh sách chờ lâm sàng
                         }, 1500);
+                    } else if (response.status == 404) {
+                        toastr.warning(response.message, "Lỗi")
                     }
 
                 },
@@ -539,22 +566,20 @@ var KTDatatableRecordSelectionDemo = function() {
             });
         }
 
-        function getPostData(user_id){
-            var user_id     = user_id
-            var rowData     = lstData;
-            var checkBoxObj = lstCheckbox;
-            var quantityObj = lstQuantity;
-            var usageObj    = lstUsage;
-            var noteObj     = lstNote;
+        function getPostData(){
+            var rowData            = lstData;
+            var checkBoxObj        = lstCheckbox;
+            var quantityObj        = lstQuantity;
+            var usageObj           = lstUsage;
+            var noteObj            = lstNote;
 
             for (const each in checkBoxObj) {
                 for (let i = 0; i < rowData.length; i++) {
                     if (rowData[i].obj.id == each) {
-                        rowData[i].obj.bao_hiem  = checkBoxObj[each];
-                        rowData[i].obj.so_luong  = quantityObj[each];
-                        rowData[i].obj.cach_dung = usageObj[each];
-                        rowData[i].obj.ghi_chu   = noteObj[each];
-                        rowData[i].obj.benh_nhan = user_id;
+                        rowData[i].obj.bao_hiem           = checkBoxObj[each];
+                        rowData[i].obj.so_luong           = quantityObj[each];
+                        rowData[i].obj.cach_dung          = usageObj[each];
+                        rowData[i].obj.ghi_chu            = noteObj[each];
                     }
                 }
             }

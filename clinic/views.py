@@ -1419,12 +1419,13 @@ class ThanhToanHoaDonThuocToggle(APIView):
         hoa_don_thuoc, created = HoaDonThuoc.objects.get_or_create(don_thuoc=don_thuoc, ma_hoa_don=ma_hoa_don, tong_tien=tong_tien, bao_hiem=bao_hiem)
         hoa_don_thuoc.save()
 
-        channel_layer = get_channel_layer()
-        async_to_sync(channel_layer.group_send)(
-            f"charge_prescription_user_{don_thuoc.benh_nhan.id}", {
-                'type':'charge_prescription_notification'
-            }
-        )
+        if don_thuoc.benh_nhan is not None:
+            channel_layer = get_channel_layer()
+            async_to_sync(channel_layer.group_send)(
+                f"charge_prescription_user_{don_thuoc.benh_nhan.id}", {
+                    'type':'charge_prescription_notification'
+                }
+            )
         
         response = {'status': 200, 'message': 'Thanh Toán Thành Công'}
         return HttpResponse(json.dumps(response), content_type="application/json, charset=utf-8")
@@ -2516,19 +2517,26 @@ def nhan_don_thuoc(request):
 
         trang_thai_don_thuoc = TrangThaiDonThuoc.objects.get_or_create(trang_thai = "Hoàn Thành")[0]
         don_thuoc = DonThuoc.objects.get(id=id)
-        chuoi_kham = don_thuoc.chuoi_kham
-        trang_thai_chuoi_kham = TrangThaiChuoiKham.objects.get_or_create(trang_thai_chuoi_kham = "Hoàn Thành")[0]
-        chuoi_kham.trang_thai = trang_thai_chuoi_kham
-        chuoi_kham.save()
-        don_thuoc.trang_thai = trang_thai_don_thuoc
-        don_thuoc.save()
-        
-        channel_layer = get_channel_layer()
-        async_to_sync(channel_layer.group_send)(
-            f"process_accomplished_user_{don_thuoc.benh_nhan.id}", {
-                'type':'process_accomplished_notification'
+        if don_thuoc.chuoi_kham is not None:
+            chuoi_kham = don_thuoc.chuoi_kham
+            trang_thai_chuoi_kham = TrangThaiChuoiKham.objects.get_or_create(trang_thai_chuoi_kham = "Hoàn Thành")[0]
+            chuoi_kham.trang_thai = trang_thai_chuoi_kham
+            chuoi_kham.save()
+            don_thuoc.trang_thai = trang_thai_don_thuoc
+            don_thuoc.save()
+            
+            channel_layer = get_channel_layer()
+            async_to_sync(channel_layer.group_send)(
+                f"process_accomplished_user_{don_thuoc.benh_nhan.id}", {
+                    'type':'process_accomplished_notification'
+                }
+            )
+        else:
+            response={
+                'status' : 200,
+                'message' : 'Đã Nhận Đơn Thuốc'
             }
-        )
+            return HttpResponse(json.dumps(response), content_type="application/json, charset=utf-8")
 
         response={
             'status' : 200,
@@ -3659,36 +3667,45 @@ def create_don_thuoc_rieng(request):
 def store_don_thuoc_rieng(request):
     if request.method == "POST":
         request_data = request.POST.get('data', None)
-        user = request.POST.get('user', None)
+        user_id = request.POST.get('user_id', None)
+        ten_khach_vang_lai = request.POST.get("ten_khach_vang_lai", None)
         # id_chuoi_kham = request.POST.get('id_chuoi_kham', None)
         data = json.loads(request_data)
 
+        print(user_id)
+        print(ten_khach_vang_lai)
         now = datetime.now()
         date_time = now.strftime("%m%d%y%H%M%S")
         
         bulk_create_data = []
-        user = User.objects.get(id=user)
-        subName = getSubName(user.ho_ten)
-        ma_don_thuoc = subName + '-' + date_time
         trang_thai = TrangThaiDonThuoc.objects.get_or_create(trang_thai="Chờ Thanh Toán")[0]
-        don_thuoc = DonThuoc.objects.get_or_create(benh_nhan=user, bac_si_ke_don=request.user, trang_thai=trang_thai, ma_don_thuoc=ma_don_thuoc)[0]
-        don_thuoc.save()
-        bao_hiem = False
-        print(data)
+        if user_id == "":
+            user = ten_khach_vang_lai
+            subName = getSubName(user)
+            ma_don_thuoc = subName + '-' + date_time
+            don_thuoc = DonThuoc.objects.get_or_create(benh_nhan_vang_lai=user, bac_si_ke_don=request.user, trang_thai=trang_thai, ma_don_thuoc=ma_don_thuoc)[0]
+        elif ten_khach_vang_lai == "":
+            user = User.objects.get(id=user_id)
+            subName = getSubName(user.ho_ten)
+            ma_don_thuoc = subName + '-' + date_time
+            don_thuoc = DonThuoc.objects.get_or_create(benh_nhan=user, bac_si_ke_don=request.user, trang_thai=trang_thai, ma_don_thuoc=ma_don_thuoc)[0]
 
         for i in data:
-            if i['obj']['bao_hiem'] == 'True':
-                bao_hiem = True
             thuoc = Thuoc.objects.only('id').get(id=i['obj']['id'])
             ke_don_thuoc = KeDonThuoc(don_thuoc=don_thuoc, thuoc=thuoc, so_luong=i['obj']['so_luong'], cach_dung=i['obj']['duong_dung'], ghi_chu=i['obj']['ghi_chu'], bao_hiem=i['obj']['bao_hiem'])
             bulk_create_data.append(ke_don_thuoc)
 
-        hoa_don = HoaDonThuoc.objects.get_or_create(don_thuoc = don_thuoc, ma_hoa_don = ma_don_thuoc, bao_hiem=bao_hiem)[0]
-        hoa_don.save()
         KeDonThuoc.objects.bulk_create(bulk_create_data)
-        response = {'status': 200, 'message': 'Kê Đơn Thành Công', 'url': '/danh_sach_kham/'}
+        response = {
+            'status': 200, 
+            'message': 'Kê Đơn Thành Công', 
+            'url': '/danh_sach_kham/'
+        }
     else:
-        response = {'message': 'oke'} 
+        response = {
+            'status': 404,
+            'message': 'Không gửi được dữ liệu, vui lòng kiểm tra lại'
+        } 
     return HttpResponse(json.dumps(response), content_type='application/json; charset=utf-8')
 
 # END UPDATE
