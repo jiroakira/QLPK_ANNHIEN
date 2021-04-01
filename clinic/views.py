@@ -2532,6 +2532,8 @@ def nhan_don_thuoc(request):
                 }
             )
         else:
+            don_thuoc.trang_thai = trang_thai_don_thuoc
+            don_thuoc.save()
             response={
                 'status' : 200,
                 'message' : 'Đã Nhận Đơn Thuốc'
