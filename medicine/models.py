@@ -213,6 +213,7 @@ def get_default_trang_thai_don_thuoc():
 class DonThuoc(models.Model):
     chuoi_kham = models.ForeignKey("clinic.ChuoiKham", on_delete=models.SET_NULL, related_name="don_thuoc_chuoi_kham", null=True, blank=True)
     benh_nhan = models.ForeignKey("clinic.User", on_delete=models.SET_NULL, related_name="don_thuoc", null=True, blank=True)
+    benh_nhan_vang_lai = models.CharField(max_length=255, null=True, blank=True)
     bac_si_ke_don = models.ForeignKey("clinic.User", on_delete=models.SET_NULL, related_name="bac_si_ke_don", null=True, blank=True)
     ma_don_thuoc = models.CharField(max_length=50, unique=True)
     trang_thai = models.ForeignKey(TrangThaiDonThuoc, on_delete=models.SET_NULL, null=True)
