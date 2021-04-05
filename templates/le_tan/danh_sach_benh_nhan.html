@@ -376,17 +376,13 @@
 
 
 {% block scripts %}
-{% comment %} <script>var HOST_URL = "https://preview.keenthemes.com/metronic/theme/html/tools/preview";</script> {% endcomment %}
 <!--begin::Global Theme Bundle(used by all pages)-->
 <script src="{% static 'assets/plugins/global/plugins.bundle9cd7.js' %} "></script>
 <script src="{% static 'assets/plugins/custom/prismjs/prismjs.bundle9cd7.js' %} "></script>
 <script src="{% static 'assets/js/scripts.bundle9cd7.js' %} "></script>
 <script src="{% static 'assets/js/pages/crud/forms/widgets/bootstrap-datetimepicker9cd7.js' %} "></script>
-{% comment %} <script src="{% static 'assets/js/pages/crud/forms/widgets/bootstrap-datepicker9cd7.js' %} "></script> {% endcomment %}
 <script src="{% static 'assets/js/excelexportjs.js' %} "></script>
 <!--end::Global Theme Bundle-->
-{% comment %} <script>var HOST_URL = "https://preview.keenthemes.com/metronic/theme/html/tools/preview";</script> {% endcomment %}
-{% comment %} <script src="{% static 'assets/js/pages/crud/ktdatatable/base/data-ajax9cd7.js' %} "></script> {% endcomment %}
 <script>
 
 "use strict";
@@ -562,9 +558,31 @@ var KTDatatableRemoteAjaxDemo = function() {
             }, {
                 field: 'ho_ten',
                 title: 'Bệnh Nhân',
+                width: 180
             }, {
                 field: 'so_dien_thoai',
                 title: 'Số điện thoại',
+            }, {
+                field: 'cmnd_cccd',
+                title: 'CMND/CCCD',
+                
+            }, {
+                field: 'dia_chi',
+                title: 'Địa chỉ',
+                width: 200,
+                autoHide: false,
+            }, {
+                field: 'dan_toc',
+                title: 'Dân tộc',
+                width: 50,
+                textAlign: 'center',
+                template: function(row){
+                    if (!row.dan_toc) {
+                        return '<span class="label font-weight-bold label-lg label-light-warning label-inline">Chưa có thông tin</span>'
+                    } else {
+                        return row.dan_toc
+                    }
+                }
             }, {
                 field: 'email',
                 title: 'Email',
@@ -576,27 +594,9 @@ var KTDatatableRemoteAjaxDemo = function() {
                     }
                 }
             }, {
-                field: 'cmnd_cccd',
-                title: 'CMND/CCCD',
-                
-            }, {
-                field: 'dia_chi',
-                title: 'Địa chỉ',
-            }, {
-                field: 'dan_toc',
-                title: 'Dân tộc',
-                width: 50,
-                textAlign: 'center',
-                template: function(row){
-                    if (!row.dan_toc) {
-                        return '<span class="text-warning font-weight-bold ">Chưa có thông tin</span>'
-                    } else {
-                        return row.dan_toc
-                    }
-                }
-            }, {
                 field: 'ngay_sinh',
                 title: 'Ngày sinh',
+                autoHide: false,
                 template: function(row) {
                     var date = new Date(row.ngay_sinh)
                     if(!row.ngay_sinh){

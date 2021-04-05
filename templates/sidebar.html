@@ -1,12 +1,15 @@
 {% load static %}
 
+{% load custom_tags %}
+
 <!--begin::Aside-->
+
 <div class="aside aside-left aside-fixed d-flex flex-column flex-row-auto" id="kt_aside">
 	<!--begin::Brand-->	
 	<div class="brand flex-column-auto" id="kt_brand">
 		<!--begin::Logo-->
-		<a href="{% url 'index' %}" class="brand-logo">
-			<img alt="Logo" src="{% static 'assets/media/logos/logo1.png' %} " class="max-w-50px"/>
+		<a href="{% url 'index' %}" class="brand-logo pt-2 m-20">
+			<img alt="Logo" src="{% static 'assets/media/logos/logo1.png' %} " class="max-w-55px"/>
 		</a>
 		<!--end::Logo-->
 		<!--begin::Toggle-->

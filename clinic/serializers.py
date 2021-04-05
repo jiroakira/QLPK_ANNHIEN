@@ -38,6 +38,7 @@ class ChildUserSerializer(serializers.ModelSerializer):
 
 class UserSerializer(serializers.ModelSerializer):
     gioi_tinh = serializers.CharField(source='get_gioi_tinh')
+    dia_chi = serializers.CharField(source='get_dia_chi')
     class Meta:
         model = User
         # fields = '__all__'
