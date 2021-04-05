@@ -152,6 +152,13 @@ class Thuoc(models.Model):
             else: 
                 return False
 
+    @property
+    def check_loai_thuoc(self):
+        if self.loai_thuoc == '5':
+            return True
+        else:
+            return False
+
     def get_don_gia(self):
         try:
             don_gia = "{:,}".format(int(self.don_gia))
@@ -310,6 +317,8 @@ class ThuocLog(models.Model):
     ngay = models.DateTimeField(verbose_name="Ngày giờ")
     quy_trinh = models.CharField(max_length=1, choices=OPERATIONS, verbose_name="Quy trình")
     so_luong = models.IntegerField(default=0, verbose_name="Số lượng")
+
+    bao_hiem = models.BooleanField(default=True)
 
     class Meta:
         verbose_name = "Thuốc Log"

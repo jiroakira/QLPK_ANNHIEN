@@ -4,10 +4,12 @@ import time
 from clinic.excelUtils import WriteToExcel, writeToExcelDichVu, writeToExcelThuoc
 from finance.models import (
     HoaDonChuoiKham, 
-    HoaDonLamSang, 
+    HoaDonLamSang,
+    HoaDonNhapHang, 
     HoaDonThuoc, 
     HoaDonTong, 
-    HoaDonVatTu
+    HoaDonVatTu,
+    NhapHang
 )
 from clinic.forms import (
     BaiDangForm, 
@@ -1454,6 +1456,16 @@ def xuat(request, id=None, so_luong=None):
         return Response({"error": False, "message": f"Xuat Thuoc Thanh Cong: {so_luong} {thuoc[0].ten_thuoc}"})
     except:
         return Response({"error": True, "message": "Loi Tao Log Thuoc"})
+
+@transaction.atomic
+def nhap(request, id=None, so_luong=None):
+    try:
+        thuoc = Thuoc.objects.filter(id=id).first()
+        thuoc.update(so_luong_kha_dung=F('so_luong_kha_dung') + so_luong)
+        ThuocLog.objects.create(thuoc=thuoc, ngay=timezone.now(), quy_trinh=ThuocLog.IN, so_luong=so_luong)
+        return Response({'error': False, 'message': 'Nhập Thuốc Thành Công'})
+    except:
+        return Response({'error': True, 'message': 'Không Thể Nhập Thuốc'})
 
 class ThanhToanHoaDonThuocToggle(APIView):
     def get(self, request, format=None):
@@ -5120,10 +5132,147 @@ def store_thuoc_excel(request):
 
 def nhap_them_thuoc(request):
     phong_chuc_nang = PhongChucNang.objects.all()
+    user_id = request.user.id
+    data = {
+        'phong_chuc_nang' : phong_chuc_nang,
+        'user_id' : user_id
+    }
+    return render(request, 'phong_tai_chinh/nhap_them_thuoc.html', context = data)
+
+def store_nhap_thuoc(request):
+    if request.method == "POST":
+        request_data = request.POST.get('data', None)
+        user = request.POST.get('user', None)
+        data = json.loads(request_data)
+
+        now = datetime.now()
+        date_time = now.strftime("%m%d%y%H%M%S")
+
+        user = User.objects.get(id=user)
+        subName = getSubName(user.ho_ten)
+        ma_hoa_don = subName + '-' + date_time
+        hoa_don_nhap = HoaDonNhapHang.objects.get_or_create(nguoi_phu_trach=user, ma_hoa_don=ma_hoa_don)[0]
+
+        bulk_create_data = []
+        for i in data:
+            thuoc = Thuoc.objects.only('id').get(id=i['obj']['id'])
+            so_luong = i['obj']['so_luong']
+            id = i['obj']['id']
+
+            nhap(request, id = id, so_luong = so_luong)
+
+            nhap_hang = NhapHang(hoa_don=hoa_don_nhap, thuoc=thuoc, so_luong=i['obj']['so_luong'], bao_hiem=i['obj']['bao_hiem'])
+            bulk_create_data.append(nhap_hang)
+
+        NhapHang.objects.bulk_create(bulk_create_data)
+
+        response = {'status': 200, 'message': 'Nhập Hàng Thành Công'}
+    else:
+       response = {'message': 'oke'} 
+    return HttpResponse(json.dumps(response), content_type='application/json; charset=utf-8')
+
+def bao_cao_thuoc(request):
+    phong_chuc_nang = PhongChucNang.objects.all()
+
     data = {
         'phong_chuc_nang' : phong_chuc_nang,
     }
-    return render(request, 'phong_tai_chinh/nhap_them_thuoc.html', context = data)
+    return render(request, 'phong_tai_chinh/bao_cao_thuoc.html', context=data)
+
+def xuat_bao_cao_ton(request, *args, **kwargs):
+    if request.method == "POST":
+        range_start = request.POST.get('range_start')
+        range_end = request.POST.get('range_end')
+
+        start = datetime.strptime(range_start, "%d-%m-%Y")
+        
+        end = datetime.strptime(range_end, "%d-%m-%Y")
+
+        tomorrow_start = start + timedelta(1)
+
+        if range_end == '':
+            tong_nhap_hang = NhapHang.objects.filter(thoi_gian_tao__gte=start, thoi_gian_tao__lt=tomorrow_start).exclude(bao_hiem=False).values("thuoc__ten_thuoc").annotate(id=F('thuoc__id')).annotate(so_luong=Sum('so_luong')).annotate(c = Count('thuoc__ten_thuoc')).annotate(bao_hiem=F('bao_hiem'))
+
+            list_nhap_hang = []
+            for i in tong_nhap_hang:
+                list_nhap_hang.append(i)
+            response = {
+                'data' : list_nhap_hang,
+            }
+
+            return Response(response)
+        # danh_sach_dich_vu = PhanKhoaKham.objects.filter(thoi_gian_tao__lt=tomorrow_start, thoi_gian_tao__gte=start).values('dich_vu_kham__ten_dvkt').annotate(tong_tien=Sum('dich_vu_kham__don_gia')).order_by('dich_vu_kham__ten_dvkt').annotate(dich_vu_kham_count = Count('dich_vu_kham__ten_dvkt'))
+        else:
+            tong_nhap_hang = NhapHang.objects.filter(thoi_gian_tao__gte=start, thoi_gian_tao__lt=end).exclude(bao_hiem=False).values("thuoc__ten_thuoc").annotate(id=F('thuoc__id')).annotate(so_luong=Sum('so_luong')).annotate(c = Count('thuoc__ten_thuoc')).annotate(bao_hiem=F('bao_hiem'))
+
+            tong_xuat_hang = KeDonThuoc.objects.filter(thoi_gian_tao__gte=start, thoi_gian_tao__lt=end).exclude(bao_hiem=False).values('thuoc__ten_thuoc').annotate(id=F('thuoc__id')).annotate(so_luong=Sum('so_luong')).annotate(c = Count('thuoc__ten_thuoc')).annotate(bao_hiem=F('bao_hiem'))
+
+            list_ton = []
+
+            for i in tong_nhap_hang:
+                for j in tong_xuat_hang:
+                    if j['id'] in i.values():
+                        so_luong_nhap = i['so_luong']
+                        so_luong_xuat = j['so_luong']
+                        so_luong_ton = so_luong_nhap - so_luong_xuat
+                        ten_thuoc = j['thuoc__ten_thuoc']
+                        d = {}
+                        d['so_luong'] = so_luong_ton
+                        d['ten_thuoc'] = ten_thuoc
+                        list_ton.append(d)
+
+
+            print(list_ton)
+
+            response = {
+                'list_ton' : list_ton,
+            }
+            return HttpResponse(json.dumps(response), content_type='application/json; charset=utf-8')
+    else:
+        response = {'message': 'oke'} 
+    return HttpResponse(json.dumps(response), content_type='application/json; charset=utf-8')
+
+@login_required(login_url='/dang_nhap/')
+def hoa_don_tpcn(request, **kwargs):
+    id_don_thuoc = kwargs.get('id_don_thuoc')
+    don_thuoc = DonThuoc.objects.get(id = id_don_thuoc)
+    danh_sach_thuoc = don_thuoc.ke_don.all()
+
+    bao_hiem = []
+    tong_tien = []
+    for thuoc_instance in danh_sach_thuoc:
+        if thuoc_instance.bao_hiem:
+            gia = int(thuoc_instance.thuoc.don_gia_tt) * \
+                thuoc_instance.so_luong
+            bao_hiem.append(gia)
+        else:
+            gia = int(thuoc_instance.thuoc.don_gia_tt) * \
+                thuoc_instance.so_luong
+
+        tong_tien.append(gia)
+
+    total_spent = sum(tong_tien)
+    tong_bao_hiem = sum(bao_hiem)
+    thanh_tien = total_spent - tong_bao_hiem
+
+    total_spent = sum(tong_tien)
+    tong_tien.clear()
+    bao_hiem.clear()
+
+    phong_chuc_nang = PhongChucNang.objects.all()
+    phong_kham  = PhongKham.objects.all().first()
+
+    data = {
+        'danh_sach_thuoc': danh_sach_thuoc,
+        'tong_tien'      : total_spent,
+        'don_thuoc'      : don_thuoc,
+        'phong_chuc_nang': phong_chuc_nang,
+        'thanh_tien'     : thanh_tien,
+        'tong_bao_hiem'  : tong_bao_hiem,
+        'phong_kham'     : phong_kham,
+    }
+    return render(request, 'phong_tai_chinh/hoa_don_thuc_pham_ho_tro.html', context=data)
+
             
 def my_activities(request):
     phong_chuc_nang = PhongChucNang.objects.all()
@@ -5134,3 +5283,4 @@ def my_activities(request):
         'activities': activities
     }
     return render(request, 'user_activities.html', context)
+
