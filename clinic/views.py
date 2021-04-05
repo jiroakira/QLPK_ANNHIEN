@@ -2458,6 +2458,19 @@ def them_pcn_kem_dich_vu(request):
  
         bac_si_phu_trach = User.objects.get(id=id_bac_si)
         phong_chuc_nang = PhongChucNang.objects.create(ten_phong_chuc_nang=ten_phong_chuc_nang, bac_si_phu_trach=bac_si_phu_trach)
+
+        content_type = ContentType.objects.get_for_model(PhongChucNang)
+
+        new_group, created = Group.objects.get_or_create(name=f"Nhóm {phong_chuc_nang}")
+        codename_perm = f'can_view_{phong_chuc_nang.slug}'
+
+        if not Permission.objects.filter(codename = codename_perm).exists():
+            permission = Permission.objects.create(
+                codename=codename_perm,
+                name = f'Xem {phong_chuc_nang}',
+                content_type=content_type
+            )
+            new_group.permissions.add(permission)
         
         list_id_dich_vu_kham = []
  
@@ -2474,6 +2487,13 @@ def them_pcn_kem_dich_vu(request):
         response = {
             'status': 200,
             'message': 'Thêm Phòng Chức Năng Thành Công'
+        }
+        return HttpResponse(json.dumps(response), content_type="application/json, charset=utf-8")
+
+    else:
+        response = {
+            'status': 404,
+            'message': 'Thêm Phòng Chức Năng Không Thành Công'
         }
         return HttpResponse(json.dumps(response), content_type="application/json, charset=utf-8")
 
