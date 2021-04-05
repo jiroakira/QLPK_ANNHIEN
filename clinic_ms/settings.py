@@ -48,7 +48,6 @@ INSTALLED_APPS = [
     'corsheaders',
     'widget_tweaks',
     'bulk_update_or_create',
-    'import_export',
     'actstream',
 ]
 
