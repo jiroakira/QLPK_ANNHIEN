@@ -1,3 +1,4 @@
+from clinic.pagination import CustomPagination
 from finance.models import (
     HoaDonChuoiKham, 
     HoaDonThuoc, 
@@ -53,6 +54,7 @@ from channels.layers import get_channel_layer
 from asgiref.sync import async_to_sync
 from rest_framework import generics
 from django.contrib.auth.models import Group
+from rest_framework import generics
 
 User = get_user_model()
 
@@ -214,7 +216,6 @@ class DangKiAPI(generics.GenericAPIView):
 class DichVuKhamViewSet(viewsets.ViewSet):
 
     def list(self, request):
-        phong_chuc_nang = PhongChucNangSerializerSimple()
         dich_vu_kham = DichVuKham.objects.all()
         serializer = DichVuKhamSerializerFormatted(dich_vu_kham, many=True, context={"request": request})
         response = {
@@ -286,6 +287,12 @@ class DichVuKhamViewSet(viewsets.ViewSet):
             "status": status.HTTP_204_NO_CONTENT,
             "message": f"Xoa Dich Vu {dich_vu_kham.ten_dich_vu} Thanh Cong"
         })
+
+class DichVuKhamListCreateAPIView(generics.ListCreateAPIView):
+    queryset = DichVuKham.objects.all()
+    serializer_class = DichVuKhamSerializerFormatted
+    pagination_class = CustomPagination
+
 
 class PhongChucNangViewSet(viewsets.ModelViewSet):
     def list(self, request):

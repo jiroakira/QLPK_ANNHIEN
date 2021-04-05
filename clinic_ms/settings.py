@@ -48,6 +48,8 @@ INSTALLED_APPS = [
     'corsheaders',
     'widget_tweaks',
     'bulk_update_or_create',
+    'import_export',
+    'actstream',
 ]
 
 MIDDLEWARE = [
@@ -139,23 +141,23 @@ CHANNEL_LAYERS = {
 #         'PORT': '',
 #     }
 # }
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.sqlite3',
-#         'NAME': BASE_DIR / 'db.sqlite3',
-#     }
-# }
-
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'qlpk_annhien',
-        'USER': 'jiroakira249',
-        'PASSWORD': 'medotisadmin123',
-        'HOST': 'localhost',
-        'PORT': '',
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
+
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.postgresql_psycopg2',
+#         'NAME': 'qlpk_annhien',
+#         'USER': 'jiroakira249',
+#         'PASSWORD': 'medotisadmin123',
+#         'HOST': 'localhost',
+#         'PORT': '',
+#     }
+# }
 
 
 # Password validation
@@ -192,6 +194,10 @@ REST_FRAMEWORK = {
     # )
 }
 
+REST_FRAMEWORK = {
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',
+    'PAGE_SIZE': 100
+}
 
 SIMPLE_JWT = {
     'ACCESS_TOKEN_LIFETIME': timedelta(days=1),

@@ -1,0 +1,280 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% load activity_tags %}
+
+{% block content %}
+<!--begin::Entry-->
+<div class="d-flex flex-column-fluid">
+    <!--begin::Container-->
+    <div class="container">
+        <!--begin::Profile 4-->
+        <div class="d-flex flex-row">
+            <!--begin::Aside-->
+            <div class="flex-row-auto offcanvas-mobile w-300px w-xl-350px" id="kt_profile_aside">
+                <!--begin::Card-->
+                <div class="card card-custom gutter-b">
+                    <!--begin::Body-->
+                    <div class="card-body pt-4">
+                        
+                        <!--begin::User-->
+                        <div class="d-flex align-items-center">
+                            <div class="symbol symbol-60 symbol-xxl-100 mr-5 align-self-start align-self-xxl-center">
+                                <div class="symbol-label" style="background-image:url('../../../../theme/html/demo1/dist/assets/media/users/300_13.jpg')"></div>
+                                <i class="symbol-badge bg-success"></i>
+                            </div>
+                            <div>
+                                <a href="#" class="font-weight-bold font-size-h5 text-dark-75 text-hover-primary">James Jones</a>
+                                <div class="text-muted">{{ request.user.get_user_role }}</div>
+                                {% comment %} <div class="mt-2">
+                                    <a href="#" class="btn btn-sm btn-primary font-weight-bold mr-2 py-2 px-3 px-xxl-5 my-1">Chat</a>
+                                    <a href="#" class="btn btn-sm btn-success font-weight-bold py-2 px-3 px-xxl-5 my-1">Follow</a>
+                                </div> {% endcomment %}
+                            </div>
+                        </div>
+                        <!--end::User-->
+                        <!--begin::Contact-->
+                        <div class="pt-8 pb-6">
+                            {% comment %} <div class="d-flex align-items-center justify-content-between mb-2">
+                                <span class="font-weight-bold mr-2">Email:</span>
+                                <a href="#" class="text-muted text-hover-primary">matt@fifestudios.com</a>
+                            </div> {% endcomment %}
+                            <div class="d-flex align-items-center justify-content-between mb-2">
+                                <span class="font-weight-bold mr-2">Số Điện Thoại:</span>
+                                <span class="text-muted">{{ request.user.so_dien_thoai }}</span>
+                            </div>
+                            <div class="d-flex align-items-center justify-content-between">
+                                <span class="font-weight-bold mr-2">Địa Chỉ:</span>
+                                <span class="text-muted">{{ request.user.dia_chi }}</span>
+                            </div>
+                        </div>
+                        <!--end::Contact-->
+                        <!--begin::Contact-->
+                        <div class="pb-6">{{ request.user.get_mo_ta }}</div>
+                        <!--end::Contact-->
+                        {% comment %} <a href="#" class="btn btn-light-success font-weight-bold py-3 px-6 mb-2 text-center btn-block">Profile Overview</a> {% endcomment %}
+                    </div>
+                    <!--end::Body-->
+                </div>
+                <!--end::Card-->
+                <!--begin::Mixed Widget 14-->
+                {% comment %} <div class="card card-custom gutter-b">
+                    <!--begin::Header-->
+                    <div class="card-header border-0 pt-5">
+                        <h3 class="card-title font-weight-bolder">Action Needed</h3>
+                        <div class="card-toolbar">
+                            <div class="dropdown dropdown-inline">
+                                <a href="#" class="btn btn-clean btn-sm btn-icon" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    <i class="ki ki-bold-more-hor"></i>
+                                </a>
+                                <div class="dropdown-menu dropdown-menu-md dropdown-menu-right">
+                                    <!--begin::Navigation-->
+                                    <ul class="navi navi-hover py-5">
+                                        <li class="navi-item">
+                                            <a href="#" class="navi-link">
+                                                <span class="navi-icon">
+                                                    <i class="flaticon2-drop"></i>
+                                                </span>
+                                                <span class="navi-text">New Group</span>
+                                            </a>
+                                        </li>
+                                        <li class="navi-item">
+                                            <a href="#" class="navi-link">
+                                                <span class="navi-icon">
+                                                    <i class="flaticon2-list-3"></i>
+                                                </span>
+                                                <span class="navi-text">Contacts</span>
+                                            </a>
+                                        </li>
+                                        <li class="navi-item">
+                                            <a href="#" class="navi-link">
+                                                <span class="navi-icon">
+                                                    <i class="flaticon2-rocket-1"></i>
+                                                </span>
+                                                <span class="navi-text">Groups</span>
+                                                <span class="navi-link-badge">
+                                                    <span class="label label-light-primary label-inline font-weight-bold">new</span>
+                                                </span>
+                                            </a>
+                                        </li>
+                                        <li class="navi-item">
+                                            <a href="#" class="navi-link">
+                                                <span class="navi-icon">
+                                                    <i class="flaticon2-bell-2"></i>
+                                                </span>
+                                                <span class="navi-text">Calls</span>
+                                            </a>
+                                        </li>
+                                        <li class="navi-item">
+                                            <a href="#" class="navi-link">
+                                                <span class="navi-icon">
+                                                    <i class="flaticon2-gear"></i>
+                                                </span>
+                                                <span class="navi-text">Settings</span>
+                                            </a>
+                                        </li>
+                                        <li class="navi-separator my-3"></li>
+                                        <li class="navi-item">
+                                            <a href="#" class="navi-link">
+                                                <span class="navi-icon">
+                                                    <i class="flaticon2-magnifier-tool"></i>
+                                                </span>
+                                                <span class="navi-text">Help</span>
+                                            </a>
+                                        </li>
+                                        <li class="navi-item">
+                                            <a href="#" class="navi-link">
+                                                <span class="navi-icon">
+                                                    <i class="flaticon2-bell-2"></i>
+                                                </span>
+                                                <span class="navi-text">Privacy</span>
+                                                <span class="navi-link-badge">
+                                                    <span class="label label-light-danger label-rounded font-weight-bold">5</span>
+                                                </span>
+                                            </a>
+                                        </li>
+                                    </ul>
+                                    <!--end::Navigation-->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!--end::Header-->
+                    <!--begin::Body-->
+                    <div class="card-body d-flex flex-column">
+                        <div class="flex-grow-1">
+                            <div id="kt_mixed_widget_14_chart" style="height: 200px"></div>
+                        </div>
+                        <div class="pt-5">
+                            <p class="text-center font-weight-normal font-size-lg pb-7">Notes: Current sprint requires stakeholders 
+                            <br />to approve newly amended policies</p>
+                            <a href="#" class="btn btn-success btn-shadow-hover font-weight-bolder w-100 py-3">Generate Report</a>
+                        </div>
+                    </div>
+                    <!--end::Body-->
+                </div> {% endcomment %}
+                <!--end::Mixed Widget 14-->
+            </div>
+            <!--end::Aside-->
+            <!--begin::Content-->
+            <div class="flex-row-fluid ml-lg-8">
+                <!--begin::Row-->
+                <div class="row">
+                    <div class="col-lg-6">
+                        <!--begin::Mixed Widget 5-->
+                        <div class="card card-custom card-stretch gutter-b">
+                            <!--begin::Header-->
+                            <div class="card-header align-items-center border-0 mt-4">
+                                <h3 class="card-title align-items-start flex-column">
+                                    <span class="font-weight-bolder text-dark">Lịch Sử Hoạt Động</span>
+                                    
+                                </h3>
+                            </div>
+                            <!--end::Header-->
+                            <!--begin::Body-->
+                            <div class="card-body pt-4">
+                                <!--begin::Timeline-->
+                                <div class="timeline timeline-6 mt-3">
+                                    <!--begin::Item-->
+                                    {% for activity in activities %}
+                                    <div class="timeline-item align-items-start">
+                                        <!--begin::Label-->
+                                        <div class="timeline-label font-weight-bolder text-dark-75 font-size-lg">{{activity.timestamp|time:"H:i"}}</div>
+                                        <!--end::Label-->
+                                        <!--begin::Badge-->
+                                        <div class="timeline-badge">
+                                            <i class="fa fa-genderless text-warning icon-xl"></i>
+                                        </div>
+                                        <!--end::Badge-->
+                                        <!--begin::Text-->
+                                        <div class="font-weight-mormal font-size-lg timeline-content text-muted pl-3">
+                                            {% if activity.target %}
+                                                {% if activity.action_object %}
+                                                    <a href="javascript:;">{{ activity.actor }}</a> {{ activity.verb }} <a href="javascript:;">{{ activity.action_object }}</a> của <a href="javascript:;">{{ activity.target }}</a> {{ activity.timesince }} trước
+                                                {% else %}
+                                                    <a href="javascript:;">{{ activity.actor }}</a> {{ activity.verb }} <a href="javascript:;">{{ activity.target }}</a> {{ activity.timesince }} trước
+
+                                                {% endif %}
+                                            
+                                            {% elif activity.action_object %}
+                                                <a href="javascript:;">{{ activity.actor }}</a> {{ activity.verb }} <a href="javascript:;">{{ activity.action_object }}</a> {{ activity.timesince }} trước
+                                            {% else %}
+                                                <a href="javascript:;">{{ activity.actor }}</a> {{ activity.verb }} {{ activity.timesince }} trước
+                                            {% endif %}
+                                        </div>
+                                        <!--end::Text-->
+                                    </div>
+                                    {% endfor %}
+                                    <!--end::Item-->
+                                </div>
+                                <!--end::Timeline-->
+                            </div>
+                            <!--end: Card Body-->
+                        </div>
+                        <!--end::Mixed Widget 5-->
+                    </div>
+                    <div class="col-lg-6">
+                        <!--begin::List Widget 10-->
+                        <div class="card card-custom card-stretch gutter-b">
+                            <!--begin::Header-->
+                            <div class="card-header border-0">
+                                <h3 class="card-title font-weight-bolder text-dark">Thông Báo</h3>
+                                
+                            </div>
+                            <!--end::Header-->
+                            <!--begin::Body-->
+                            <div class="card-body pt-0">
+                                <!--begin::Item-->
+                                <div class="mb-6">
+                                    <!--begin::Content-->
+                                    <div class="d-flex align-items-center flex-grow-1">
+                                        
+                                        <!--begin::Section-->
+                                        <div class="d-flex flex-wrap align-items-center justify-content-between w-100">
+                                            <!--begin::Info-->
+                                            <div class="d-flex flex-column align-items-cente py-2 w-75">
+                                                <!--begin::Title-->
+                                                <a href="#" class="text-dark-75 font-weight-bold text-hover-primary font-size-lg mb-1">Coming soon</a>
+                                                <!--end::Title-->
+                                               
+                                            </div>
+                                            <!--end::Info-->
+                                            
+                                        </div>
+                                        <!--end::Section-->
+                                    </div>
+                                    <!--end::Content-->
+                                </div>
+                                <!--end::Item-->
+                                
+                            </div>
+                            <!--end: Card Body-->
+                        </div>
+                        <!--end: Card-->
+                        <!--end: List Widget 10-->
+                    </div>
+                </div>
+                <!--end::Row-->
+                <!--begin::Advance Table Widget 8-->
+                
+                <!--end::Advance Table Widget 8-->
+            </div>
+            <!--end::Content-->
+        </div>
+        <!--end::Profile 4-->
+    </div>
+    <!--end::Container-->
+</div>
+<!--end::Entry-->
+
+{% endblock content %}
+
+{% block scripts %}
+<script src="{% static 'assets/plugins/global/plugins.bundle9cd7.js' %} "></script>
+<script src="{% static 'assets/plugins/custom/prismjs/prismjs.bundle9cd7.js' %} "></script>
+<script src="{% static 'assets/js/scripts.bundle9cd7.js' %} "></script>
+
+{% endblock scripts %}
+
+
+

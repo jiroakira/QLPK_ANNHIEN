@@ -18,6 +18,8 @@ from channels.layers import get_channel_layer
 from django.contrib import auth
 from django.core.exceptions import PermissionDenied
 from django.contrib.auth.models import PermissionsMixin
+import re
+import unicodedata
 
 def file_url(self, filename): 
 
@@ -26,6 +28,22 @@ def file_url(self, filename):
     file_hash = hash_.hexdigest()
     filename = filename
     return "%s%s/%s" % (self.file_prepend, file_hash, filename)
+
+def strip_accents(text):
+    try:
+        text = unicode(text, 'utf-8')
+    except (TypeError, NameError): 
+        pass
+    text = unicodedata.normalize('NFD', text)
+    text = text.encode('ascii', 'ignore')
+    text = text.decode("utf-8")
+    return str(text)
+
+def text_to_id(text):
+    text = strip_accents(text.lower())
+    text = re.sub('[ ]+', '_', text)
+    text = re.sub('[^0-9a-zA-Z_-]', '', text)
+    return text
 
 class UserManager(BaseUserManager):
     def create_user(self, ho_ten, so_dien_thoai, cmnd_cccd, dia_chi, password=None):
@@ -295,6 +313,35 @@ class User(AbstractBaseUser, PermissionsMixin):
             return "Nữ"
         else: 
             return "Không xác định"
+    
+    def get_user_role(self):
+        if self.chuc_nang == '2':
+            return "Lễ Tân"
+        elif self.chuc_nang == '3':
+            return "Bác Sĩ Lâm Sàng"
+        elif self.chuc_nang == '4':
+            return "Bác Sĩ Chuyên Khoa"
+        elif self.chuc_nang == '5':
+            return "Nhân Viên Tài Chính"
+        elif self.chuc_nang == '6':
+            return "Nhân Viên Phòng Thuốc"
+        elif self.chuc_nang == '7':
+            return "Quản Trị Viên"
+    
+    @property
+    def is_bac_si(self):
+        if self.chuc_nang == '3' or self.chuc_nang == '4' or self.is_superuser:
+            return True
+        else:
+            return False
+
+    def get_mo_ta(self):
+        if self.chuc_nang == '3' or self.chuc_nang == '4':
+            mo_ta = self.user_bac_si.gioi_thieu
+        else:
+            mo_ta = "Nhân Viên Phòng Khám"
+
+        return mo_ta
 
         
 class BacSi(models.Model):
@@ -302,7 +349,7 @@ class BacSi(models.Model):
         ('full_time', "Full-Time"),
         ('part_time', "Part-Time"),
     )
-    user = models.OneToOneField(User, on_delete=models.CASCADE, null=True, blank=True)
+    user = models.OneToOneField(User, on_delete=models.CASCADE, null=True, blank=True, related_name='user_bac_si')
     chung_chi_hanh_nghe = models.CharField(max_length=50, null=True, blank=True)
     gioi_thieu = models.TextField(null=True, blank=True)
     chuc_danh = models.CharField(max_length=255, null=True, blank=True)
@@ -362,6 +409,7 @@ class PhongKham(models.Model):
 class PhongChucNang(models.Model):
     """ Mỗi dịch vụ khám sẽ có một phòng chức năng riêng biệt, là nơi bệnh nhân sau khi được phân dịch vụ khám sẽ đến trong suốt chuỗi khám của bệnh nhân """
     ten_phong_chuc_nang = models.CharField(max_length=255)
+    slug = models.CharField(max_length=255, null=True, blank=True)
     bac_si_phu_trach = models.ForeignKey(User, null=True, blank=True, on_delete=models.DO_NOTHING, related_name="bac_si_chuyen_khoa")
     # dich_vu_kham = models.ForeignKey(DichVuKham, null=True, blank=True, on_delete=models.DO_NOTHING, related_name="phong_chuc_nang_theo_dich_vu")
     thoi_gian_tao = models.DateTimeField(editable=False, null=True, blank=True, auto_now_add=True)
@@ -383,11 +431,11 @@ class PhongChucNang(models.Model):
     def danh_sach_benh_nhan_theo_dich_vu_kham(self):
         # return self.dich_vu_kham.dich_vu_kham.all()
         return self.ten_phong_chuc_nang
-    # def save(self, *agrs, **kwargs):
-    #     if not self.id:
-    #         self.thoi_gian_tao = timezone.now
-    #     self.thoi_gian_cap_nhat = timezone.now
-    #     return super(PhongChucNang, self).save(*agrs, **kwargs)
+
+    def save(self, *agrs, **kwargs):
+        if not self.id:
+            self.slug = text_to_id(self.ten_phong_chuc_nang)
+        return super(PhongChucNang, self).save(*agrs, **kwargs)
 
     # TODO review table PhongChucNang again
 
@@ -675,10 +723,15 @@ class ChuoiKham(models.Model):
         return ""
 
     def get_chi_phi_dich_vu(self):
+        
         if (hasattr(self, 'hoa_don_dich_vu')):
-            tong_tien = "{:,}".format(int(self.hoa_don_dich_vu.tong_tien))
+            if self.hoa_don_dich_vu.tong_tien is not None:
+                tong_tien = "{:,}".format(int(self.hoa_don_dich_vu.tong_tien))
+            else:
+                tong_tien = "-"
         else:
-            tong_tien = "-"
+            tong_tien = '-'
+
         return tong_tien
     
     def get_chi_phi_lam_sang(self):
@@ -698,7 +751,10 @@ class ChuoiKham(models.Model):
         if don_thuoc is not None:
             if (hasattr(don_thuoc, 'hoa_don_thuoc')):
                 hoa_don_thuoc = don_thuoc.hoa_don_thuoc
-                tong_tien = "{:,}".format(int(hoa_don_thuoc.tong_tien))
+                if hoa_don_thuoc.tong_tien is not None:
+                    tong_tien = "{:,}".format(int(hoa_don_thuoc.tong_tien))
+                else:
+                    tong_tien = '-'
             else:
                 tong_tien = '-'
         else:
@@ -899,6 +955,13 @@ class KetQuaTongQuat(models.Model):
         if not self.ket_luan:
             return "Không có kết luận"
         return self.ket_luan
+
+    @property
+    def check_html_ket_qua(self):
+        if self.html_ket_qua_tong_quat.exists():
+            return True
+        else:
+            return False
 
 class KetQuaChuyenKhoa(models.Model):
     """ Kết quả của khám chuyên khoa mà người dùng có thể nhận được """ 
@@ -1210,6 +1273,7 @@ class KetQuaXetNghiem(models.Model):
 
 class HtmlKetQua(models.Model):
     phan_khoa_kham = models.ForeignKey(PhanKhoaKham, on_delete=models.CASCADE, null=True, blank=True)
+    ket_qua_tong_quat = models.ForeignKey(KetQuaTongQuat, on_delete=models.CASCADE, null=True, blank=True, related_name="html_ket_qua_tong_quat")
     ket_qua_chuyen_khoa = models.ForeignKey(KetQuaChuyenKhoa, on_delete=models.CASCADE, null=True, blank=True, related_name="html_ket_qua")
     noi_dung = models.TextField(null=True, blank=True)
 
@@ -1397,6 +1461,3 @@ class Ward(models.Model):
 
     def __str__(self):
         return self.name
-
-    
-
