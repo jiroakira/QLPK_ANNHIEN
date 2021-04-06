@@ -154,26 +154,26 @@
                         </div>
                         <div class="form-group row">
                             <div class="col-lg-12">
-                                <label>Họ Tên <span class="text-danger">*</span></label>
+                                <label>Họ Tên </label>
                                 <input type="text" class="form-control" id="inputNameModal"  placeholder="Nhập Đầy Đủ Họ Tên Của Bạn"/>
                             </div>
                         </div>
                         <div class="form-group row">
                             <div class="col-lg-6">
-                                <label>Số Điện Thoại <span class="text-danger">*</span></label>
+                                <label>Số Điện Thoại </label>
                                 <input type="text" class="form-control" id="inputPhoneModal"  placeholder="Nhập Số Điện Thoại"/>
                                 <span class="form-text text-muted" >Chúng tôi sẽ không chia sẻ dữ liệu này với bất kì ai</span>
                                 <span class="text-success" id="success_phone"></span>
                                 <span class="text-warning" id="error_phone"></span>    
                             </div>
                             <div class="col-lg-6">
-                                <label for="inputPasswordModal">Mật khẩu <span class="text-danger">*</span></label>
+                                <label for="inputPasswordModal">Mật khẩu </label>
                                 <input type="password" class="form-control" id="inputPasswordModal" placeholder="Nhập mật khẩu"/>
                             </div>
                         </div>
                         <div class="form-group row">
                             <div class="col-lg-6">
-                                <label>CMND/CCCD <span class="text-danger">*</span></label>
+                                <label>CMND/CCCD </label>
                                 <input type="text" class="form-control" id="inputCmtModal" placeholder="Nhập CMND/CCCD"/>
                             </div>
                             <div class="col-lg-6">
@@ -200,22 +200,22 @@
                                 </div>
                             </div>
                             <div class="col-lg-2">
-                                <label>Dân tộc <span class="text-danger">*</span></label>
+                                <label>Dân tộc </label>
                                 <input type="text" class="form-control" id="inputDanTocModal" placeholder="Nhập dân tộc của bệnh nhân"/>
                             </div>
                             <div class="col-lg-4">
-                                <label>Cân Nặng <span class="text-danger">*</span></label>
+                                <label>Cân Nặng </label>
                                 <input type="number" min="0" class="form-control" id="inputCanNangModal" placeholder="Nhập cân nặng của bệnh nhân"/>
                             </div>
                             <div class="col-lg-4">
-                                <label>Mã số bảo hiểm <span class="text-danger">*</span></label>
+                                <label>Mã số bảo hiểm </label>
                                 <input type="text" class="form-control" id="inputMaSoBaoHiemModal" placeholder="Nhập mã số bảo hiểm của bệnh nhân"/>
                             </div>
                         </div>
                         
                         <div class="form-group row">
                             <div class="col-lg-4">
-                                <label>Mã Nơi ĐK KCB BĐ<span class="text-danger">*</span></label>
+                                <label>Mã Nơi ĐK KCB BĐ</label>
                                 {% comment %} {{ form.ma_dkbd|attr:"class:form-control"|attr:"name:ma_dkbd"|attr:"placeholder:Nhập mã nơi đăng kí khám chữa bệnh ban đầu"}} {% endcomment %}
                                 <input type="text" class="form-control" id="inputMaDkbdModal" placeholder="Nhập mã nơi đăng kí khám chữa bệnh ban đầu"/>
                             </div>
@@ -229,7 +229,7 @@
                                 <input type="text" class="form-control" id="kt_datepicker_4" name="gt_the_tu" readonly="readonly" placeholder="Chọn thời điểm thẻ có giá trị"/>
                             </div>
                             <div class="col-lg-4">
-                                <label>Liên Tiếp 5 Năm Từ<span class="text-danger">*</span></label>
+                                <label>Liên Tiếp 5 Năm Từ</label>
                                 {% comment %} {{ form.lien_tuc_5_nam_tu|attr:"class:form-control"|attr:"name:lien_tuc_5_nam_tu"|attr:"id:kt_datepicker_5"|attr:"readonly:readonly"|attr:"placeholder:Chọn thời điểm 5 năm liên tục từ"}} {% endcomment %}
                                 <input type="text" class="form-control" id="kt_datepicker_5" name="lien_tuc_5_nam_tu" readonly="readonly" placeholder="Chọn thời điểm 5 năm liên tục từ"/>
                             </div>
@@ -238,7 +238,7 @@
 
                         <div class="form-group row">
                             <div class="col-lg-4">
-                                <label>Tỉnh/Thành Phố<span class="text-danger">*</span></label>
+                                <label>Tỉnh/Thành Phố</label>
                                 {% comment %} <input type="text" class="form-control" id="inputCmtModal" placeholder="Nhập CMND/CCCD"/> {% endcomment %}
                                 <select class="form-control selectpicker" id="kt_select2_1" data-live-search="true" name="param">
                                     <option value="" selected disabled>Chọn Tỉnh/Thành phố</option>
@@ -264,7 +264,7 @@
                         </div>
 
                         <div class="form-group">
-                            <label>Địa chỉ cụ thể (Đường/Số nhà)<span class="text-danger">*</span></label>
+                            <label>Địa chỉ cụ thể (Đường/Số nhà)</label>
                             <textarea class="form-control" id="inputDiaChiModal" placeholder="Địa chỉ người dùng" rows="3"></textarea>
                         </div>
                     </form>
@@ -305,7 +305,7 @@
                         </div>
                         <div class="form-group" id="thongTinBenhNhan"></div>
                         <div class="form-group">
-                            <label>Chọn Dịch Vụ Khám <span class="text-danger">*</span></label>
+                            <label>Chọn Dịch Vụ Khám </label>
                             <select id="selectDichVuKham" class="form-control selectpicker">
                                 <option value="kham_chua_benh" selected>Khám Chữa Bệnh</option>
                                 <option value="kham_sua_khoe">Khám Sức Khỏe</option>
@@ -347,18 +347,18 @@
                 <form>
                     <div class="card-body">
                         <div class="form-group">
-                            <label for="inputPassword1">Mật khẩu hiện tại <span class="text-danger">*</span></label>
+                            <label for="inputPassword1">Mật khẩu hiện tại </label>
                             <input type="password" class="form-control" id="inputPassword1" placeholder="Mật khẩu hiện tại"/>
                         </div>
                         <div class="form-group">
-                            <label for="inputPassword2">Mật khẩu mới <span class="text-danger">*</span></label>
+                            <label for="inputPassword2">Mật khẩu mới </label>
                             <input type="password" class="form-control" id="inputPassword2" placeholder="Mật khẩu mới"/>
                             <span class="form-text text-muted"><code>Mật khẩu phải có ít nhất 8 ký tự.</code></span>
                             <span class="form-text text-muted"><code>Mật khẩu phải có các chữ cái từ a-z.</code></span>
                             <span class="form-text text-muted"><code>Mật khẩu phải có ít nhất 1 chữ số từ 0-9.</code></span>
                         </div>
                         <div class="form-group">
-                            <label for="inputPassword3">Xác nhận mật khẩu <span class="text-danger">*</span></label>
+                            <label for="inputPassword3">Xác nhận mật khẩu </label>
                             <input type="password" class="form-control" id="inputPassword3" placeholder="Xác nhận mật khẩu"/>
                         </div>
                     </div>
@@ -851,18 +851,19 @@ var KTDatatableRemoteAjaxDemo = function() {
                 processData: false,
                 contentType: false,
                 success: function(response){
-                    KTApp.unblockPage();
-                    if (response.status == 400) {
-                        
+                
+                    if (response.status == 404) {
+                        KTApp.unblockPage();
                         toastr.warning(response.message, "Xảy Ra Lỗi")
+
                     } else if (response.status == 409) {
-                        
+                        KTApp.unblockPage();
                         toastr.info(response.message, "Lỗi")
                     } else if (response.status == 403){
-                        
+                        KTApp.unblockPage();
                         toastr.info(response.message, "Lỗi")
-                    } else {
-                        
+                    } else if (response.status == 200) {
+                        KTApp.unblockPage();
                         toastr.success(response.message, "Thành Công")
                         $('#form_register').find("input, textarea").val("");
                         $('#error_phone').html('')
@@ -872,6 +873,7 @@ var KTDatatableRemoteAjaxDemo = function() {
                     $('#kt_datatable').KTDatatable('reload');
                 },
                 error: function(response){
+                    KTApp.unblockPage();
                     $('#registerModal').modal('hide');
                 }
             })

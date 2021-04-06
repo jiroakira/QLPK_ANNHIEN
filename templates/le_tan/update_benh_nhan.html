@@ -41,23 +41,23 @@
                     <form id="benh_nhan_form">
                         <div class="form-group row">
                             <div class="col-lg-12">
-                                <label>Họ Tên <span class="text-danger">*</span></label>
+                                <label>Họ Tên </label>
                                 {{ form.ho_ten|attr:"class:form-control"|attr:"name:ho_ten"|attr:"placeholder:Nhập Họ Tên Của Bệnh Nhân" }}
                             </div>
                         </div>
                         <div class="form-group row">
                             <div class="col-lg-6">
-                                <label>Số Điện Thoại <span class="text-danger">*</span></label>
+                                <label>Số Điện Thoại </label>
                                 {{ form.so_dien_thoai|attr:"class:form-control"|attr:"name:so_dien_thoai"|attr:"placeholder:Nhập Số Điện Thoại Của Bệnh Nhân" }}
                             </div>
                             <div class="col-lg-6">
-                                <label>Email <span class="text-danger">*</span></label>
+                                <label>Email </label>
                                 {{ form.email|attr:"class:form-control"|attr:"name:email"|attr:"placeholder:Nhập Email Của Bệnh Nhân" }}
                             </div>
                         </div>
                         <div class="form-group row">
                             <div class="col-lg-6">
-                                <label>CMND/CCCD <span class="text-danger">*</span></label>
+                                <label>CMND/CCCD </label>
                                 {{ form.cmnd_cccd|attr:"class:form-control"|attr:"name:cmnd_cccd"|attr:"placeholder:Nhập CCMD/CCCD Của Bệnh Nhân" }}
                             </div>
                             {% comment %} <div class="col-lg-6">
@@ -84,22 +84,22 @@
                                 </div>
                             </div>
                             <div class="col-lg-2">
-                                <label>Dân tộc <span class="text-danger">*</span></label>
+                                <label>Dân tộc </label>
                                 {{ form.dan_toc|attr:"class:form-control"|attr:"name:dan_toc"|attr:"placeholder:Nhập dân tộc"}}
                             </div>
                             <div class="col-lg-4">
-                                <label>Cân Nặng <span class="text-danger">*</span></label>
+                                <label>Cân Nặng </label>
                                 {{ form.can_nang|attr:"class:form-control"|attr:"name:can_nang"|attr:"placeholder:Nhập cân nặng"}}
                             </div>
                             <div class="col-lg-4">
-                                <label>Mã số bảo hiểm <span class="text-danger">*</span></label>
+                                <label>Mã số bảo hiểm </label>
                                 {{ form.ma_so_bao_hiem|attr:"class:form-control"|attr:"name:ma_so_bao_hiem"|attr:"placeholder:Nhập mã số bảo hiểm"}}
                             </div>
                         </div>
 
                         <div class="form-group row">
                             <div class="col-lg-4">
-                                <label>Mã Nơi ĐK KCB BĐ<span class="text-danger">*</span></label>
+                                <label>Mã Nơi ĐK KCB BĐ</label>
                                 {{ form.ma_dkbd|attr:"class:form-control"|attr:"name:ma_dkbd"|attr:"placeholder:Nhập mã nơi đăng kí khám chữa bệnh ban đầu"}}
                             </div>
 
@@ -111,7 +111,7 @@
                                 {{ form.gt_the_tu|attr:"class:form-control"|attr:"name:gt_the_tu"|attr:"id:kt_datepicker_4"|attr:"readonly:readonly"|attr:"placeholder:Chọn thời điểm thẻ có giá trị"}}
                             </div>
                             <div class="col-lg-4">
-                                <label>Liên Tiếp 5 Năm Từ<span class="text-danger">*</span></label>
+                                <label>Liên Tiếp 5 Năm Từ</label>
                                 {{ form.lien_tuc_5_nam_tu|attr:"class:form-control"|attr:"name:lien_tuc_5_nam_tu"|attr:"id:kt_datepicker_5"|attr:"readonly:readonly"|attr:"placeholder:Chọn thời điểm 5 năm liên tục từ"}}
                             </div>
                             
@@ -119,7 +119,7 @@
 
                         <div class="form-group row">
                             <div class="col-lg-4">
-                                <label>Tỉnh/Thành Phố<span class="text-danger">*</span></label>
+                                <label>Tỉnh/Thành Phố</label>
                                 {% comment %} <input type="text" class="form-control" id="inputCmtModal" placeholder="Nhập CMND/CCCD"/> {% endcomment %}
                                 <select class="form-control selectpicker" id="kt_select2_1" data-live-search="true" name="param">
                                     <option value="" selected disabled>Chọn Tỉnh/Thành phố</option>
@@ -147,8 +147,8 @@
                         </div>
 
                         <div class="form-group">
-                            <label>Địa chỉ cụ thể (Đường/Số nhà) <span class="text-danger">*</span></label>
-                            {{ form.dia_chi|attr:"class:form-control"|attr:"name:dia_chi"|attr:"rows:3"|attr:"placeholder:Nhập Mã Số Bảo Hiểm Y Tế Của Bệnh Nhân"}}
+                            <label>Địa chỉ cụ thể (Đường/Số nhà) </label>
+                            {{ form.dia_chi|attr:"class:form-control"|attr:"name:dia_chi"|attr:"rows:3"|attr:"placeholder:Nhập Địa Chỉ Cụ Thể Của Bệnh Nhân"}}
                         </div>
 
                         <div class="row">

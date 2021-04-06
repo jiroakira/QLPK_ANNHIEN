@@ -434,7 +434,14 @@ def create_user(request):
             ngay_sinh = datetime.strptime(ngay_sinh, format_3)
             ngay_sinh = ngay_sinh.strftime("%Y-%m-%d")
         
-            # benh_nhan = get_object_or_404(User, id=id_benh_nhan)
+            if User.objects.filter(so_dien_thoai=so_dien_thoai).exists():
+                response = {
+                    'status': 404, 
+                    'message': "Số Điện Thoại Này Đã Tồn Tại"
+                }
+                return HttpResponse(json.dumps(response), content_type="application/json, charset=utf-8")
+
+            benh_nhan = get_object_or_404(User, id=id_benh_nhan)
             benh_nhan = User.objects.create_nguoi_dung(
                 ho_ten         = ho_ten, 
                 so_dien_thoai  = so_dien_thoai, 
@@ -446,23 +453,11 @@ def create_user(request):
                 dan_toc        = dan_toc,    
                 ma_so_bao_hiem = ma_so_bao_hiem,
             )
-            benh_nhan.dia_chi        = dia_chi
+
             benh_nhan.ngay_sinh      = ngay_sinh
             benh_nhan.gioi_tinh      = gioi_tinh
             benh_nhan.dan_toc        = dan_toc
             benh_nhan.ma_so_bao_hiem = ma_so_bao_hiem
-            
-            if tinh_id != "":
-                tinh = Province.objects.filter(id=tinh_id).first()       
-                benh_nhan.tinh = tinh
-            
-            if huyen_id != "":
-                huyen = District.objects.filter(id=huyen_id).first()
-                benh_nhan.huyen = huyen
-
-            if xa_id != "":
-                xa = Ward.objects.filter(id=xa_id).first()
-                benh_nhan.xa = xa
 
             benh_nhan.can_nang = can_nang
             benh_nhan.ma_dkbd = ma_dkbd
@@ -476,21 +471,64 @@ def create_user(request):
                 lien_tuc_5_nam_tu = datetime.strptime(lien_tuc_5_nam_tu, format_3)
                 lien_tuc_5_nam_tu = lien_tuc_5_nam_tu.strftime("%Y-%m-%d")
                 benh_nhan.lien_tuc_5_nam_tu = lien_tuc_5_nam_tu
+            
+            if tinh_id != "null":
+                tinh = Province.objects.filter(id=tinh_id).first()       
+                benh_nhan.tinh = tinh
+            else:
+                response = {
+                    'status': 404, 
+                    'message': "Không Thể Thiếu Tỉnh Thành"
+                }
+                return HttpResponse(json.dumps(response), content_type="application/json, charset=utf-8")
+            
+            if huyen_id != "null":
+                huyen = District.objects.filter(id=huyen_id).first()
+                benh_nhan.huyen = huyen
+            else:
+                response = {
+                    'status': 404, 
+                    'message': "Không Thể Thiếu Quận Huyện"
+                }
+                return HttpResponse(json.dumps(response), content_type="application/json, charset=utf-8")
+
+            if xa_id != "null":
+                xa = Ward.objects.filter(id=xa_id).first()
+                benh_nhan.xa = xa
+            else:
+                response = {
+                    'status': 404, 
+                    'message': "Không Thể Thiếu Phường Xã"
+                }
+                return HttpResponse(json.dumps(response), content_type="application/json, charset=utf-8")
+
+            if dia_chi != '':
+                benh_nhan.dia_chi        = dia_chi
+            else:
+                response = {
+                    'status': 404, 
+                    'message': "Không Thể Thiếu Địa Chỉ Cụ Thể"
+                }
+                return HttpResponse(json.dumps(response), content_type="application/json, charset=utf-8")
 
             benh_nhan.save()
+
             from actstream import action
             action.send(request.user, verb="tạo mới người dùng", target=benh_nhan)
         
             response = {
+                'status': 200,
                 "message": "Đăng Kí Người Dùng Thành Công",
-                "ho_ten": benh_nhan.ho_ten,
-                "so_dien_thoai": benh_nhan.so_dien_thoai,
             }
 
             return HttpResponse(json.dumps(response), content_type="application/json, charset=utf-8")
         else:
+            response = {
+                'status': 404,
+                "message": "Đăng Kí Người Dùng Không Thành Công",
+            }
             return HttpResponse(
-                json.dumps({"nothing to see": "this isn't happening"}),
+                json.dumps(response),
                 content_type="application/json"
             )
     else:
