@@ -41,14 +41,14 @@
                     <form id="benh_nhan_form">
                         <div class="form-group row">
                             <div class="col-lg-6">
-                                <label>Họ Tên <span class="text-danger">*</span></label>
+                                <label>Họ Tên </label>
                                 {{ form_user.ho_ten|attr:"class: form-control"|attr:"name:ho_ten" }}
                                 {% comment %} <input type="text" class="form-control" id="inputNameModal"  placeholder="Nhập Đầy Đủ Họ Tên Của Bác Sĩ"/> {% endcomment %}
                             </div>
                         {% comment %} </div>
                         <div class="form-group row"> {% endcomment %}
                             <div class="col-lg-6">
-                                <label>Số Điện Thoại <span class="text-danger">*</span></label>
+                                <label>Số Điện Thoại </label>
                                 {{ form_user.so_dien_thoai|attr:"class: form-control"|attr:"name:so_dien_thoai" }}
                                 {% comment %} <input type="text" class="form-control" id="inputPhoneModal"  placeholder="Nhập Số Điện Thoại"/> {% endcomment %}
                                 <span class="form-text text-muted" >Chúng tôi sẽ không chia sẻ dữ liệu này với bất kì ai</span>
@@ -58,7 +58,7 @@
                         </div>
                         <div class="form-group row">
                             <div class="col-lg-6">
-                                <label>CMND/CCCD <span class="text-danger">*</span></label>
+                                <label>CMND/CCCD </label>
                                 {{ form_user.cmnd_cccd|attr:"class:form-control"|attr:"name:cmnd_cccd" }}
                                 {% comment %} <input type="text" class="form-control" id="inputCmtModal" placeholder="Nhập CMND/CCCD"/> {% endcomment %}
                             </div>
@@ -72,7 +72,7 @@
                         </div>
                         <div class="form-group row">
                             <div class="col-lg-6">
-                                <label>Giới Thiệu<span class="text-danger">*</span></label>
+                                <label>Giới Thiệu</label>
                                 {{form.gioi_thieu|attr:"class:form-control"|attr:"name:gioi_thieu"|attr:"rows:2"}}
 
                                 {% comment %} <input type="text" class="form-control" id="inputGioiThieuModal" placeholder="Giới thiệu về bác sĩ"/> {% endcomment %}
@@ -86,7 +86,7 @@
                         </div>
                         <div class="form-group row">
                             <div class="col-lg-6">
-                                <label>Chuyên Khoa<span class="text-danger">*</span></label>
+                                <label>Chuyên Khoa</label>
                                 {{form.chuyen_khoa|attr:"class:form-control"|attr:"name:chuyen_khoa"}}
 
                                 {% comment %} <input type="text" class="form-control" id="inputChuyenKhoaModal" placeholder="Chuyên khoa của bác sĩ"/> {% endcomment %}
@@ -108,14 +108,14 @@
                                     </label> {% endcomment %}
                             </div>
                             <div class="col-lg-6">
-                                <label>Kinh Nghiệm <span class="text-danger">*</span></label>
+                                <label>Kinh Nghiệm </label>
                                 {{ form.kinh_nghiem|attr:"class:form-control selectpicker"|attr:"name:kinh_nghiem"|attr:"rows:1" }}
 
                                 {% comment %} <input type="text" class="form-control" id="inputKinhNghiemModal" placeholder="Kinh nghiệm làm việc của bác sĩ"/> {% endcomment %}
                             </div>
                         </div>
                         <div class="form-group">
-                            <label>Địa chỉ <span class="text-danger">*</span></label>
+                            <label>Địa chỉ </label>
                             {{ form_user.dia_chi|attr:"class:form-control selectpicker"|attr:"name:dia_chi"|attr:"rows:3" }}
 
                             {% comment %} <textarea class="form-control" id="inputDiaChiModal" placeholder="Địa chỉ người dùng" rows="3"></textarea> {% endcomment %}
