@@ -1496,11 +1496,14 @@ def xuat(request, id=None, so_luong=None):
         return Response({"error": True, "message": "Loi Tao Log Thuoc"})
 
 @transaction.atomic
-def nhap(request, id=None, so_luong=None):
+def nhap(id, so_luong):
     try:
-        thuoc = Thuoc.objects.filter(id=id).first()
+        thuoc = Thuoc.objects.filter(id=id)
+        print(thuoc)
+        print(so_luong)
         thuoc.update(so_luong_kha_dung=F('so_luong_kha_dung') + so_luong)
-        ThuocLog.objects.create(thuoc=thuoc, ngay=timezone.now(), quy_trinh=ThuocLog.IN, so_luong=so_luong)
+        print('updated')
+        ThuocLog.objects.create(thuoc=thuoc[0], ngay=timezone.now(), quy_trinh=ThuocLog.IN, so_luong=so_luong)
         return Response({'error': False, 'message': 'Nhập Thuốc Thành Công'})
     except:
         return Response({'error': True, 'message': 'Không Thể Nhập Thuốc'})
@@ -2791,9 +2794,10 @@ def xoa_vat_tu(request):
 @login_required(login_url='/dang_nhap/')
 def danh_sach_bac_si(request):
     phong_chuc_nang = PhongChucNang.objects.all()
-    
+    province = Province.objects.all()
     data={
         'phong_chuc_nang' : phong_chuc_nang,
+        'province' : province,
     }
 
     return render(request, 'danh_sach_bac_si.html', context=data)
@@ -2816,6 +2820,9 @@ def create_bac_si(request):
         kinh_nghiem    = request.POST.get('kinh_nghiem',    None)
         loai_cong_viec = request.POST.get('loai_cong_viec', None)
         chuc_nang      = request.POST.get('chuc_nang',      None)
+        tinh_id      = request.POST.get('tinh',      None)
+        huyen_id      = request.POST.get('huyen',      None)
+        xa_id      = request.POST.get('xa',      None)
 
         ngay_sinh = datetime.strptime(ngay_sinh, format_3)
         ngay_sinh = ngay_sinh.strftime("%Y-%m-%d")
@@ -2829,6 +2836,16 @@ def create_bac_si(request):
         if User.objects.filter(cmnd_cccd=cmnd_cccd).exists():
             return HttpResponse(json.dumps({'message': "Số chứng minh thư đã tồn tại", 'status': '403'}), content_type = 'application/json; charset=utf-8')
 
+        if dia_chi == '':
+            response = {
+                'status': 400,
+                'message': "Thiếu địa chỉ cụ thể"
+            }
+            return HttpResponse(
+                json.dumps(response),
+                content_type="application/json"
+            )
+
         user = User.objects.create_nguoi_dung(
             ho_ten         = ho_ten, 
             so_dien_thoai  = so_dien_thoai,
@@ -2840,9 +2857,50 @@ def create_bac_si(request):
             ma_so_bao_hiem = ma_so_bao_hiem,
             password       = password,
         )
-   
+
         user.chuc_nang = chuc_nang
+        
         user.staff = True
+
+        if tinh_id != 'null':      
+            tinh = Province.objects.filter(id=tinh_id).first()
+            user.tinh = tinh
+        else:
+            response = {
+                'status': 400,
+                'message': "Không thể thiếu tỉnh thành"
+            }
+            return HttpResponse(
+                json.dumps(response),
+                content_type="application/json"
+            )
+    
+        if huyen_id != 'null':
+            huyen = District.objects.filter(id=huyen_id).first()
+            user.huyen = huyen
+        else:
+            response = {
+                'status': 400,
+                'message': "Không thể thiếu quận huyện"
+            }
+            return HttpResponse(
+                json.dumps(response),
+                content_type="application/json"
+            )
+
+        if xa_id != 'null': 
+            xa = Ward.objects.filter(id=xa_id).first()  
+            user.xa = xa
+        else:
+            response = {
+                'status': 400,
+                'message': "Không thể thiếu phường xã"
+            }
+            return HttpResponse(
+                json.dumps(response),
+                content_type="application/json"
+            )
+   
         user.save()
 
         bac_si = BacSi.objects.create(
@@ -2854,6 +2912,7 @@ def create_bac_si(request):
             kinh_nghiem    = kinh_nghiem   ,
             loai_cong_viec = loai_cong_viec,
         )
+
         bac_si.save()
 
         response = {
@@ -5215,13 +5274,14 @@ def store_nhap_thuoc(request):
 
         bulk_create_data = []
         for i in data:
-            thuoc = Thuoc.objects.only('id').get(id=i['obj']['id'])
             so_luong = i['obj']['so_luong']
             id = i['obj']['id']
 
-            nhap(request, id = id, so_luong = so_luong)
+            thuoc = Thuoc.objects.filter(id=id)
+            thuoc.update(so_luong_kha_dung=F('so_luong_kha_dung') + so_luong)
+            ThuocLog.objects.create(thuoc=thuoc[0], ngay=timezone.now(), quy_trinh=ThuocLog.IN, so_luong=so_luong)
 
-            nhap_hang = NhapHang(hoa_don=hoa_don_nhap, thuoc=thuoc, so_luong=i['obj']['so_luong'], bao_hiem=i['obj']['bao_hiem'])
+            nhap_hang = NhapHang(hoa_don=hoa_don_nhap, thuoc=thuoc[0], so_luong=i['obj']['so_luong'], bao_hiem=i['obj']['bao_hiem'])
             bulk_create_data.append(nhap_hang)
 
         NhapHang.objects.bulk_create(bulk_create_data)

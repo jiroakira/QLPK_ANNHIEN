@@ -341,9 +341,6 @@ var KTDatatableRecordSelectionDemo = function() {
                                 <input type="checkbox" id="${trVals.obj.id}" class="checkbox checkbox-lg checkbox-light-success checkbox-inline flex-shrink-0 m-0 mx-4 big-checkbox" data-checked="True" data-unchecked="False" />
                             </td>
                             <td>
-                                <input type="number" class="big-input-quantity form-control" />
-                            </td>
-                            <td>
                                 <span>
                                     ${trVals.obj.so_luong_kha_dung}
                                 </span>
@@ -352,15 +349,9 @@ var KTDatatableRecordSelectionDemo = function() {
                                 <span>
                                     ${trVals.obj.don_vi_tinh}
                                 </span>
-                                {% comment %} <input type="text" class="big-input-usage"> {% endcomment %}
                             </td>
                             <td>
-                                <span class="big-input-usage">
-                                    ${trVals.obj.duong_dung}
-                                </span>
-                            </td>
-                            <td>
-                                <input type="text" class="big-input-note form-control" onwheel="return false;" min="0" oninput="this.value|=0" />
+                                <input type="number" class="big-input-quantity form-control" onwheel="return false;" min='0' oninput="this.value|=0" />
                             </td>
                         </tr>
                     `);

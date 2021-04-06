@@ -238,6 +238,34 @@
                                 <input type="text" class="form-control" id="inputMaSoBaoHiemModal" placeholder="Nhập mã số bảo hiểm của bệnh nhân"/>
                             </div>
                         </div>
+
+                        <div class="form-group row">
+                            <div class="col-lg-4">
+                                <label>Tỉnh/Thành Phố</label>
+                                {% comment %} <input type="text" class="form-control" id="inputCmtModal" placeholder="Nhập CMND/CCCD"/> {% endcomment %}
+                                <select class="form-control selectpicker" id="kt_select2_1" data-live-search="true" name="param">
+                                    <option value="" selected disabled>Chọn Tỉnh/Thành phố</option>
+                                    {% for p in province %}
+                                        <option value="{{p.id}}">{{p.name}}</option>
+                                    {% endfor %}      
+                                </select>
+                            </div>
+                            <div class="col-lg-4">
+                                <label>Quận/Huyện</label>
+                                {% comment %} <input class="form-control" id="inputNgaySinhModal" type="text" /> {% endcomment %}
+                                <select class="form-control selectpicker" id="kt_select2_2" data-live-search="true" name="param">
+                                    
+                                </select>
+                            </div>
+                            <div class="col-lg-4">
+                                <label>Phường/Xã</label>
+                                {% comment %} <input class="form-control" id="inputNgaySinhModal" type="text" /> {% endcomment %}
+                                <select class="form-control selectpicker" id="kt_select2_3" data-live-search="true" name="param">
+                                    
+                                </select>
+                            </div>
+                        </div>
+
                         <div class="form-group">
                             <label>Địa chỉ </label>
                             <textarea class="form-control" id="inputDiaChiModal" placeholder="Địa chỉ người dùng" rows="3"></textarea>
@@ -249,62 +277,6 @@
                 <button type="button" class="btn btn-light-primary font-weight-bold" data-dismiss="modal">Đóng</button>
                 <button type="button" class="registerModalSubmit btn btn-primary font-weight-bold">Tạo Tài Khoản</button>
             </div>     
-        </div>
-    </div>
-</div>
-
-<!-- Modal Thêm Lịch Hẹn Khám -->
-<div class="modal fade" id="addLichHenKham" data-backdrop="static" tabindex="-1" role="dialog" aria-labelledby="staticBackdrop" aria-hidden="true">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="exampleModalLabel">Thêm Mới Lịch Hẹn Khám</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <i aria-hidden="true" class="ki ki-close"></i>
-                </button>
-            </div>
-            <div class="modal-body">
-                <form id="formLichHen">
-                    <div class="card-body">
-                        <div class="form-group mb-8">
-                            <div class="alert alert-custom alert-default" role="alert">
-                                <div class="alert-icon"><i class="flaticon2-calendar-6 text-primary"></i></div>
-                                <div class="alert-text">
-                                    Thêm Lịch Hẹn Khám
-                                </div>
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label>Bệnh Nhân</label>
-                            <span class="input-group-text" id="ten_benh_nhan"></span>
-                        </div>
-                        <div class="form-group" id="thongTinBenhNhan"></div>
-                        <div class="form-group">
-                            <label>Chọn Dịch Vụ Khám </label>
-                            <select id="selectDichVuKham" class="form-control selectpicker">
-                                <option value="kham_chua_benh" selected>Khám Chữa Bệnh</option>
-                                <option value="kham_sua_khoe">Khám Sức Khỏe</option>
-                            </select>
-                        </div>
-                        <div class="input-group date" id="kt_datetimepicker_1" data-target-input="nearest">
-                            <input type="text" id="inputLichHenKham" class="form-control datetimepicker-input" placeholder="Chọn thời gian bắt đầu" data-target="#kt_datetimepicker_1"/>
-                            <div class="input-group-append" data-target="#kt_datetimepicker_1" data-toggle="datetimepicker">
-                                <span class="input-group-text">
-                                    <i class="ki ki-calendar"></i>
-                                </span>
-                            </div>
-                        </div>
-                        <div class="form-group mt-5">
-                            <label>Lý Do Đến Khám</label>
-                            <textarea class="form-control" id="ly_do" rows="3" placeholder="Nhập triệu chứng/lý do khám của bệnh nhân"></textarea>
-                        </div>
-                    </div>
-                    <div class="card-footer">
-                        <button type="button" class="btn btn-light-primary font-weight-bold" data-dismiss="modal">Đóng</button>
-                        <button type="button" id="addLichSubmit" class="btn btn-primary font-weight-bold">Tạo</button>
-                    </div>
-                </form>
-            </div>
         </div>
     </div>
 </div>
@@ -530,6 +502,53 @@ var KTDatatableRemoteAjaxDemo = function() {
                 }
             }
         })
+
+        $('#kt_select2_1').on('changed.bs.select', function(e, clickedIndex, newValue, oldValue) {
+            console.log(this.value, clickedIndex, newValue, oldValue)
+            var id_province = this.value
+            $.ajax({
+                url        : HOST_URL + '/api/province/',
+                data       : {'id': id_province},
+                success: function(response){
+                    console.log(response.data)
+                    $('#kt_select2_2').empty()
+                    var selectHtml = "";
+                    selectHtml += `<option value="" selected disabled>Chọn Quận/Huyện</option>`
+                    $.each(response.data, function(index, item) {
+                        selectHtml += "<option value='" + item.id + "' " + ">" + item.name + "</option>";
+                    });
+                    $('#kt_select2_2').html(selectHtml)
+                    $('#kt_select2_2').selectpicker('refresh')
+                },
+                error: function(response){
+                    
+                }
+            })
+        })
+
+        $('#kt_select2_2').on('changed.bs.select', function(e, clickedIndex, newValue, oldValue) {
+            console.log(this.value, clickedIndex, newValue, oldValue)
+            var id_district = this.value
+            $.ajax({
+                url        : HOST_URL + '/api/district/',
+                data       : {'id': id_district},
+                success: function(response){
+                    console.log(response.data)
+                    $('#kt_select2_3').empty()
+                    var selectHtml = "";
+                    selectHtml += `<option value="" selected disabled>Chọn Phường/Xã</option>`
+                    $.each(response.data, function(index, item) {
+                        selectHtml += "<option value='" + item.id + "' " + ">" + item.name + "</option>";
+                    });
+                    $('#kt_select2_3').html(selectHtml)
+                    $('#kt_select2_3').selectpicker('refresh')
+                },
+                error: function(response){
+                    
+                }
+            })
+        })
+
         $(document).on("click", ".registerModalSubmit", function() {
 
             var ele = document.getElementsByName('radio'); 
@@ -569,6 +588,10 @@ var KTDatatableRemoteAjaxDemo = function() {
             formData.append('gioi_tinh',      gioi_tinh)
             formData.append('dan_toc',        $("#inputDanTocModal").val())
             formData.append('ma_so_bao_hiem', $("#inputMaSoBaoHiemModal").val())
+
+            formData.append('tinh', $('#kt_select2_1').val())
+            formData.append('huyen', $('#kt_select2_2').val())
+            formData.append('xa', $('#kt_select2_3').val())
             formData.append('csrfmiddlewaretoken', '{{ csrf_token }}')
 
             $.ajax({
@@ -587,12 +610,12 @@ var KTDatatableRemoteAjaxDemo = function() {
                         toastr.info(response.message, "Lỗi")
                     } else {
                         toastr.success(response.message, "Thành Công")
-                        $('#form_register').find("input, textarea").val("");
+                        $('#form_register').find('input:not([type="radio"]), textarea').val("");
                         $('#error_phone').html('')
                         $('#success_phone').html('')
+                        $('#registerModal').modal('hide');
+                        $('#kt_datatable').KTDatatable('reload');
                     }
-                    $('#registerModal').modal('hide');
-                    $('#kt_datatable').KTDatatable('reload');
                 },
                 error: function(response){
                     $('#registerModal').modal('hide');
