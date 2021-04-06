@@ -4767,12 +4767,14 @@ def create_staff_user(request):
             if dia_chi == '':
                 response = {
                     'status': 400,
-                    'message': "CMND đã tồn tại, vui lòng chọn CMND mới"
+                    'message': "Thiếu địa chỉ cụ thể"
                 }
                 return HttpResponse(
                     json.dumps(response),
                     content_type="application/json"
                 )
+
+            print(chuc_nang)
 
             benh_nhan = User.objects.create_staffuser(
                 ho_ten         = ho_ten,
@@ -4783,17 +4785,17 @@ def create_staff_user(request):
                 gioi_tinh      = gioi_tinh,
             )
 
+            benh_nhan.chuc_nang = chuc_nang
+
             if ngay_sinh != '':
                 ngay_sinh = datetime.strptime(ngay_sinh, format_3)
                 ngay_sinh = ngay_sinh.strftime("%Y-%m-%d")
                 benh_nhan.ngay_sinh = ngay_sinh
 
-            benh_nhan.chuc_nang = chuc_nang
-
             if dia_chi != "":
                 benh_nhan.dia_chi = dia_chi
             
-            if tinh_id != '':      
+            if tinh_id != 'null':      
                 tinh = Province.objects.filter(id=tinh_id).first()
                 benh_nhan.tinh = tinh
             else:
@@ -4806,7 +4808,7 @@ def create_staff_user(request):
                     content_type="application/json"
                 )
        
-            if huyen_id != '':
+            if huyen_id != 'null':
                 huyen = District.objects.filter(id=huyen_id).first()
                 benh_nhan.huyen = huyen
             else:
@@ -4820,7 +4822,7 @@ def create_staff_user(request):
                 )
 
             
-            if xa_id != '': 
+            if xa_id != 'null': 
                 xa = Ward.objects.filter(id=xa_id).first()  
                 benh_nhan.xa = xa
             else:

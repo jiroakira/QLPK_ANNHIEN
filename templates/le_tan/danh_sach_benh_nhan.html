@@ -865,12 +865,12 @@ var KTDatatableRemoteAjaxDemo = function() {
                     } else if (response.status == 200) {
                         KTApp.unblockPage();
                         toastr.success(response.message, "Thành Công")
-                        $('#form_register').find("input, textarea").val("");
+                        $('#form_register').find('input:not([type="radio"]), textarea').val("");
                         $('#error_phone').html('')
                         $('#success_phone').html('')
+                        $('#registerModal').modal('hide');
+                        $('#kt_datatable').KTDatatable('reload');
                     }
-                    $('#registerModal').modal('hide');
-                    $('#kt_datatable').KTDatatable('reload');
                 },
                 error: function(response){
                     KTApp.unblockPage();
