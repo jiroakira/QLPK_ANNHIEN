@@ -65,6 +65,7 @@ class Thuoc(models.Model):
         ('3', 'Vị thuốc YHCT'),
         ('4', 'Phóng xạ'),
         ('5', 'Thực phẩm bảo vệ sức khỏe'),
+        ('6', 'Vật Tư Y Tế'),
     )
     TYPE_CHOICES_LOAI_THAU = (
         ('1', 'Thầu tập trung'),

@@ -8,8 +8,8 @@
 	<!--begin::Brand-->	
 	<div class="brand flex-column-auto" id="kt_brand">
 		<!--begin::Logo-->
-		<a href="{% url 'index' %}" class="brand-logo pt-2 m-20">
-			<img alt="Logo" src="{% static 'assets/media/logos/logo1.png' %} " class="max-w-55px"/>
+		<a href="{% url 'index' %}" class="brand-logo pt-2">
+			<img alt="Logo" src="{% static 'assets/media/logos/logo1.png' %} " class="max-w-custom"/>
 		</a>
 		<!--end::Logo-->
 		<!--begin::Toggle-->
@@ -445,6 +445,7 @@
 				</li>
 				{% endif %}
 
+				{% if perms.clinic.can_bao_cao_thuoc %}
 				<li class="menu-item" aria-haspopup="true">
 					<a href="{% url 'bao_cao_thuoc' %}" class="menu-link">
 						<span class="svg-icon menu-icon">
@@ -461,6 +462,7 @@
 						<span class="menu-text">Báo Cáo Thuốc</span>
 					</a>
 				</li>
+				{% endif %}
 			
 				{% if perms.clinic.preclinical_department_module_view %}
 				<li class="menu-section">
