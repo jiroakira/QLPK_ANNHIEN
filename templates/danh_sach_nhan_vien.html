@@ -199,27 +199,27 @@
                                 <label>Chức Năng</label>
                                 <div class="radio-inline">
                                     <label class="radio radio-rounded">
-                                        <input type="radio" value="2" checked="checked" class='inputChucNangModal' name="radios15_1"/>
+                                        <input type="radio" value="2" checked="checked" class='inputChucNangModal' name="chuc_nang"/>
                                         <span></span>
                                         Lễ Tân
                                     </label>
                                     <label class="radio radio-rounded">
-                                        <input type="radio" value="3" class='inputChucNangModal' name="radios15_1"/>
+                                        <input type="radio" value="3" class='inputChucNangModal' name="chuc_nang"/>
                                         <span></span>
                                         Bác Sĩ Lâm Sàng
                                     </label>
                                     <label class="radio radio-rounded">
-                                        <input type="radio" value="4" class='inputChucNangModal' name="radios15_1"/>
+                                        <input type="radio" value="4" class='inputChucNangModal' name="chuc_nang"/>
                                         <span></span>
                                         Bác Sĩ Chuyên Khoa
                                     </label>
                                     <label class="radio radio-rounded">
-                                        <input type="radio" value="5" class='inputChucNangModal' name="radios15_1"/>
+                                        <input type="radio" value="5" class='inputChucNangModal' name="chuc_nang"/>
                                         <span></span>
                                         Nhân Viên Phòng Tài Chính
                                     </label>
                                     <label class="radio radio-rounded">
-                                        <input type="radio" value="6" class='inputChucNangModal' name="radios15_1"/>
+                                        <input type="radio" value="6" class='inputChucNangModal' name="chuc_nang"/>
                                         <span></span>
                                         Nhân Viên Phòng Thuốc
                                     </label>
@@ -695,8 +695,9 @@ var KTDatatableRemoteAjaxDemo = function() {
         $(document).on("click", ".registerModalSubmit", function() {
 
             var ele = document.getElementsByName('radio');
-            var ele2 = document.getElementsByName('radios15_1');
+            var ele2 = document.getElementsByName('chuc_nang');
             var i;
+
             for(i = 0; i < ele.length; i++) { 
                 if(ele[i].checked)
                 var gioi_tinh = ele[i].value
@@ -706,6 +707,7 @@ var KTDatatableRemoteAjaxDemo = function() {
                 if(ele2[i].checked)
                 var chuc_nang = ele2[i].value
             }
+            console.log(chuc_nang)
 
             formData.append('ho_ten', $("#inputNameModal").val())
             formData.append('username', $("#inputUsernameModal").val())
@@ -749,7 +751,7 @@ var KTDatatableRemoteAjaxDemo = function() {
                     } else if (response.status == 200) {
                         KTApp.unblockPage();
                         toastr.success(response.message, "Thành Công")
-                        $('#form_register').find("input, textarea").val("");
+                        $('#form_register').find('input:not([type="radio"]), textarea').val("");
                         $('#error_phone').html('')
                         $('#success_phone').html('')
                         $('#registerModal').modal('hide');
