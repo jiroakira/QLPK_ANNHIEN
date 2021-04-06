@@ -235,6 +235,7 @@ class User(AbstractBaseUser, PermissionsMixin):
             ('export_insurance_data', 'Xuất Bảo Hiểm Tài Chính'),
             ('can_export_list_of_patient_insurance_coverage', 'Xuất Danh Sách Bệnh Nhân Bảo Hiểm Chi Trả'),
             ('can_view_list_of_patient', 'Xem Danh Sách Bệnh Nhân Chờ'),
+            ('can_bao_cao_thuoc', 'Báo Cáo Thuốc')
         )
 
     def save(self, *args, **kwargs):
