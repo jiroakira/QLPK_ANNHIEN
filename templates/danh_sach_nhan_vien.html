@@ -774,7 +774,7 @@ var KTDatatableRemoteAjaxDemo = function() {
             var ten_benh_nhan = $(this).attr('data-ten')
  
             Swal.fire({
-                title: "Xóa Bệnh Nhân " +ten_benh_nhan+ " khỏi danh sách",
+                title: "Xóa Nhân Viên " +ten_benh_nhan+ " khỏi danh sách",
                 text: "Bạn sẽ không thể hoàn tác!",
                 icon: "warning",
                 showCancelButton: true,
@@ -805,7 +805,7 @@ var KTDatatableRemoteAjaxDemo = function() {
                                 
                                 Swal.fire(
                                     'Đã Xóa!',
-                                    'Bệnh Nhân Đã Được Xóa.',
+                                    'Nhân Viên Đã Được Xóa.',
                                     'success'
                                 )
                                 $('#kt_datatable').KTDatatable('reload');
@@ -819,7 +819,7 @@ var KTDatatableRemoteAjaxDemo = function() {
                 }else if (result.dismiss === 'cancel') {
 					Swal.fire(
 						'Đã Hủy',
-						'Bệnh Nhân Vẫn An Toàn Nhé! :)',
+						'Nhân Viên Vẫn Trong Danh Sách!',
 						'error'
 					)
 				}
@@ -833,7 +833,7 @@ var KTDatatableRemoteAjaxDemo = function() {
             var id = $(this).data('id')
             var ten_benh_nhan = $(this).data('ten')
             Swal.fire({
-                title: "Đặt lại mật khẩu cho bệnh nhân: " +ten_benh_nhan,
+                title: "Đặt lại mật khẩu cho nhân viên: " +ten_benh_nhan,
                 text: "Bạn sẽ không thể hoàn tác!",
                 icon: "warning",
                 showCancelButton: true,
@@ -878,7 +878,7 @@ var KTDatatableRemoteAjaxDemo = function() {
                 }else if (result.dismiss === 'cancel') {
 					Swal.fire(
 						'Đã Hủy',
-						'Mật Khẩu Của Bệnh Nhân Vẫn Y Nguyên Nhé! :)',
+						'Mật Khẩu Của Nhân Viên Được Giữ Nguyên!',
 						'error'
 					)
 				}

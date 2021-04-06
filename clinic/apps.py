@@ -14,4 +14,8 @@ class ClinicConfig(AppConfig):
         registry.register(self.get_model('MauPhieu'))
         registry.register(self.get_model('BaiDang'))
         registry.register(self.get_model('LichHenKham'))
-        
+        registry.register(self.get_model('BacSi'))
+        registry.register(self.get_model('PhongChucNang'))
+        registry.register(self.get_model('ChiSoXetNghiem'))
+        registry.register(self.get_model('KetQuaXetNghiem'))
+        registry.register(self.get_model('HtmlKetQua'))
