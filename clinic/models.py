@@ -1427,7 +1427,7 @@ class MauPhieu(models.Model):
         permissions = (
             ('can_add_analysis_note', 'Thêm mẫu phiếu'),
             ('can_change_analysis_note', 'Thay đổi mẫu phiếu'),
-            ('can_view_analysis_note', 'Xem mấu phiếu'),
+            ('can_view_analysis_note', 'Xem mẫu phiếu'),
             ('can_delete_analysis_note', 'Xóa mẫu phiếu'),
         )
 
