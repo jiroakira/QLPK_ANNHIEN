@@ -5413,3 +5413,18 @@ def my_activities(request):
     }
     return render(request, 'user_activities.html', context)
 
+def xoa_nhom_quyen(request):
+    if request.method == "POST":
+        id = request.POST.get('id')
+        group = get_object_or_404(Group, id=id)
+        group.delete()
+        response = {
+            'status': 200,
+            'message': 'Nhóm quyền đã được xóa thành công'
+        }
+    else:
+        response = {
+            'status': 404, 
+            'message': 'Xóa nhóm quyền không thành công'
+        }
+    return HttpResponse(json.dumps(response), content_type='application/json; charset=utf-8')
