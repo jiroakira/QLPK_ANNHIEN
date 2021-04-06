@@ -4626,20 +4626,28 @@ def chinh_sua_bai_dang(request):
     return HttpResponse(json.dumps(response), content_type="application/json, charset=utf-8")
 
 def view_danh_sach_nhom_quyen(request):
-    permissions = Permission.objects.all()
+    import operator
+    from functools import reduce
+    default_perms_name = ['Can view', 'Can change', 'Can delete', 'Can add']
+    query = reduce(operator.or_, (Q(name__contains=x) for x in default_perms_name))
+    permissions = Permission.objects.exclude(query)
     context = {
         'permissions': permissions
     }
     return render(request, 'danh_sach_nhom_quyen.html', context)
 
 def view_chinh_sua_nhom_quyen(request, **kwargs):
+    import operator
+    from functools import reduce
     id_nhom_quyen = kwargs.get('id')
     try:
         group = Group.objects.get(id=id_nhom_quyen)
         group_permissions = group.permissions.all()
         group_permissions_str = [p.name for p in group_permissions]
         code_name_permissions = [p.codename for p in group_permissions]
-        permissions = Permission.objects.all()
+        default_perms_name = ['Can view', 'Can change', 'Can delete', 'Can add']
+        query = reduce(operator.or_, (Q(name__contains=x) for x in default_perms_name))
+        permissions = Permission.objects.exclude(query)
         permissions = PermissionSerializer(permissions, many=True)
         permissions_data = json.loads(json.dumps(permissions.data))
         context = {
@@ -4713,6 +4721,7 @@ def update_nhom_quyen(request):
         try:
             group = Group.objects.get(id=id)
             group.name = ten_nhom_quyen
+
             group.permissions.clear()
 
             for codename in group_permissions:

@@ -264,11 +264,9 @@ var KTDatatableRemoteAjaxDemo = function() {
             }, {
                 field: 'ten_phong_chuc_nang',
                 title: 'Phòng Chức Năng',
-            }, {
-                field: 'bac_si_phu_trach.ho_ten',
-                title: 'Bác Sĩ Phụ Trách',
                 textAlign: 'center'
-            }, {
+            },
+            {% comment %} {
                 field: 'Update',
                 title: 'Chỉnh Sửa',
                 sortable: false,
@@ -285,7 +283,8 @@ var KTDatatableRemoteAjaxDemo = function() {
                         {% endif %}
                     `;
                 },
-            }, {
+            },  {% endcomment %}
+            {
                 field: 'List',
                 title: 'Danh Sách DVK',
                 sortable: false,

@@ -10,7 +10,7 @@ from json import dump
 from rest_framework.parsers import FileUploadParser
 from rest_framework.parsers import MultiPartParser
 import json
-from medicine.models import DonThuoc, KeDonThuoc, Thuoc, TrangThaiDonThuoc, VatTu
+from medicine.models import CongTy, DonThuoc, KeDonThuoc, Thuoc, TrangThaiDonThuoc, VatTu
 from django.http.response import Http404, HttpResponse
 from rest_framework import views
 from rest_framework.views import APIView
@@ -46,6 +46,7 @@ from django.db.models.functions import TruncDay
 from django.db.models import Count, F, Sum, Q
 from django.db import models
 from medicine.serializers import (
+    CongTySerializer,
     DanhSachThuocSerializer, 
     KeDonThuocSerializer,
     ThuocSerializer
@@ -1121,7 +1122,19 @@ class DanhSachDoanhThuDichVu(APIView):
                 'data' : list_dich_vu,
             }
             return Response(response)
-    
+
+class DanhSachNguonCung(APIView):
+    def get(self, request, format=None):
+        nguon_cung = CongTy.objects.all()
+
+        serializer = CongTySerializer(nguon_cung, many=True, context = {'request' : request})
+        data = serializer.data
+        
+        response = {
+            'data': data
+        }
+        return Response(response)
+
 class DanhSachDoanhThuLamSang(APIView):
     def get(self, request, format=None):
         range_start = self.request.query_params.get('range_start', None)
