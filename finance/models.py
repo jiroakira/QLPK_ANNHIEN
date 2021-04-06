@@ -39,7 +39,13 @@ class HoaDonThuoc(models.Model):
         return super(HoaDonThuoc, self).save(*args, **kwargs)
 
     def get_don_gia(self):
-        don_gia = "{:,}".format(int(self.tong_tien))
+        try:
+            if self.tong_tien is not None:
+                don_gia = "{:,}".format(int(self.tong_tien))
+            else:
+                don_gia = '-'
+        except ValueError:
+            don_gia = "{:,}".format(float(self.tong_tien))
         return don_gia
 
 class HoaDonChuoiKham(models.Model):
