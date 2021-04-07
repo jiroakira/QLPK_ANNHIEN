@@ -19,3 +19,4 @@ class ClinicConfig(AppConfig):
         registry.register(self.get_model('ChiSoXetNghiem'))
         registry.register(self.get_model('KetQuaXetNghiem'))
         registry.register(self.get_model('HtmlKetQua'))
+        

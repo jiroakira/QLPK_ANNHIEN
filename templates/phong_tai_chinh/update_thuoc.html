@@ -182,11 +182,6 @@
                         </div>
                     </div>
                 </form>
-
-                <div class="form-group row">
-                    <table class="table" id="overview">
-                    </table>
-                </div>
                 <!--end::Form-->
             </div>
         </div>
@@ -200,7 +195,7 @@
 
 <script src="{% static 'assets/plugins/global/plugins.bundle9cd7.js' %} "></script>
 <script src="{% static 'assets/plugins/custom/prismjs/prismjs.bundle9cd7.js' %} "></script>
-<script src="{% static 'assets/js/scripts.bunsdle9cd7.js' %} "></script>
+<script src="{% static 'assets/js/scripts.bundle9cd7.js' %} "></script>
 {% comment %} <script src="{% static 'assets/js/pages/crud/forms/widgets/bootstrap-datetimepicker9cd7.js' %} "></script> {% endcomment %}
 
 
@@ -212,45 +207,6 @@
         $("#redirectBtn").on('click', function() {
             window.history.back()
         })
-
-        var _initDemo1 = function () {
-            FormValidation.formValidation(
-                document.getElementById('kt_form_1'),
-                {
-                    fields: {
-                        text: {
-                            validators: {
-                                notEmpty: {
-                                    message: 'Không được để trống'
-                                },
-                            }
-                        },
-                        memo: {
-                            validators: {
-                                notEmpty: {
-                                    message: 'Không được để trống'
-                                },
-                                stringLength: {
-                                    min:10,
-                                    max:10000,
-                                }
-                            }
-                        },
-                    },
-
-                    plugins: { //Learn more: https://formvalidation.io/guide/plugins
-                        trigger: new FormValidation.plugins.Trigger(),
-                        // Bootstrap Framework Integration
-                        bootstrap: new FormValidation.plugins.Bootstrap(),
-                        // Validate fields when clicking the Submit button
-                        submitButton: new FormValidation.plugins.SubmitButton(),
-                        // Submit the form when all fields are valid
-                        defaultSubmit: new FormValidation.plugins.DefaultSubmit(),
-                    }
-                }
-            );
-
-        }
 
         var dateMasks = function(){
             //fill ngay san xuat
@@ -282,11 +238,63 @@
                 han_su_dung
             }
             $('#inputHanSuDung').val(han_su_dung)
+            
+            
         }
 
         var _formAddThuocSubmit = function () {
             var formData = new FormData();
             $(document).on("click", "#submitData", function(){
+                FormValidation.formValidation(
+                    document.getElementById('kt_form_1'),
+                    {
+                        fields: {
+                            text: {
+                                validators: {
+                                    notEmpty: {
+                                        message: 'Không được để trống'
+                                    },
+                                }
+                            },
+                            memo: {
+                                validators: {
+                                    notEmpty: {
+                                        message: 'Không được để trống'
+                                    },
+                                    stringLength: {
+                                        min:10,
+                                        max:10000,
+                                    }
+                                }
+                            },
+                            ngay_san_xuat: {
+                                validators: {
+                                    notEmpty: {
+                                        message: 'Không được để trống'
+                                    },
+                                }
+                            },
+                            han_su_dung: {
+                                validators: {
+                                    notEmpty: {
+                                        message: 'Không được để trống'
+                                    },
+                                }
+                            },
+                        },
+
+                        plugins: { //Learn more: https://formvalidation.io/guide/plugins
+                            trigger: new FormValidation.plugins.Trigger(),
+                            // Bootstrap Framework Integration
+                            bootstrap: new FormValidation.plugins.Bootstrap(),
+                            // Validate fields when clicking the Submit button
+                            submitButton: new FormValidation.plugins.SubmitButton(),
+                            // Submit the form when all fields are valid
+                            defaultSubmit: new FormValidation.plugins.DefaultSubmit(),
+                        }
+                    }
+                );
+
                 var loai_thuoc = $('#loai_thuoc').val()
                 console.log(loai_thuoc)
 
@@ -327,7 +335,7 @@
         return {
             // public functions
             init: function() {
-                _initDemo1();
+                {% comment %} _initDemo1(); {% endcomment %}
                 dateMasks();
                 _formAddThuocSubmit();
             }
