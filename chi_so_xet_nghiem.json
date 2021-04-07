@@ -3,7 +3,7 @@
   "model": "clinic.chisoxetnghiem",
   "pk": 1,
   "fields": {
-    "dich_vu_kham": 777,
+    "dich_vu_kham": 1,
     "doi_tuong_xet_nghiem": 2,
     "ma_chi_so": "M01",
     "ten_chi_so": "   WBC (NEUT - SL Bạch cầu)",
@@ -14,7 +14,7 @@
   "model": "clinic.chisoxetnghiem",
   "pk": 2,
   "fields": {
-    "dich_vu_kham": 777,
+    "dich_vu_kham": 1,
     "doi_tuong_xet_nghiem": 2,
     "ma_chi_so": "M01",
     "ten_chi_so": "   LYM% (Tỷ lệ Bạch cầu Lympho)",
@@ -25,7 +25,7 @@
   "model": "clinic.chisoxetnghiem",
   "pk": 3,
   "fields": {
-    "dich_vu_kham": 777,
+    "dich_vu_kham": 1,
     "doi_tuong_xet_nghiem": 2,
     "ma_chi_so": "M01",
     "ten_chi_so": "   *MID ( )",
@@ -36,7 +36,7 @@
   "model": "clinic.chisoxetnghiem",
   "pk": 4,
   "fields": {
-    "dich_vu_kham": 777,
+    "dich_vu_kham": 1,
     "doi_tuong_xet_nghiem": 2,
     "ma_chi_so": "M01",
     "ten_chi_so": "   GRAN ( )",
@@ -47,7 +47,7 @@
   "model": "clinic.chisoxetnghiem",
   "pk": 5,
   "fields": {
-    "dich_vu_kham": 777,
+    "dich_vu_kham": 1,
     "doi_tuong_xet_nghiem": 2,
     "ma_chi_so": "M01",
     "ten_chi_so": "   RBC (SL Hồng cầu)",
@@ -58,7 +58,7 @@
   "model": "clinic.chisoxetnghiem",
   "pk": 6,
   "fields": {
-    "dich_vu_kham": 777,
+    "dich_vu_kham": 1,
     "doi_tuong_xet_nghiem": 2,
     "ma_chi_so": "M01",
     "ten_chi_so": "   HGB (Huyết sắc tố)",
@@ -69,7 +69,7 @@
   "model": "clinic.chisoxetnghiem",
   "pk": 7,
   "fields": {
-    "dich_vu_kham": 777,
+    "dich_vu_kham": 1,
     "doi_tuong_xet_nghiem": 2,
     "ma_chi_so": "M01",
     "ten_chi_so": "   HCT (Hematocrit)",
@@ -80,7 +80,7 @@
   "model": "clinic.chisoxetnghiem",
   "pk": 8,
   "fields": {
-    "dich_vu_kham": 777,
+    "dich_vu_kham": 1,
     "doi_tuong_xet_nghiem": 2,
     "ma_chi_so": "M01",
     "ten_chi_so": "   MCV (Thể tích Hồng cầu)",
@@ -91,7 +91,7 @@
   "model": "clinic.chisoxetnghiem",
   "pk": 9,
   "fields": {
-    "dich_vu_kham": 777,
+    "dich_vu_kham": 1,
     "doi_tuong_xet_nghiem": 2,
     "ma_chi_so": "M01",
     "ten_chi_so": "   MCH (Lượng hst TB hồng cầu)",
@@ -102,7 +102,7 @@
   "model": "clinic.chisoxetnghiem",
   "pk": 10,
   "fields": {
-    "dich_vu_kham": 777,
+    "dich_vu_kham": 1,
     "doi_tuong_xet_nghiem": 2,
     "ma_chi_so": "M01",
     "ten_chi_so": "   MCHC (Lượng hst TB khối HC)",
@@ -113,7 +113,7 @@
   "model": "clinic.chisoxetnghiem",
   "pk": 11,
   "fields": {
-    "dich_vu_kham": 777,
+    "dich_vu_kham": 1,
     "doi_tuong_xet_nghiem": 2,
     "ma_chi_so": "M01",
     "ten_chi_so": "   RDW-CV (Dải phân bố HC- Hệ số biến thiên)",
@@ -124,7 +124,7 @@
   "model": "clinic.chisoxetnghiem",
   "pk": 12,
   "fields": {
-    "dich_vu_kham": 777,
+    "dich_vu_kham": 1,
     "doi_tuong_xet_nghiem": 2,
     "ma_chi_so": "M01",
     "ten_chi_so": "   PLT (SL Tiểu cầu)",
@@ -135,7 +135,7 @@
   "model": "clinic.chisoxetnghiem",
   "pk": 13,
   "fields": {
-    "dich_vu_kham": 777,
+    "dich_vu_kham": 1,
     "doi_tuong_xet_nghiem": 2,
     "ma_chi_so": "M01",
     "ten_chi_so": "   MPV (Thể tích trung bình TC)",
@@ -146,7 +146,7 @@
   "model": "clinic.chisoxetnghiem",
   "pk": 14,
   "fields": {
-    "dich_vu_kham": 777,
+    "dich_vu_kham": 1,
     "doi_tuong_xet_nghiem": 2,
     "ma_chi_so": "M01",
     "ten_chi_so": "   WBC (NEUT - SL Bạch cầu)",
@@ -157,7 +157,7 @@
   "model": "clinic.chisoxetnghiem",
   "pk": 15,
   "fields": {
-    "dich_vu_kham": 777,
+    "dich_vu_kham": 1,
     "doi_tuong_xet_nghiem": 2,
     "ma_chi_so": "M01",
     "ten_chi_so": "   LYM% (Tỷ lệ Bạch cầu Lympho)",
@@ -168,7 +168,7 @@
   "model": "clinic.chisoxetnghiem",
   "pk": 16,
   "fields": {
-    "dich_vu_kham": 777,
+    "dich_vu_kham": 1,
     "doi_tuong_xet_nghiem": 2,
     "ma_chi_so": "M01",
     "ten_chi_so": "   *MID ( )",
@@ -179,7 +179,7 @@
   "model": "clinic.chisoxetnghiem",
   "pk": 17,
   "fields": {
-    "dich_vu_kham": 777,
+    "dich_vu_kham": 1,
     "doi_tuong_xet_nghiem": 2,
     "ma_chi_so": "M01",
     "ten_chi_so": "   GRAN ( )",
@@ -190,7 +190,7 @@
   "model": "clinic.chisoxetnghiem",
   "pk": 18,
   "fields": {
-    "dich_vu_kham": 777,
+    "dich_vu_kham": 1,
     "doi_tuong_xet_nghiem": 2,
     "ma_chi_so": "M01",
     "ten_chi_so": "   RBC (SL Hồng cầu)",
@@ -201,7 +201,7 @@
   "model": "clinic.chisoxetnghiem",
   "pk": 19,
   "fields": {
-    "dich_vu_kham": 777,
+    "dich_vu_kham": 1,
     "doi_tuong_xet_nghiem": 2,
     "ma_chi_so": "M01",
     "ten_chi_so": "   HGB (Huyết sắc tố)",
@@ -212,7 +212,7 @@
   "model": "clinic.chisoxetnghiem",
   "pk": 20,
   "fields": {
-    "dich_vu_kham": 777,
+    "dich_vu_kham": 1,
     "doi_tuong_xet_nghiem": 2,
     "ma_chi_so": "M01",
     "ten_chi_so": "   HCT (Hematocrit)",
@@ -223,7 +223,7 @@
   "model": "clinic.chisoxetnghiem",
   "pk": 21,
   "fields": {
-    "dich_vu_kham": 777,
+    "dich_vu_kham": 1,
     "doi_tuong_xet_nghiem": 2,
     "ma_chi_so": "M01",
     "ten_chi_so": "   MCV (Thể tích Hồng cầu)",
@@ -234,7 +234,7 @@
   "model": "clinic.chisoxetnghiem",
   "pk": 22,
   "fields": {
-    "dich_vu_kham": 777,
+    "dich_vu_kham": 1,
     "doi_tuong_xet_nghiem": 2,
     "ma_chi_so": "M01",
     "ten_chi_so": "   MCH (Lượng hst TB hồng cầu)",
@@ -245,7 +245,7 @@
   "model": "clinic.chisoxetnghiem",
   "pk": 23,
   "fields": {
-    "dich_vu_kham": 777,
+    "dich_vu_kham": 1,
     "doi_tuong_xet_nghiem": 2,
     "ma_chi_so": "M01",
     "ten_chi_so": "   MCHC (Lượng hst TB khối HC)",
@@ -256,7 +256,7 @@
   "model": "clinic.chisoxetnghiem",
   "pk": 24,
   "fields": {
-    "dich_vu_kham": 777,
+    "dich_vu_kham": 1,
     "doi_tuong_xet_nghiem": 2,
     "ma_chi_so": "M01",
     "ten_chi_so": "   RDW-CV (Dải phân bố HC- Hệ số biến thiên)",
@@ -267,7 +267,7 @@
   "model": "clinic.chisoxetnghiem",
   "pk": 25,
   "fields": {
-    "dich_vu_kham": 777,
+    "dich_vu_kham": 1,
     "doi_tuong_xet_nghiem": 2,
     "ma_chi_so": "M01",
     "ten_chi_so": "   PLT (SL Tiểu cầu)",
@@ -278,7 +278,7 @@
   "model": "clinic.chisoxetnghiem",
   "pk": 26,
   "fields": {
-    "dich_vu_kham": 777,
+    "dich_vu_kham": 1,
     "doi_tuong_xet_nghiem": 2,
     "ma_chi_so": "M01",
     "ten_chi_so": "   MPV (Thể tích trung bình TC)",
