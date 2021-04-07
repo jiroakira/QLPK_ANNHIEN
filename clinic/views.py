@@ -1157,7 +1157,6 @@ def hoa_don_dich_vu(request, **kwargs):
     
     data = {
         'chuoi_kham'         : chuoi_kham,
-        'tong_tien'          : total_spent,
         'phong_chuc_nang'    : phong_chuc_nang,
         'danh_sach_phan_khoa': danh_sach_phan_khoa,
         'tong_tien'          : total_spent,
@@ -2000,7 +1999,7 @@ def update_thuoc(request):
 
         cong_ty = get_object_or_404(CongTy, id=id_cong_ty)
         thuoc = get_object_or_404(Thuoc, id = id_thuoc)
-        thuoc.id_thuoc          = id_thuoc
+
         thuoc.ma_hoat_chat      = ma_hoat_chat
         thuoc.ten_hoat_chat     = ten_hoat_chat
         thuoc.ma_thuoc          = ma_thuoc
@@ -2024,13 +2023,13 @@ def update_thuoc(request):
         thuoc.cong_ty           = cong_ty
         thuoc.save()
 
+        from actstream import action
+        action.send(request.user, verb='cập nhật thông tin thuốc', target=thuoc)
+
         response = {
             'status': 200,
             'message': 'Cập Nhật Thông Tin Thành Công'
         }
-
-        from actstream import action
-        action.send(request.user, verb='cập nhật thông tin thuốc', target=thuoc)
 
         return HttpResponse(json.dumps(response), content_type="application/json, charset=utf-8")
     else:
@@ -2107,9 +2106,6 @@ def update_thuoc_phong_thuoc(request):
             'status': 200,
             'message': 'Cập Nhật Thông Tin Thành Công'
         }
-
-        from actstream import action
-        action.send(request.user, verb='cập nhật thông tin thuốc', target=thuoc)
 
         return HttpResponse(json.dumps(response), content_type="application/json, charset=utf-8")
     else:
@@ -3959,6 +3955,16 @@ def phieu_ket_qua(request, **kwargs):
     }
     return render(request, 'phieu_ket_qua_mobile.html', context=context)
 
+def phieu_ket_qua_tong_quat(request, **kwargs):
+    id_ket_qua_tong_quat = kwargs.get('id')
+    ket_qua_tong_quat = get_object_or_404(KetQuaTongQuat, id=id_ket_qua_tong_quat)
+    html_ket_qua = ket_qua_tong_quat.html_ket_qua_tong_quat.all().first()
+    noi_dung = html_ket_qua.noi_dung
+    context = {
+        'noi_dung': noi_dung,
+    }
+    return render(request, 'phieu_ket_qua_mobile.html', context=context)
+
 # UPDATE BY LONG
 def xoa_bac_si(request):
     if request.method == 'POST':
@@ -4043,7 +4049,9 @@ def store_don_thuoc_rieng(request):
             subName = getSubName(user.ho_ten)
             ma_don_thuoc = subName + '-' + date_time
             don_thuoc = DonThuoc.objects.get_or_create(benh_nhan=user, bac_si_ke_don=request.user, trang_thai=trang_thai, ma_don_thuoc=ma_don_thuoc)[0]
+            
             action.send(request.user, verb='đã tạo mới đơn thuốc lẻ cho bệnh nhân', target=user)
+        
         for i in data:
             thuoc = Thuoc.objects.only('id').get(id=i['obj']['id'])
             ke_don_thuoc = KeDonThuoc(don_thuoc=don_thuoc, thuoc=thuoc, so_luong=i['obj']['so_luong'], cach_dung=i['obj']['duong_dung'], ghi_chu=i['obj']['ghi_chu'], bao_hiem=i['obj']['bao_hiem'])
@@ -5314,24 +5322,35 @@ def xuat_bao_cao_ton(request, *args, **kwargs):
         range_end = request.POST.get('range_end')
 
         start = datetime.strptime(range_start, "%d-%m-%Y")
-        
-        end = datetime.strptime(range_end, "%d-%m-%Y")
-
         tomorrow_start = start + timedelta(1)
 
         if range_end == '':
             tong_nhap_hang = NhapHang.objects.filter(thoi_gian_tao__gte=start, thoi_gian_tao__lt=tomorrow_start).exclude(bao_hiem=False).values("thuoc__ten_thuoc").annotate(id=F('thuoc__id')).annotate(so_luong=Sum('so_luong')).annotate(c = Count('thuoc__ten_thuoc')).annotate(bao_hiem=F('bao_hiem'))
 
-            list_nhap_hang = []
-            for i in tong_nhap_hang:
-                list_nhap_hang.append(i)
-            response = {
-                'data' : list_nhap_hang,
-            }
+            tong_xuat_hang = KeDonThuoc.objects.filter(thoi_gian_tao__gte=start, thoi_gian_tao__lt=tomorrow_start).exclude(bao_hiem=False).values('thuoc__ten_thuoc').annotate(id=F('thuoc__id')).annotate(so_luong=Sum('so_luong')).annotate(c = Count('thuoc__ten_thuoc')).annotate(bao_hiem=F('bao_hiem'))
 
-            return Response(response)
+            list_ton = []
+
+            for i in tong_nhap_hang:
+                for j in tong_xuat_hang:
+                    if j['id'] in i.values():
+                        so_luong_nhap = i['so_luong']
+                        so_luong_xuat = j['so_luong']
+                        so_luong_ton = so_luong_nhap - so_luong_xuat
+                        ten_thuoc = j['thuoc__ten_thuoc']
+                        d = {}
+                        d['so_luong'] = so_luong_ton
+                        d['ten_thuoc'] = ten_thuoc
+                        list_ton.append(d)
+            print(list_ton)
+
+            response = {
+                'list_ton' : list_ton,
+            }
+            return HttpResponse(json.dumps(response), content_type='application/json; charset=utf-8')
         # danh_sach_dich_vu = PhanKhoaKham.objects.filter(thoi_gian_tao__lt=tomorrow_start, thoi_gian_tao__gte=start).values('dich_vu_kham__ten_dvkt').annotate(tong_tien=Sum('dich_vu_kham__don_gia')).order_by('dich_vu_kham__ten_dvkt').annotate(dich_vu_kham_count = Count('dich_vu_kham__ten_dvkt'))
         else:
+            end = datetime.strptime(range_end, "%d-%m-%Y")
             tong_nhap_hang = NhapHang.objects.filter(thoi_gian_tao__gte=start, thoi_gian_tao__lt=end).exclude(bao_hiem=False).values("thuoc__ten_thuoc").annotate(id=F('thuoc__id')).annotate(so_luong=Sum('so_luong')).annotate(c = Count('thuoc__ten_thuoc')).annotate(bao_hiem=F('bao_hiem'))
 
             tong_xuat_hang = KeDonThuoc.objects.filter(thoi_gian_tao__gte=start, thoi_gian_tao__lt=end).exclude(bao_hiem=False).values('thuoc__ten_thuoc').annotate(id=F('thuoc__id')).annotate(so_luong=Sum('so_luong')).annotate(c = Count('thuoc__ten_thuoc')).annotate(bao_hiem=F('bao_hiem'))
@@ -5349,8 +5368,6 @@ def xuat_bao_cao_ton(request, *args, **kwargs):
                         d['so_luong'] = so_luong_ton
                         d['ten_thuoc'] = ten_thuoc
                         list_ton.append(d)
-
-
             print(list_ton)
 
             response = {
@@ -5402,7 +5419,6 @@ def hoa_don_tpcn(request, **kwargs):
     }
     return render(request, 'phong_tai_chinh/hoa_don_thuc_pham_ho_tro.html', context=data)
 
-            
 def my_activities(request):
     phong_chuc_nang = PhongChucNang.objects.all()
     from actstream.models import actor_stream
