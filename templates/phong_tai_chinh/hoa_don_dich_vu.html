@@ -100,20 +100,22 @@
                                             <td class="pl-0 pt-7">{{ khoa_kham.dich_vu_kham.ten_dvkt }}</td>
                                             {% comment %} <td class="text-right pt-7">{{ khoa_kham.muc_bao_hiem }} %</td> {% endcomment %}
                                             <td class="text-center pt-7">
-                                                {% if khoa_kham.bao_hiem == True %}
+                                                {% if khoa_kham.check_bao_hiem %}
                                                     Đã Áp Dụng
                                                 {% else %}
                                                     Chưa Áp Dụng
                                                 {% endif %}
                                                 {% comment %} {{ khoa_kham.dich_vu_kham.bao_hiem }} {% endcomment %}
                                             </td>
-                                            <td class="format-gia text-center pt-7" data-id={{khoa_kham.dich_vu_kham.don_gia}}>
-                                                {% if khoa_kham.bao_hiem == False %}
-                                                    {{ khoa_kham.dich_vu_kham.don_gia }}
-                                                {% else %}
-                                                    {{ khoa_kham.dich_vu_kham.don_gia_bhyt }}
-                                                {% endif %}
+                                            {% if khoa_kham.check_bao_hiem %}
+                                            <td class="format-gia text-center pt-7" data-id={{khoa_kham.dich_vu_kham.don_gia_bhyt}}>
+                                                {{ khoa_kham.dich_vu_kham.don_gia_bhyt }}
                                             </td>
+                                            {% elif not khoa_kham.check_bao_hiem %}
+                                            <td class="format-gia text-center pt-7" data-id={{khoa_kham.dich_vu_kham.don_gia}}>
+                                                {{ khoa_kham.dich_vu_kham.don_gia }}
+                                            </td>
+                                            {% endif %}
                                             <td class="text-left pt-7">VND</td>
                                         </tr>
                                     {% endfor %}

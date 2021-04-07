@@ -2893,20 +2893,18 @@ class DanhSachNhungThuocDuocNhap(APIView):
         range_start = self.request.query_params.get('range_start', None)
         range_end   = self.request.query_params.get('range_end', None)
         start = datetime.strptime(range_start, "%d-%m-%Y")
-        end = datetime.strptime(range_end, "%d-%m-%Y")
 
         tomorrow_start = start + timedelta(1)
 
         if range_end == '':
-            danh_sach_nhap_hang = NhapHang.objects.filter(thoi_gian_tao__lt=tomorrow_start, thoi_gian_tao__gt=start).exclude(bao_hiem=False).values('ten_thuoc').annotate(so_luong = Sum('so_luong')).order_by('thuoc__id').annotate(c = Count('thuoc__id'))
+            danh_sach_nhap_hang = NhapHang.objects.filter(thoi_gian_tao__lt=tomorrow_start, thoi_gian_tao__gt=start).exclude(bao_hiem=False).values('thuoc__ten_thuoc').annotate(so_luong = Sum('so_luong')).annotate(c = Count('thuoc__id')).annotate(id=F('thuoc__id')).annotate(bao_hiem=F('bao_hiem'))
 
-            # serializer = NhapHangSerializer(danh_sach_nhap_hang, many=True, context={'request': request})
-            # data = serializer.data
-
-            # return Response(data)
             list_nhap_hang = []
 
             for i in danh_sach_nhap_hang:
+                # id_thuoc = i['id']
+                # so_luong = i['so_luong']
+
                 list_nhap_hang.append(i)
             response = {
                 'data' : list_nhap_hang,
@@ -2914,18 +2912,14 @@ class DanhSachNhungThuocDuocNhap(APIView):
 
             return Response(response)
         else: 
-            danh_sach_nhap_hang = NhapHang.objects.filter(thoi_gian_tao__lt=end, thoi_gian_tao__gt=start).exclude(bao_hiem=False).values('thuoc__ten_thuoc').annotate(id=F('thuoc__id')).annotate(so_luong=Sum('so_luong')).annotate(count=Count('thuoc__ten_thuoc')).annotate(bao_hiem=F('bao_hiem'))
+            end = datetime.strptime(range_end, "%d-%m-%Y")
+            danh_sach_nhap_hang = NhapHang.objects.filter(thoi_gian_tao__lt=end, thoi_gian_tao__gt=start).exclude(bao_hiem=False).values('thuoc__ten_thuoc').annotate(so_luong=Sum('so_luong')).annotate(count=Count('thuoc__id')).annotate(bao_hiem=F('bao_hiem'))
 
-            # serializer = NhapHangSerializer(danh_sach_nhap_hang, many=True, context={'request': request})
-            # data = serializer.data
-
-            # return Response(data)
             list_nhap_hang = []
 
             for i in danh_sach_nhap_hang:
-                id_thuoc = i['id']
-                so_luong = i['so_luong']
-
+                # id_thuoc = i['id']
+                # so_luong = i['so_luong']
                 list_nhap_hang.append(i)
 
             response = {
@@ -2939,12 +2933,11 @@ class DanhSachNhungThuocDuocXuat(APIView):
         range_start = self.request.query_params.get('range_start', None)
         range_end   = self.request.query_params.get('range_end', None)
         start = datetime.strptime(range_start, "%d-%m-%Y")
-        end = datetime.strptime(range_end, "%d-%m-%Y")
 
         tomorrow_start = start + timedelta(1)
 
         if range_end == '':
-            danh_sach_xuat_hang = KeDonThuoc.objects.filter(thoi_gian_tao__lt=tomorrow_start, thoi_gian_tao__gt=start).exclude(bao_hiem=False).values('thuoc__ten_thuoc').annotate(so_luong = Sum('so_luong')).order_by('thuoc__id').annotate(c = Count('thuoc__id'))
+            danh_sach_xuat_hang = KeDonThuoc.objects.filter(thoi_gian_tao__lt=tomorrow_start, thoi_gian_tao__gt=start).exclude(bao_hiem=False).values('thuoc__ten_thuoc').annotate(so_luong = Sum('so_luong')).order_by('thuoc__id').annotate(c = Count('thuoc__id')).annotate(id=F('thuoc__id')).annotate(bao_hiem = F('bao_hiem'))
             list_xuat_hang = []
 
             for i in danh_sach_xuat_hang:
@@ -2955,6 +2948,8 @@ class DanhSachNhungThuocDuocXuat(APIView):
 
             return Response(response)
         else:
+            end = datetime.strptime(range_end, "%d-%m-%Y")
+
             danh_sach_xuat_hang = KeDonThuoc.objects.filter(thoi_gian_tao__lt=end, thoi_gian_tao__gt=start).exclude(bao_hiem=False).values('thuoc__ten_thuoc').annotate(so_luong = Sum('so_luong')).order_by('thuoc__id').annotate(c = Count('thuoc__id')).annotate(id=F('thuoc__id')).annotate(bao_hiem = F('bao_hiem'))
             list_xuat_hang = []
 
