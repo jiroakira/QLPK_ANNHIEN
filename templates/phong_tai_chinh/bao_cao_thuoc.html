@@ -514,7 +514,7 @@ var KTDatatableRemoteAjaxDemo = function() {
                 field: 'bao_hiem',
                 title: 'Bảo Hiểm',
                 textAlign: 'center',
-                template: function() {
+                template: function(row) {
                     if(row.bao_hiem == true){
                         return '<span class="label font-weight-bold label-lg label-light-success label-inline">Bảo Hiểm</span>';
                     } else {
