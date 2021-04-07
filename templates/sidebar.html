@@ -241,7 +241,7 @@
 				{% endif %}
 				
 				<!-- Danh sách chờ -->
-				{% if perms.clinic.view_checkout_list %}
+				{% if perms.clinic.can_view_checkout_list %}
 				<li class="menu-item" aria-haspopup="true">
 					<a href="{% url 'phong_tai_chinh' %}" class="menu-link">
 						<span class="svg-icon menu-icon">
