@@ -888,6 +888,13 @@ class PhanKhoaKham(models.Model):
 
     def get_ma_pttt(self):
         return 1
+
+    @property
+    def check_bao_hiem(self):
+        if self.bao_hiem == True:
+            return True
+        else:
+            return False
     
 @receiver(post_save, sender=PhanKhoaKham)
 def send_func_room_info(sender, instance, created, **kwargs):
