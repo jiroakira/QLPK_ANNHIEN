@@ -2771,56 +2771,49 @@ class DanhSachBaoCaoTheoThoiGian(APIView):
         range_end   = self.request.query_params.get('range_end', None)
 
         start = datetime.strptime(range_start, "%d-%m-%Y")
-        # today_end = datetime.strptime(today_end, "%d-%m-%Y")
         tomorrow_start = start + timedelta(1)
 
         # print(start)
         if range_end == '':
-
-            # tong_tien_hoa_don_chuoi_kham_theo_thoi_gian = HoaDonChuoiKham.objects.filter(thoi_gian_tao__gt=start, thoi_gian_tao__lt=tomorrow_start).exclude(tong_tien__isnull=True).annotate(day=TruncDay("thoi_gian_tao")).values("day").annotate(c=Count("id")).annotate(total_spent=Sum(F("tong_tien")))
-
-            # list_tong_tien = [x['total_spent'] for x in tong_tien_hoa_don_chuoi_kham_theo_thoi_gian]
-            # tong_tien_dich_vu_kham = sum(list_tong_tien)
-
-            # tong_tien_lam_sang_theo_thoi_gian = HoaDonLamSang.objects.filter(thoi_gian_tao__gt=start, thoi_gian_tao__lt=tomorrow_start).exclude(tong_tien__isnull=True).annotate(day=TruncDay("thoi_gian_tao")).values("day").annotate(c=Count("id")).annotate(total_spent=Sum(F("tong_tien")))
-            # list_tong_tien_lam_sang = [x['total_spent'] for x in tong_tien_lam_sang_theo_thoi_gian]
-            # tong_tien_lam_sang = sum(list_tong_tien_lam_sang)
-
-            # tong_tien_dich_vu = tong_tien_dich_vu_kham + tong_tien_lam_sang
-            # tong_tien_dich_vu_formatted = "{:,}".format(int(tong_tien_dich_vu))
-
-            # tong_tien_hoa_don_thuoc_theo_thoi_gian = HoaDonThuoc.objects.filter( thoi_gian_tao__gt=start, thoi_gian_tao__lt=tomorrow_start).exclude(tong_tien__isnull=True).annotate(day=TruncDay("thoi_gian_tao")).values("day").annotate(c=Count("id")).annotate(total_spent=Sum(F("tong_tien")))
-            # list_tong_tien_don_thuoc = [x['total_spent'] for x in tong_tien_hoa_don_thuoc_theo_thoi_gian]
-
-            # tong_tien_don_thuoc = sum(list_tong_tien_don_thuoc)
-            # tong_tien_don_thuoc_formatted = "{:,}".format(int(tong_tien_don_thuoc))
-
-            # tong_doanh_thu = tong_tien_dich_vu + tong_tien_don_thuoc
-            # tong_doanh_thu_formatted = "{:,}".format(int(tong_doanh_thu))
-
-            # danh_sach_dich_vu = PhanKhoaKham.objects.filter(thoi_gian_tao__lt=tomorrow_start, thoi_gian_tao__gte=start).values('dich_vu_kham__phong_chuc_nang__ten_phong_chuc_nang').annotate(tong_tien=Sum('dich_vu_kham__don_gia')).order_by('dich_vu_kham__phong_chuc_nang__ten_phong_chuc_nang').annotate(dich_vu_kham_count = Count('dich_vu_kham__phong_chuc_nang__ten_phong_chuc_nang'))
-            # list_tong_tien_without_format = [i['tong_tien'] for i in danh_sach_dich_vu]
-            # tong_tien_theo_phong = sum(list_tong_tien_without_format)
-            # tong_tien_theo_phong_formatted = "{:,}".format(int(tong_tien_theo_phong))
-
             response = [
                 {   
                     'type': 'bao_cao_nhap',
-                    'loai_bao_cao': 'Báo Cáo Nhập',
+                    'loai_bao_cao': 'Báo Cáo Nhập BH',
                     'thoi_gian_bat_dau': start,
                     'thoi_gian_ket_thuc': tomorrow_start,
                     # 'tong_tien': tong_doanh_thu_formatted
                 },
                 {   
                     'type': 'bao_cao_xuat',
-                    'loai_bao_cao': 'Báo Cáo Xuất',
+                    'loai_bao_cao': 'Báo Cáo Xuất BH',
                     'thoi_gian_bat_dau': start,
                     'thoi_gian_ket_thuc': tomorrow_start,
                     # 'tong_tien': tong_tien_dich_vu_formatted
                 },
                 {
                     'type': 'bao_cao_ton',
-                    'loai_bao_cao': 'Báo Cáo Tồn',
+                    'loai_bao_cao': 'Báo Cáo Tồn BH',
+                    'thoi_gian_bat_dau': start,
+                    'thoi_gian_ket_thuc': tomorrow_start,
+                    # 'tong_tien': tong_tien_don_thuoc_formatted
+                },
+                {   
+                    'type': 'bao_cao_nhap_dv',
+                    'loai_bao_cao': 'Báo Cáo Nhập DV',
+                    'thoi_gian_bat_dau': start,
+                    'thoi_gian_ket_thuc': tomorrow_start,
+                    # 'tong_tien': tong_doanh_thu_formatted
+                },
+                {   
+                    'type': 'bao_cao_xuat_dv',
+                    'loai_bao_cao': 'Báo Cáo Xuất DV',
+                    'thoi_gian_bat_dau': start,
+                    'thoi_gian_ket_thuc': tomorrow_start,
+                    # 'tong_tien': tong_tien_dich_vu_formatted
+                },
+                {
+                    'type': 'bao_cao_ton_dv',
+                    'loai_bao_cao': 'Báo Cáo Tồn DV',
                     'thoi_gian_bat_dau': start,
                     'thoi_gian_ket_thuc': tomorrow_start,
                     # 'tong_tien': tong_tien_don_thuoc_formatted
@@ -2836,55 +2829,50 @@ class DanhSachBaoCaoTheoThoiGian(APIView):
             if range_start == range_end:
                 end = end + timedelta(1)
 
-            # tong_tien_hoa_don_chuoi_kham_theo_thoi_gian = HoaDonChuoiKham.objects.filter(thoi_gian_tao__gt=start, thoi_gian_tao__lte=end).exclude(tong_tien__isnull=True).annotate(day=TruncDay("thoi_gian_tao")).values("day").annotate(c=Count("id")).annotate(total_spent=Sum(F("tong_tien")))
-
-            # list_tong_tien = [x['total_spent'] for x in tong_tien_hoa_don_chuoi_kham_theo_thoi_gian]
-            # tong_tien_dich_vu_kham = sum(list_tong_tien)
-
-            # tong_tien_lam_sang_theo_thoi_gian = HoaDonLamSang.objects.filter(thoi_gian_tao__gt=start, thoi_gian_tao__lte=end).exclude(tong_tien__isnull=True).annotate(day=TruncDay("thoi_gian_tao")).values("day").annotate(c=Count("id")).annotate(total_spent=Sum(F("tong_tien")))
-            # list_tong_tien_lam_sang = [x['total_spent'] for x in tong_tien_lam_sang_theo_thoi_gian]
-            # tong_tien_lam_sang = sum(list_tong_tien_lam_sang)
-
-            # tong_tien_dich_vu = tong_tien_dich_vu_kham + tong_tien_lam_sang
-            # tong_tien_dich_vu_formatted = "{:,}".format(int(tong_tien_dich_vu))
-
-            # tong_tien_hoa_don_thuoc_theo_thoi_gian = HoaDonThuoc.objects.filter(thoi_gian_tao__gt=start, thoi_gian_tao__lte=end).exclude(tong_tien__isnull=True).annotate(day=TruncDay("thoi_gian_tao")).values("day").annotate(c=Count("id")).annotate(total_spent=Sum(F("tong_tien")))
-            # list_tong_tien_don_thuoc = [x['total_spent'] for x in tong_tien_hoa_don_thuoc_theo_thoi_gian]
-
-            # tong_tien_don_thuoc = sum(list_tong_tien_don_thuoc)
-            # tong_tien_don_thuoc_formatted = "{:,}".format(int(tong_tien_don_thuoc))
-
-            # tong_doanh_thu = tong_tien_dich_vu + tong_tien_don_thuoc
-            # tong_doanh_thu_formatted = "{:,}".format(int(tong_doanh_thu))
-
-            # danh_sach_dich_vu = PhanKhoaKham.objects.filter(thoi_gian_tao__lte=end, thoi_gian_tao__gt=start).values('dich_vu_kham__phong_chuc_nang__ten_phong_chuc_nang').annotate(tong_tien=Sum('dich_vu_kham__don_gia')).order_by('dich_vu_kham__phong_chuc_nang__ten_phong_chuc_nang').annotate(dich_vu_kham_count = Count('dich_vu_kham__phong_chuc_nang__ten_phong_chuc_nang'))
-
-            # list_tong_tien_without_format = [i['tong_tien'] for i in danh_sach_dich_vu]
-            # tong_tien_theo_phong = sum(list_tong_tien_without_format)
-            # tong_tien_theo_phong_formatted = "{:,}".format(int(tong_tien_theo_phong))
-
             response = [
                 {   
                     'type': 'bao_cao_nhap',
-                    'loai_bao_cao': 'Báo Cáo Nhập',
+                    'loai_bao_cao': 'Báo Cáo Nhập BH',
                     'thoi_gian_bat_dau': start,
                     'thoi_gian_ket_thuc': end,
                     # 'tong_tien': tong_doanh_thu_formatted
                 },
                 {   
                     'type': 'bao_cao_xuat',
-                    'loai_bao_cao': 'Báo Cáo Xuất',
+                    'loai_bao_cao': 'Báo Cáo Xuất BH',
                     'thoi_gian_bat_dau': start,
                     'thoi_gian_ket_thuc': end,
                     # 'tong_tien': tong_tien_dich_vu_formatted
                 },
                 {
                     'type': 'bao_cao_ton',
-                    'loai_bao_cao': 'Báo Cáo Tồn',
+                    'loai_bao_cao': 'Báo Cáo Tồn BH',
                     'thoi_gian_bat_dau': start,
                     'thoi_gian_ket_thuc': end,
                     # 'tong_tien': tong_tien_don_thuoc_formatted
                 },
+                {   
+                    'type': 'bao_cao_nhap_dv',
+                    'loai_bao_cao': 'Báo Cáo Nhập DV',
+                    'thoi_gian_bat_dau': start,
+                    'thoi_gian_ket_thuc': tomorrow_start,
+                    # 'tong_tien': tong_doanh_thu_formatted
+                },
+                {   
+                    'type': 'bao_cao_xuat_dv',
+                    'loai_bao_cao': 'Báo Cáo Xuất DV',
+                    'thoi_gian_bat_dau': start,
+                    'thoi_gian_ket_thuc': tomorrow_start,
+                    # 'tong_tien': tong_tien_dich_vu_formatted
+                },
+                {
+                    'type': 'bao_cao_ton_dv',
+                    'loai_bao_cao': 'Báo Cáo Tồn DV',
+                    'thoi_gian_bat_dau': start,
+                    'thoi_gian_ket_thuc': tomorrow_start,
+                    # 'tong_tien': tong_tien_don_thuoc_formatted
+                },
+                
             ]
             return Response(response)
 
@@ -2902,9 +2890,6 @@ class DanhSachNhungThuocDuocNhap(APIView):
             list_nhap_hang = []
 
             for i in danh_sach_nhap_hang:
-                # id_thuoc = i['id']
-                # so_luong = i['so_luong']
-
                 list_nhap_hang.append(i)
             response = {
                 'data' : list_nhap_hang,
@@ -2918,8 +2903,6 @@ class DanhSachNhungThuocDuocNhap(APIView):
             list_nhap_hang = []
 
             for i in danh_sach_nhap_hang:
-                # id_thuoc = i['id']
-                # so_luong = i['so_luong']
                 list_nhap_hang.append(i)
 
             response = {
@@ -2942,6 +2925,7 @@ class DanhSachNhungThuocDuocXuat(APIView):
 
             for i in danh_sach_xuat_hang:
                 list_xuat_hang.append(i)
+
             response = {
                 'data' : list_xuat_hang,
             }
@@ -2961,3 +2945,56 @@ class DanhSachNhungThuocDuocXuat(APIView):
 
             return Response(response)
     
+class DanhSachThuocNhapDichVu(APIView):
+    def get(self, request, format=None):
+        range_start = self.request.query_params.get('range_start', None)
+        range_end   = self.request.query_params.get('range_end', None)
+        start = datetime.strptime(range_start, "%d-%m-%Y")
+
+        if range_end == '': 
+            end = start + timedelta(1)
+            danh_sach_nhap_hang = NhapHang.objects.filter(thoi_gian_tao__lte=end, thoi_gian_tao__gte=start).exclude(bao_hiem=True).values('thuoc__ten_thuoc').annotate(so_luong = Sum('so_luong')).annotate(c = Count('thuoc__id')).annotate(id=F('thuoc__id')).annotate(bao_hiem=F('bao_hiem'))
+            list_xuat_hang = []
+
+        else:
+            end = datetime.strptime(range_end, "%d-%m-%Y")
+
+            if range_start == range_end:
+                end = end + timedelta(1)
+
+            danh_sach_nhap_hang = NhapHang.objects.filter(thoi_gian_tao__lte=end, thoi_gian_tao__gte=start).exclude(bao_hiem=True).values('thuoc__ten_thuoc').annotate(so_luong = Sum('so_luong')).annotate(c = Count('thuoc__id')).annotate(id=F('thuoc__id')).annotate(bao_hiem=F('bao_hiem'))
+            list_xuat_hang = []
+
+        for i in danh_sach_nhap_hang:
+            list_xuat_hang.append(i)
+            
+        response = {
+            'data' : list_xuat_hang,
+        }
+
+        return Response(response)
+
+class DanhSachThuocXuatDichVu(APIView):
+    def get(self, request, format=None):
+        range_start = self.request.query_params.get('range_start', None)
+        range_end   = self.request.query_params.get('range_end', None)
+        start = datetime.strptime(range_start, "%d-%m-%Y")
+
+        if range_end == '':
+            end = start + timedelta(1)
+            danh_sach_xuat_hang = KeDonThuoc.objects.filter(thoi_gian_tao__lte=end, thoi_gian_tao__gte=start).exclude(bao_hiem=True).values('thuoc__ten_thuoc').annotate(so_luong = Sum('so_luong')).order_by('thuoc__id').annotate(c = Count('thuoc__id')).annotate(id=F('thuoc__id')).annotate(bao_hiem = F('bao_hiem'))
+            list_xuat_hang = []
+        else:
+            end = datetime.strptime(range_end, "%d-%m-%Y")
+            if range_start == range_end:
+                end = end + timedelta(1)
+            danh_sach_xuat_hang = KeDonThuoc.objects.filter(thoi_gian_tao__lte=end, thoi_gian_tao__gte=start).exclude(bao_hiem=True).values('thuoc__ten_thuoc').annotate(so_luong = Sum('so_luong')).order_by('thuoc__id').annotate(c = Count('thuoc__id')).annotate(id=F('thuoc__id')).annotate(bao_hiem = F('bao_hiem'))
+            list_xuat_hang = []
+
+        for i in danh_sach_xuat_hang:
+            list_xuat_hang.append(i)
+        response = {
+            'data' : list_xuat_hang,
+        }
+
+        return Response(response)
