@@ -267,7 +267,6 @@
     <!-- end: Invoice footer-->
 </div>
 <!-- end: Invoice-->
-
 {% endblock content %}
 
 {% block scripts %}
@@ -446,15 +445,24 @@ var KTDatatableRemoteAjaxDemo = function() {
 
         $('#kt_datatable_search_status').selectpicker();
 
+        var afterPrint = function(){
+            $('#lam_sang_modal').modal('hide');
+        }
+
         $('#printDiv').on('click', function(){
-            var tien_lam_sang = $('#gia_tien').val()
+            {% comment %} var tien_lam_sang = $('#gia_tien').val()
             console.log(tien_lam_sang)
             $('#hoa_don_dich_vu').find('#tien_lam_sang').html(tien_lam_sang)
-            $('#hoa_don_dich_vu').find('#format-money-thanh-tien').html(tien_lam_sang)
+            $('#hoa_don_dich_vu').find('#format-money-thanh-tien').html(tien_lam_sang) {% endcomment %}
             printDiv(hoa_don_dich_vu)
         })
 
         function printDiv(hoa_don_dich_vu){
+            var tien_lam_sang = $('#gia_tien').val();
+            console.log(tien_lam_sang);
+            $('#hoa_don_dich_vu').find('#tien_lam_sang').html(tien_lam_sang);
+            $('#hoa_don_dich_vu').find('#format-money-thanh-tien').html(tien_lam_sang);
+
             var printContents = document.getElementById("hoa_don_dich_vu").innerHTML;
             var originalContents = document.body.innerHTML;
 
@@ -462,7 +470,12 @@ var KTDatatableRemoteAjaxDemo = function() {
 
             window.print();
 
+            $('#lam_sang_modal').modal('hide');
+
+            window.location.reload()
+
             document.body.innerHTML = originalContents;
+
         }
     };
 
