@@ -49,9 +49,9 @@
                         <div class="form-group row"> {% endcomment %}
                             <div class="col-lg-6">
                                 <label>Số Điện Thoại </label>
-                                {{ form_user.so_dien_thoai|attr:"class: form-control"|attr:"name:so_dien_thoai" }}
+                                {{ form_user.so_dien_thoai|attr:"class: form-control"|attr:"name:so_dien_thoai"|attr:"id:inputPhone" }}
                                 {% comment %} <input type="text" class="form-control" id="inputPhoneModal"  placeholder="Nhập Số Điện Thoại"/> {% endcomment %}
-                                <span class="form-text text-muted" >Chúng tôi sẽ không chia sẻ dữ liệu này với bất kì ai</span>
+                                
                                 <span class="text-success" id="success_phone"></span>
                                 <span class="text-warning" id="error_phone"></span>    
                             </div>
@@ -208,6 +208,46 @@
             }
         })
     })
+
+    $(document).ready(function() {
+        $('#inputPhone').on('keyup', function() {
+            var so_dien_thoai = $('#inputPhone').val().trim()
+            var formData = new FormData()
+            
+            if (so_dien_thoai != '') {
+                $("#success_phone").html("<img src='{% static 'assets/media/loader/loader.gif' %}' /> Đang kiểm tra...")
+                $("#error_phone").html("")
+                setTimeout(function () {
+                    formData.append('so_dien_thoai', so_dien_thoai)     
+                    $.ajax({
+                        type: "POST",
+                        url: "{% url 'check_exists_so_dien_thoai' %}",
+                        data: formData,
+                        cache: false,
+                        processData: false,
+                        contentType: false,
+                        success: function(response){
+                            if (response.status == 200) {
+                                $("#success_phone").html("") 
+                                $("#error_phone").html(response.message)
+                            } else if (response.status == 404) {
+                                $("#success_phone").html(response.message)
+                                $("#error_phone").html("")
+                            } else if (response.status == 406) {
+                                $("#success_phone").html("") 
+                                $("#error_phone").html(response.message)
+                            }
+                        }
+                    })
+                }, 1500);
+            } else {
+                $("#success_phone").html("")
+                $("#error_phone").html("")
+            }
+        })
+        
+    })
+
 </script>
 
 {% endblock scripts %}

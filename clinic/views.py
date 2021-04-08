@@ -426,6 +426,7 @@ def create_user(request):
             gt_the_tu = request.POST.get('gt_the_tu')
             lien_tuc_5_nam_tu = request.POST.get('lien_tuc_5_nam_tu')
             can_nang = request.POST.get('can_nang')
+
             if can_nang != '':
                 can_nang = request.POST.get('can_nang')
             else:
@@ -441,7 +442,6 @@ def create_user(request):
                 }
                 return HttpResponse(json.dumps(response), content_type="application/json, charset=utf-8")
 
-            benh_nhan = get_object_or_404(User, id=id_benh_nhan)
             benh_nhan = User.objects.create_nguoi_dung(
                 ho_ten         = ho_ten, 
                 so_dien_thoai  = so_dien_thoai, 
@@ -5444,3 +5444,61 @@ def xoa_nhom_quyen(request):
             'message': 'Xóa nhóm quyền không thành công'
         }
     return HttpResponse(json.dumps(response), content_type='application/json; charset=utf-8')
+
+import re
+def validation_check(input_string):
+    if re.match(r"(84|0[3|5|7|8|9])+([0-9]{8})\b", str(input_string)):
+        return True
+    else:
+        return False
+
+@csrf_exempt
+def check_so_dien_thoai_exists(request):
+    if request.method == "POST":
+        so_dien_thoai = request.POST.get('so_dien_thoai')
+        if validation_check(so_dien_thoai):
+            if User.objects.filter(so_dien_thoai=so_dien_thoai).exists():
+                response = {
+                    'status': 200,
+                    'message': 'Số Điện Thoại Đã Tồn Tại'
+                }
+                return HttpResponse(json.dumps(response), content_type='application/json; charset=utf-8')
+            else:
+                response = {
+                    'status': 404,
+                    'message': 'Số Điện Thoại Khả Dụng'
+                }
+                return HttpResponse(json.dumps(response), content_type='application/json; charset=utf-8')
+        else:
+            response = {
+                'status': 406,
+                'message': 'Số Điện Thoại Không Hợp Lệ'
+            }
+            return HttpResponse(json.dumps(response), content_type='application/json; charset=utf-8')
+    else:
+        response = {
+            'message': "not ok"
+        }
+        return HttpResponse(json.dumps(response), content_type='application/json; charset=utf-8')
+
+@csrf_exempt
+def check_username_exists(request):
+    if request.method == "POST":
+        username = request.POST.get('username')
+        if User.objects.filter(username=username).exists():
+            response = {
+                'status': 200,
+                'message': 'Username Đã Tồn Tại'
+            }
+            return HttpResponse(json.dumps(response), content_type='application/json; charset=utf-8')
+        else:
+            response = {
+                'status': 404,
+                'message': 'Username Khả Dụng'
+            }
+            return HttpResponse(json.dumps(response), content_type='application/json; charset=utf-8')
+    else:
+        response = {
+            'message': "not ok"
+        }
+        return HttpResponse(json.dumps(response), content_type='application/json; charset=utf-8')

@@ -151,6 +151,8 @@
                             <div class="col-lg-12">
                                 <label>Username </label>
                                 <input type="text" class="form-control" id="inputUsernameModal"  placeholder="Nhập Đầy Đủ Họ Tên Của Bạn"/>
+                                <span class="text-success" id="success_username"></span>
+                                <span class="text-warning" id="error_username"></span> 
                             </div>
                         </div>
                         <div class="form-group row">
@@ -668,30 +670,30 @@ var KTDatatableRemoteAjaxDemo = function() {
     var _registerUser = function(){
         var formData = new FormData();
 
-        $('#inputPhoneModal').on("change", function(){
-            console.log(1)
-            var phone = document.getElementById("inputPhoneModal").value;
-            if(phone== "") {
-                document.getElementById('error_phone').innerHTML = 'Không được để trống';
-                document.getElementById('success_phone').innerHTML = '';
-                return false;
-            }
-            else{
-                var regex_phone = /(84|0[3|5|7|8|9])+([0-9]{8})\b/gm;
-
-                var test_phone = regex_phone.test(phone);
-
-                if(test_phone==true){
-                    document.getElementById('success_phone').innerHTML = 'Hợp lệ';
-                    document.getElementById('error_phone').innerHTML = '';
-                }
-                else{
-                    document.getElementById('success_phone').innerHTML = '';
-                    document.getElementById('error_phone').innerHTML = 'Không hợp lệ';
-                    return false;
-                }
-            }
-        })
+        // $('#inputPhoneModal').on("change", function(){
+        //     console.log(1)
+        //     var phone = document.getElementById("inputPhoneModal").value;
+        //     if(phone== "") {
+        //         document.getElementById('error_phone').innerHTML = 'Không được để trống';
+        //         document.getElementById('success_phone').innerHTML = '';
+        //         return false;
+        //     }
+        //     else{
+        //         var regex_phone = /(84|0[3|5|7|8|9])+([0-9]{8})\b/gm;
+// 
+        //         var test_phone = regex_phone.test(phone);
+// 
+        //         if(test_phone==true){
+        //             document.getElementById('success_phone').innerHTML = 'Hợp lệ';
+        //             document.getElementById('error_phone').innerHTML = '';
+        //         }
+        //         else{
+        //             document.getElementById('success_phone').innerHTML = '';
+        //             document.getElementById('error_phone').innerHTML = 'Không hợp lệ';
+        //             return false;
+        //         }
+        //     }
+        // })
         $(document).on("click", ".registerModalSubmit", function() {
 
             var ele = document.getElementsByName('radio');
@@ -1047,6 +1049,88 @@ var KTDatatableRemoteAjaxDemo = function() {
         })
     }
 
+    var checkSoDienThoai = function() {
+        $(document).ready(function() {
+            $('#inputPhoneModal').on('keyup', function() {
+                var so_dien_thoai = $('#inputPhoneModal').val().trim()
+                var formData = new FormData()
+                
+                if (so_dien_thoai != '') {
+                    $("#success_phone").html("<img src='{% static 'assets/media/loader/loader.gif' %}' /> Đang kiểm tra...")
+                    $("#error_phone").html("")
+                    setTimeout(function () {
+                        formData.append('so_dien_thoai', so_dien_thoai)     
+                        $.ajax({
+                            type: "POST",
+                            url: "{% url 'check_exists_so_dien_thoai' %}",
+                            data: formData,
+                            cache: false,
+                            processData: false,
+                            contentType: false,
+                            success: function(response){
+                                if (response.status == 200) {
+                                    $("#success_phone").html("") 
+                                    $("#error_phone").html(response.message)
+                                } else if (response.status == 404) {
+                                    $("#success_phone").html(response.message)
+                                    $("#error_phone").html("")
+                                } else if (response.status == 406) {
+                                    $("#success_phone").html("") 
+                                    $("#error_phone").html(response.message)
+                                }
+                            }
+                        })
+                    }, 1500);
+                } else {
+                    $("#success_phone").html("")
+                    $("#error_phone").html("")
+                }
+            })
+            
+        })
+    }
+
+    var checkUsername = function() {
+        $(document).ready(function() {
+            $('#inputUsernameModal').on('keyup', function() {
+                var username = $('#inputUsernameModal').val().trim()
+                var formData = new FormData()
+                
+                if (username != '') {
+                    $("#success_username").html("<img src='{% static 'assets/media/loader/loader.gif' %}' /> Đang kiểm tra...")
+                    $("#error_username").html("")
+                    setTimeout(function () {
+                        formData.append('username', username)     
+                        $.ajax({
+                            type: "POST",
+                            url: "{% url 'check_exists_username' %}",
+                            data: formData,
+                            cache: false,
+                            processData: false,
+                            contentType: false,
+                            success: function(response){
+                                if (response.status == 200) {
+                                    $("#success_username").html("") 
+                                    $("#error_username").html(response.message)
+                                } else if (response.status == 404) {
+                                    $("#success_username").html(response.message)
+                                    $("#error_username").html("")
+                                } else if (response.status == 406) {
+                                    $("#success_username").html("") 
+                                    $("#error_username").html(response.message)
+                                }
+                            }
+                        })
+                    }, 1500);
+                } else {
+                    $("#success_username").html("")
+                    $("#error_username").html("")
+                }
+            })
+            
+        })
+    }
+
     return {
         init: function() {
             demo();
@@ -1057,6 +1141,8 @@ var KTDatatableRemoteAjaxDemo = function() {
             changePassword();
             showModal();
             modalDemos();
+            checkSoDienThoai();
+            checkUsername();
         },
     };
 }();
