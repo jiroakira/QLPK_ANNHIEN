@@ -263,7 +263,8 @@ var KTDatatableRemoteAjaxDemo = function() {
     // Private functions
 
     // basic demo
-    var demo = function(range_start, range_end) {
+    var demo = function(range_start, range_end, url) {
+        var url = url
         var range_start = range_start
         var range_end = range_end
         var modal = $("#nhap_hang_chi_tiet")
@@ -275,7 +276,8 @@ var KTDatatableRemoteAjaxDemo = function() {
                 source: {
                     read: {
                         method: "GET",
-                        url: HOST_URL + '/api/danh_sach_nhung_thuoc_duoc_nhap/',
+                        // url: HOST_URL + '/api/danh_sach_nhung_thuoc_duoc_nhap/',
+                        url: HOST_URL + url,
                         // sample custom headers
                         // headers: {'x-my-custom-header': 'some value', 'x-test-header': 'the value'},
                         map: function(raw) {
@@ -345,90 +347,6 @@ var KTDatatableRemoteAjaxDemo = function() {
             }],
         });
 
-        var el_2 = $('#kt_datatable_sub_lam_sang')
-        var datatable_lam_sang = $('#kt_datatable_sub_lam_sang').KTDatatable({
-            data: {
-                type: 'remote',
-                source: {
-                    read: {
-                        method: "GET",
-                        url: HOST_URL + '/api/danh_sach_doanh_thu_lam_sang/',
-                        // sample custom headers
-                        // headers: {'x-my-custom-header': 'some value', 'x-test-header': 'the value'},
-                        map: function(raw) {
-                            // sample data mapping
-                            var dataSet = raw;
-                            if (typeof raw.data !== 'undefined') {
-                                dataSet = raw.data;
-                            }
-                            return dataSet;
-                        },
-                        params: {
-                            'range_start' : range_start,
-                            'range_end' : range_end,
-                        }
-                    },
-                },
-                pageSize: 10,
-                serverPaging: true,
-                //serverFiltering: true,
-                //serverSorting: true,
-            },
-
-            // layout definition
-            layout: {
-                scroll: false,
-                footer: false,
-            },
-
-            // column sorting
-            sortable: true,
-
-            pagination: true,
-
-            search: {
-                input: '#kt_datatable_search_query_2',
-                key: 'generalSearch1',
-            },
-
-            // columns definition
-            columns: [{
-                field: 'id',
-                title: 'Mã HĐ',
-                sortable: 'asc',
-                width: 100,
-                selector: false,
-                textAlign: 'center',
-            }, {
-                field: 'lich_hen.benh_nhan.ho_ten',
-                title: 'Bệnh Nhân',
-                
-            }, {
-                field: 'tong_tien',
-                title: 'Tổng Tiền',
-                template: function(row){
-                    
-                    if(row.tong_tien == null){
-                        return "Chưa Thanh Toán!"
-                    }else{
-                        return row.tong_tien
-                    }
-                }
-            }, {
-                field: 'thoi_gian_tao',
-                title: 'Thời Gian Tạo',
-                template: function(row) {
-                    var date = new Date(Date.parse(row.thoi_gian_tao))
-
-                    if(!row.thoi_gian_tao){
-                        return '<span class="label font-weight-bold label-lg ' + 'label-light-info' + ' label-inline">' + 'Chưa Bắt Đầu' + '</span>';
-                    } else {
-                        return date.toLocaleDateString('vi-VN')
-                    }
-                }
-            }],
-        });
-
         datatable_nhap_hang.hide();
         modal.on('shown.bs.modal', function() {
             var modalContent = $(this).find('.modal-content');
@@ -448,7 +366,8 @@ var KTDatatableRemoteAjaxDemo = function() {
 
     };
 
-    var demo2 = function(range_start, range_end) {
+    var demo2 = function(range_start, range_end, url) {
+        var url = url 
         var range_start = range_start
         var range_end = range_end
         console.log(range_start, range_end)
@@ -461,9 +380,9 @@ var KTDatatableRemoteAjaxDemo = function() {
                 source: {
                     read: {
                         method: "GET",
-                        url: HOST_URL + '/api/danh_sach_nhung_thuoc_duoc_xuat/',
-                        // sample custom headers
-                        // headers: {'x-my-custom-header': 'some value', 'x-test-header': 'the value'},
+                        // url: HOST_URL + '/api/danh_sach_nhung_thuoc_duoc_xuat/',
+                        url : HOST_URL + url,
+
                         map: function(raw) {
                             // sample data mapping
                             var dataSet = raw;
@@ -668,8 +587,24 @@ var KTDatatableRemoteAjaxDemo = function() {
                                 Xem Báo Cáo
                             </button>
                         `;
-                    } else {
-                        return ``
+                    } else if (row.type == "bao_cao_nhap_dv") {
+                        return `
+                            <button type="button" class="btn btn-sm btn-clean" id="bao_cao_nhap_dv" title="Xem Chi Tiết">
+                                Chi Tiết
+                            </button>
+                        `
+                    } else if (row.type == "bao_cao_xuat_dv") {
+                        return `
+                            <button type="button" class="btn btn-sm btn-clean" id="bao_cao_xuat_dv" title="Xem Chi Tiết">
+                                Chi Tiết
+                            </button>
+                        `
+                    } else if (row.type == "bao_cao_ton_dv") {
+                        return `
+                            <button type="button" class="btn btn-sm btn-clean" id="bao_cao_ton_dv" title="Xem Chi Tiết">
+                                Xem Báo Cáo
+                            </button>
+                        `
                     }
                 },
             }],
@@ -681,14 +616,24 @@ var KTDatatableRemoteAjaxDemo = function() {
         })
 
         $('#kt_datatable').on('click', '#bao_cao_nhap', function(){
-            demo(range_start, range_end)
+            demo(range_start, range_end, '/api/danh_sach_nhung_thuoc_duoc_nhap/')
             $('#nhap_hang_chi_tiet').modal('show')
         })
 
         $('#kt_datatable').on('click', '#bao_cao_xuat', function(){
-            console.log(range_start, range_end)
             $('#kt_datatable_sub_thuoc').KTDatatable('destroy');
-            demo2(range_start, range_end)
+            demo2(range_start, range_end, '/api/danh_sach_nhung_thuoc_duoc_xuat/')
+            $('#thuoc_chi_tiet').modal('show')
+        })
+
+        $('#kt_datatable').on('click', '#bao_cao_nhap_dv', function(){
+            demo(range_start, range_end, '/api/danh_sach_thuoc_dich_vu_nhap/')
+            $('#nhap_hang_chi_tiet').modal('show')
+        })
+
+        $('#kt_datatable').on('click', '#bao_cao_xuat_dv', function(){
+            $('#kt_datatable_sub_thuoc').KTDatatable('destroy');
+            demo2(range_start, range_end, '/api/danh_sach_thuoc_dich_vu_xuat/')
             $('#thuoc_chi_tiet').modal('show')
         })
 
@@ -729,7 +674,45 @@ var KTDatatableRemoteAjaxDemo = function() {
             })
         })
 
+         $('#kt_datatable').on('click', '#bao_cao_ton_dv', function(){
+            var formData = new FormData()
+
+            formData.append('range_start', range_start)
+            formData.append('range_end', range_end)
+            formData.append('csrfmiddlewaretoken', '{{ csrf_token }}')
+            bao_cao_ton()
+            $.ajax({
+                type: "POST",
+                url: "{% url 'xuat_bao_cao_ton_dich_vu' %}",
+                data : formData,
+                cache: false,
+                processData: false,
+                contentType: false,
+                success: function(response){
+                    $('#bao_cao_ton_chi_tiet').modal('show')
+                    console.log(response.list_ton)
+                    $(response.list_ton).each(function(){
+                        $('#invoice-table tbody').append(
+                            `
+                            <tr class="font-weight-boldest font-size-lg">
+                                <td class="pl-0 pt-7">
+                                    <span>${this.ten_thuoc}</span>
+                                </td>
+                                <td class="text-center pt-7">
+                                    <span>${this.so_luong}</span>
+                                </td>
+                            </tr>
+                            `
+                        )
+                    })
+                },
+                error: function(response){
+                }
+            })
+        })
+
     }
+
 
     var _initDaterangepicker = function () {
         if ($('#kt_dashboard_daterangepicker').length == 0) {

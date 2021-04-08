@@ -1114,10 +1114,12 @@ def upload_view_lam_sang(request, **kwargs):
 def phong_tai_chinh_danh_sach_cho(request):
     trang_thai = TrangThaiChuoiKham.objects.all()
     phong_chuc_nang = PhongChucNang.objects.all()
+    phong_kham = PhongKham.objects.all().first()
 
     data = {
         'trang_thai' : trang_thai,
         'phong_chuc_nang' : phong_chuc_nang,
+        'phong_kham' : phong_kham,
     }
     return render(request, 'phong_tai_chinh/danh_sach_thanh_toan.html', context= data)
 
@@ -5342,13 +5344,12 @@ def xuat_bao_cao_ton(request, *args, **kwargs):
                         d['so_luong'] = so_luong_ton
                         d['ten_thuoc'] = ten_thuoc
                         list_ton.append(d)
-            print(list_ton)
 
             response = {
                 'list_ton' : list_ton,
             }
             return HttpResponse(json.dumps(response), content_type='application/json; charset=utf-8')
-        # danh_sach_dich_vu = PhanKhoaKham.objects.filter(thoi_gian_tao__lt=tomorrow_start, thoi_gian_tao__gte=start).values('dich_vu_kham__ten_dvkt').annotate(tong_tien=Sum('dich_vu_kham__don_gia')).order_by('dich_vu_kham__ten_dvkt').annotate(dich_vu_kham_count = Count('dich_vu_kham__ten_dvkt'))
+        
         else:
             end = datetime.strptime(range_end, "%d-%m-%Y")
             tong_nhap_hang = NhapHang.objects.filter(thoi_gian_tao__gte=start, thoi_gian_tao__lt=end).exclude(bao_hiem=False).values("thuoc__ten_thuoc").annotate(id=F('thuoc__id')).annotate(so_luong=Sum('so_luong')).annotate(c = Count('thuoc__ten_thuoc')).annotate(bao_hiem=F('bao_hiem'))
@@ -5368,7 +5369,6 @@ def xuat_bao_cao_ton(request, *args, **kwargs):
                         d['so_luong'] = so_luong_ton
                         d['ten_thuoc'] = ten_thuoc
                         list_ton.append(d)
-            print(list_ton)
 
             response = {
                 'list_ton' : list_ton,
@@ -5377,6 +5377,49 @@ def xuat_bao_cao_ton(request, *args, **kwargs):
     else:
         response = {'message': 'oke'} 
     return HttpResponse(json.dumps(response), content_type='application/json; charset=utf-8')
+
+def xuat_bao_cao_ton_dich_vu(request):
+    if request.method == "POST":
+        range_start = request.POST.get('range_start')
+        range_end = request.POST.get('range_end')
+
+        start = datetime.strptime(range_start, "%d-%m-%Y")
+        if range_end == '':
+            end = start + timedelta(1)
+            tong_nhap_hang = NhapHang.objects.filter(thoi_gian_tao__gte=start, thoi_gian_tao__lte=end).exclude(bao_hiem=True).values("thuoc__ten_thuoc").annotate(id=F('thuoc__id')).annotate(so_luong=Sum('so_luong')).annotate(c = Count('thuoc__ten_thuoc')).annotate(bao_hiem=F('bao_hiem'))
+
+            tong_xuat_hang = KeDonThuoc.objects.filter(thoi_gian_tao__gte=start, thoi_gian_tao__lte=end).exclude(bao_hiem=True).values('thuoc__ten_thuoc').annotate(id=F('thuoc__id')).annotate(so_luong=Sum('so_luong')).annotate(c = Count('thuoc__ten_thuoc')).annotate(bao_hiem=F('bao_hiem'))
+
+            list_ton = []
+        else:
+            end = datetime.strptime(range_end, "%d-%m-%Y")
+            if range_start == range_end:
+                end = end + timedelta(1)
+            tong_nhap_hang = NhapHang.objects.filter(thoi_gian_tao__gte=start, thoi_gian_tao__lte=end).exclude(bao_hiem=True).values("thuoc__ten_thuoc").annotate(id=F('thuoc__id')).annotate(so_luong=Sum('so_luong')).annotate(c = Count('thuoc__ten_thuoc')).annotate(bao_hiem=F('bao_hiem'))
+
+            tong_xuat_hang = KeDonThuoc.objects.filter(thoi_gian_tao__gte=start, thoi_gian_tao__lte=end).exclude(bao_hiem=True).values('thuoc__ten_thuoc').annotate(id=F('thuoc__id')).annotate(so_luong=Sum('so_luong')).annotate(c = Count('thuoc__ten_thuoc')).annotate(bao_hiem=F('bao_hiem'))
+
+            list_ton = []
+
+        for i in tong_nhap_hang:
+            for j in tong_xuat_hang:
+                if j['id'] in i.values():
+                    so_luong_nhap = i['so_luong']
+                    so_luong_xuat = j['so_luong']
+                    so_luong_ton = so_luong_nhap - so_luong_xuat
+                    ten_thuoc = j['thuoc__ten_thuoc']
+                    d = {}
+                    d['so_luong'] = so_luong_ton
+                    d['ten_thuoc'] = ten_thuoc
+                    list_ton.append(d)
+
+        response = {
+            'list_ton' : list_ton,
+        }
+        return HttpResponse(json.dumps(response), content_type='application/json; charset=utf-8')
+    else:
+        response = {'message': 'oke'}
+        return HttpResponse(json.dumps(response), content_type='application/json; charset=utf-8')
 
 @login_required(login_url='/dang_nhap/')
 def hoa_don_tpcn(request, **kwargs):
