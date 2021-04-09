@@ -657,7 +657,7 @@ var KTDatatableRemoteAjaxDemo = function() {
                     $(response.list_ton).each(function(){
                         $('#invoice-table tbody').append(
                             `
-                            <tr class="font-weight-boldest font-size-lg">
+                            <tr class="font-weight-boldest font-size-lg added">
                                 <td class="pl-0 pt-7">
                                     <span>${this.ten_thuoc}</span>
                                 </td>
@@ -667,6 +667,10 @@ var KTDatatableRemoteAjaxDemo = function() {
                             </tr>
                             `
                         )
+                    })
+
+                    $('#bao_cao_ton_chi_tiet').on('hidden.bs.modal', function(){
+                        $('.added').remove()
                     })
                 },
                 error: function(response){
@@ -694,7 +698,7 @@ var KTDatatableRemoteAjaxDemo = function() {
                     $(response.list_ton).each(function(){
                         $('#invoice-table tbody').append(
                             `
-                            <tr class="font-weight-boldest font-size-lg">
+                            <tr class="font-weight-boldest font-size-lg added">
                                 <td class="pl-0 pt-7">
                                     <span>${this.ten_thuoc}</span>
                                 </td>
@@ -704,6 +708,9 @@ var KTDatatableRemoteAjaxDemo = function() {
                             </tr>
                             `
                         )
+                    })
+                    $('#bao_cao_ton_chi_tiet').on('hidden.bs.modal', function(){
+                        $('.added').remove()
                     })
                 },
                 error: function(response){
