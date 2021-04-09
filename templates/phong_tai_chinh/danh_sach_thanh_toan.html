@@ -209,10 +209,12 @@
                     <span class="font-weight-bolder mb-2">THỜI GIAN THANH TOÁN.</span>
                     <span class="opacity-70" id="thoi_gian_thanh_toan"></span>
                 </div>
-                <div class="d-flex flex-column flex-root">
+                <div class="d-flex flex-column flex-root flex-column-auto">
                     <span class="font-weight-bolder mb-2">NGƯỜI THANH TOÁN.</span>
-                    <span class="opacity-70"><span id="nguoi_thanh_toan"></span> 
-                    <br />-<span id="phone_number"></span></span>
+                    <span class="opacity-70"><span id="nguoi_thanh_toan" class="mr-4"></span> 
+                     Tel: <span id="phone_number"></span>
+                    <br /> Add: <span id="address"></span>
+                    </span>
                 </div>
             </div>
         </div>
@@ -398,7 +400,7 @@ var KTDatatableRemoteAjaxDemo = function() {
                     
                     return `
                         {% if perms.finance.can_checkout_clinical_receipt %}
-                        <a href="javascript:;" class="btn btn-sm btn-clean mr-2 btn-thanh-toan" data-ten="${row.benh_nhan.ho_ten}" data-id="${row.id}" data-time="${row.thoi_gian_tao}" data-phone="${row.benh_nhan.so_dien_thoai}" title="Edit details">
+                        <a href="javascript:;" class="btn btn-sm btn-clean mr-2 btn-thanh-toan" data-ten="${row.benh_nhan.ho_ten}" data-id="${row.id}" data-time="${row.thoi_gian_tao}" data-phone="${row.benh_nhan.so_dien_thoai}" data-address="${row.benh_nhan.dia_chi}" title="Edit details">
                             Thanh toán
                         </a>
                         {% endif %}
@@ -426,14 +428,18 @@ var KTDatatableRemoteAjaxDemo = function() {
             $('#lam_sang_modal').find('#ten_benh_nhan').attr("data-lich-hen", id)
         })
 
-        $('#lam_sang_modal').on('click', '#btn_submit', function(){
+        var submit_data = function(id, gia_tien){
             var formData = new FormData();
             
-            formData.append('id', $('#ten_benh_nhan').data('lich-hen'))
-            formData.append('gia_tien', $('#gia_tien').val())
+            var id = id
+            var gia_tien = gia_tien
+            
+            alert(id, gia_tien)
+            formData.append('id', id)
+            formData.append('gia_tien', gia_tien)
             formData.append('csrfmiddlewaretoken', '{{ csrf_token }}')
             
-            $.ajax({
+            {% comment %} $.ajax({
                 type: "POST",
                 url: "{% url 'store_thanh_toan_lam_sang' %}",
                 data: formData,
@@ -452,17 +458,18 @@ var KTDatatableRemoteAjaxDemo = function() {
                 error: function (response) {
                     alert(res)                         
                 }
-            })
+            }) {% endcomment %}
+        }
+
+        $('#lam_sang_modal').on('click', '#btn_submit', function(){
+            var id = $('#ten_benh_nhan').attr('data-lich-hen')
+            var gia_tien = $('#gia_tien').val()
+            submit_data(id, gia_tien)
         })
 
         $('#kt_datatable_search_status').selectpicker();
 
-        var afterPrint = function(){
-            $('#lam_sang_modal').modal('hide');
-        }
-
         $('#printDiv').on('click', function(){
-            
             printDiv(hoa_don_dich_vu)
         })
 
@@ -471,6 +478,7 @@ var KTDatatableRemoteAjaxDemo = function() {
             var id  = $(this).data('id')
             var thoi_gian = $(this).attr('data-time')
             var sdt = $(this).attr('data-phone')
+            var add = $(this).attr('data-address')
 
             $('#lam_sang_modal').modal('show')
             $('#lam_sang_modal').find('#ten_benh_nhan').html(ten)
@@ -478,6 +486,7 @@ var KTDatatableRemoteAjaxDemo = function() {
             $('#lam_sang_modal').find('#btn_submit').attr("data-time", thoi_gian)
             $('#lam_sang_modal').find('#btn_submit').attr("data-name", ten)
             $('#lam_sang_modal').find('#btn_submit').attr("data-phone", sdt)
+            $('#lam_sang_modal').find('#btn_submit').attr("data-address", add)
         })
 
         function formatMoney(amount, decimalCount = 0, decimal = ",", thousands = ".") {
@@ -497,20 +506,24 @@ var KTDatatableRemoteAjaxDemo = function() {
         };
 
         function printDiv(hoa_don_dich_vu){
-            var tien_lam_sang = $('#gia_tien').val();
-            tien_lam_sang = formatMoney(tien_lam_sang)
+            var gia_tien = $('#gia_tien').val();
+            $('#lam_sang_modal').find('#ten_benh_nhan').attr("data-money", gia_tien)
+            gia_tien = formatMoney(gia_tien)
             var thoi_gian = $('#btn_submit').attr('data-time')
             var nguoi_thanh_toan = $('#btn_submit').attr('data-name')
             var sdt = $('#btn_submit').attr('data-phone')
-            console.log(sdt)
+            var add = $('#btn_submit').attr('data-address')
+            var id = $('#ten_benh_nhan').attr('data-lich-hen')
+
             thoi_gian = new Date(Date.parse(thoi_gian))
             thoi_gian = thoi_gian.toLocaleString('vi-VN')
 
-            $('#hoa_don_dich_vu').find('#tien_lam_sang').html(tien_lam_sang);
-            $('#hoa_don_dich_vu').find('#format-money-thanh-tien').html(tien_lam_sang);
+            $('#hoa_don_dich_vu').find('#tien_lam_sang').html(gia_tien);
+            $('#hoa_don_dich_vu').find('#format-money-thanh-tien').html(gia_tien);
             $('#hoa_don_dich_vu').find('#thoi_gian_thanh_toan').html(thoi_gian)
             $('#hoa_don_dich_vu').find('#nguoi_thanh_toan').html(nguoi_thanh_toan)
             $('#hoa_don_dich_vu').find('#phone_number').html(sdt)
+            $('#hoa_don_dich_vu').find('#address').html(add)
 
 
             var printContents = document.getElementById("hoa_don_dich_vu").innerHTML;
@@ -522,11 +535,18 @@ var KTDatatableRemoteAjaxDemo = function() {
 
             $('#lam_sang_modal').modal('hide');
 
-            window.location.reload()
-
             document.body.innerHTML = originalContents;
 
+            window.onafterprint = $(document).ready(function(e) {
+                console.log('This will be called after the user prints');
+                var id = $('#lam_sang_modal').find('#ten_benh_nhan').data("lich-hen")
+                var gia_tien = $('#lam_sang_modal').find('#ten_benh_nhan').data("money")
+                alert(id, gia_tien)
+                console.log(id, gia_tien)
+                submit_data(id, gia_tien)
+            });
         }
+        
     };
 
     var hoa_don_dich_vu = function() {
