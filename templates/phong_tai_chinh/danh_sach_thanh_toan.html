@@ -480,9 +480,25 @@ var KTDatatableRemoteAjaxDemo = function() {
             $('#lam_sang_modal').find('#btn_submit').attr("data-phone", sdt)
         })
 
+        function formatMoney(amount, decimalCount = 0, decimal = ",", thousands = ".") {
+            try {
+                decimalCount = Math.abs(decimalCount);
+                decimalCount = isNaN(decimalCount) ? 2 : decimalCount;
+
+                const negativeSign = amount < 0 ? "-" : "";
+
+                let i = parseInt(amount = Math.abs(Number(amount) || 0).toFixed(decimalCount)).toString();
+                let j = (i.length > 3) ? i.length % 3 : 0;
+
+                return negativeSign + (j ? i.substr(0, j) + thousands : '') + i.substr(j).replace(/(\d{3})(?=\d)/g, "$1" + thousands) + (decimalCount ? decimal + Math.abs(amount - i).toFixed(decimalCount).slice(2) : "");
+            } catch (e) {
+                console.log(e)
+            }
+        };
+
         function printDiv(hoa_don_dich_vu){
             var tien_lam_sang = $('#gia_tien').val();
-            
+            tien_lam_sang = formatMoney(tien_lam_sang)
             var thoi_gian = $('#btn_submit').attr('data-time')
             var nguoi_thanh_toan = $('#btn_submit').attr('data-name')
             var sdt = $('#btn_submit').attr('data-phone')
@@ -495,6 +511,7 @@ var KTDatatableRemoteAjaxDemo = function() {
             $('#hoa_don_dich_vu').find('#thoi_gian_thanh_toan').html(thoi_gian)
             $('#hoa_don_dich_vu').find('#nguoi_thanh_toan').html(nguoi_thanh_toan)
             $('#hoa_don_dich_vu').find('#phone_number').html(sdt)
+
 
             var printContents = document.getElementById("hoa_don_dich_vu").innerHTML;
             var originalContents = document.body.innerHTML;
