@@ -2804,6 +2804,7 @@ def create_bac_si(request):
         ho_ten         = request.POST.get("ho_ten",         None)
         so_dien_thoai  = request.POST.get("so_dien_thoai",  None)
         password       = request.POST.get("password",       None)
+        username       = request.POST.get('username', None)
         cmnd_cccd      = request.POST.get("cmnd_cccd",      None)
         dia_chi        = request.POST.get("dia_chi",        None)
         ngay_sinh      = request.POST.get("ngay_sinh",      None)
@@ -2856,6 +2857,9 @@ def create_bac_si(request):
         )
 
         user.chuc_nang = chuc_nang
+
+        if username != '':
+            user.username = username
         
         user.staff = True
 
