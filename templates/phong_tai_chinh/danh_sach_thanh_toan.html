@@ -147,7 +147,7 @@
 </div>
 <!--end::Content-->
 
-<!--begin::Dung Kham Modal-->
+<!--begin::Thanh Toan Lam Sang Modal-->
 <div id="lam_sang_modal" class="modal fade" role="dialog" aria-hidden="true">
     <div class="modal-dialog modal-md modal-dialog-centered">
         <div class="modal-content">
@@ -174,9 +174,11 @@
                 </div>
             </div>
             <div class="modal-footer">
-                <button type="button" id="printDiv" class="btn btn-light-primary font-weight-bold">In</button>
+                {% comment %} <div class="d-flex justify-content-between"> {% endcomment %}
+                <button type="button" id="printDiv" class="btn btn-light-success font-weight-bold text-uppercase mr-custom">In</button>
                 <button type="button" class="btn btn-light-primary font-weight-bold text-uppercase" data-dismiss="modal">Hủy</button>
                 <button type="button" id="btn_submit" class="btn btn-primary font-weight-bold text-uppercase">Xác nhận</button>
+                {% comment %} </div> {% endcomment %}
             </div>
         </div>
     </div>
