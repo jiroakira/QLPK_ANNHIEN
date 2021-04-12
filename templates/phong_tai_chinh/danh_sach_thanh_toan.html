@@ -428,41 +428,38 @@ var KTDatatableRemoteAjaxDemo = function() {
             $('#lam_sang_modal').find('#ten_benh_nhan').attr("data-lich-hen", id)
         })
 
-        var submit_data = function(id, gia_tien){
+        $('#lam_sang_modal').on('click', '#btn_submit', function(){
+            var id = $('#ten_benh_nhan').attr('data-lich-hen');
+            var gia_tien = $('#gia_tien').val();
 
-            console.log(id, gia_tien);
+            var formData = new FormData();
+
             formData.append('id', id);
             formData.append('gia_tien', gia_tien);
             formData.append('csrfmiddlewaretoken', '{{ csrf_token }}');
-            $('#lam_sang_modal').on('click', '#btn_submit', function(){
-                var id = $('#ten_benh_nhan').attr('data-lich-hen');
-                var gia_tien = $('#gia_tien').val();
 
-                var formData = new FormData();
-
-                $.ajax({
-                    type: "POST",
-                    url: "{% url 'store_thanh_toan_lam_sang' %}",
-                    data: formData,
-                    dataType: 'json',
-                    processData: false,
-                    contentType: false,
-                    cache: false,
-                    success: function (response) {
-                        if (response.status == 200){
-                            toastr.success(response.message, "Thành Công")
-                            //window.location = response.url;
-                            $('#kt_datatable').KTDatatable('reload');
-                        }
-                        $('#lam_sang_modal').modal('hide');
-                    },
-                    error: function (response) {
-                        alert(res)                         
+            $.ajax({
+                type: "POST",
+                url: "{% url 'store_thanh_toan_lam_sang' %}",
+                data: formData,
+                dataType: 'json',
+                processData: false,
+                contentType: false,
+                cache: false,
+                success: function (response) {
+                    if (response.status == 200){
+                        toastr.success(response.message, "Thành Công")
+                        //window.location = response.url;
+                        $('#kt_datatable').KTDatatable('reload');
                     }
-                })
-
+                    $('#lam_sang_modal').modal('hide');
+                },
+                error: function (response) {
+                    alert(res)                         
+                }
             })
-        }
+
+        })
 
         $('#kt_datatable_search_status').selectpicker();
 
