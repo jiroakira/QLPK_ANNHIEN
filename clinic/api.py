@@ -2249,7 +2249,7 @@ class HoaDonThuocCuaChuoiKham(APIView):
         id_chuoi_kham = self.request.query_params.get('id_chuoi_kham')
         try:
             chuoi_kham = ChuoiKham.objects.get(id=id_chuoi_kham)
-            don_thuoc = chuoi_kham.don_thuoc_chuoi_kham.all()[0]
+            don_thuoc = chuoi_kham.don_thuoc_chuoi_kham.all().last()
 
             danh_sach_thuoc = don_thuoc.ke_don.all()
             bao_hiem = []
