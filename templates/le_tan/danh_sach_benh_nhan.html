@@ -812,12 +812,14 @@ var KTDatatableRemoteAjaxDemo = function() {
         //})
         $(document).on("click", ".registerModalSubmit", function() {
 
+            var formData = new FormData()
+
             var ele = document.getElementsByName('radio'); 
             var i;
             for(i = 0; i < ele.length; i++) { 
                 if(ele[i].checked)
                 var gioi_tinh = ele[i].value
-            } 
+            }
 
             formData.append('ho_ten', $("#inputNameModal").val())
             formData.append('so_dien_thoai', $("#inputPhoneModal").val())
