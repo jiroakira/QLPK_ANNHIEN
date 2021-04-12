@@ -1578,7 +1578,7 @@ class DanhSachDonThuocBenhNhan(APIView):
     def get(self, request, format=None):
         user_id = self.request.query_params.get('user_id')
         user = User.objects.get(id = user_id)
-        danh_sach_don_thuoc = user.don_thuoc.all().last()
+        danh_sach_don_thuoc = user.don_thuoc.all()
         serializer = DanhSachDonThuocSerializer(danh_sach_don_thuoc, many=True, context={'request': request})
         response = {
             'benh_nhan': user_id,
@@ -2150,7 +2150,7 @@ class DonThuocCuaChuoiKham(APIView):
         id_chuoi_kham = self.request.query_params.get('id_chuoi_kham')
         try:
             chuoi_kham = ChuoiKham.objects.get(id=id_chuoi_kham)
-            don_thuoc = chuoi_kham.don_thuoc_chuoi_kham.all()[0]
+            don_thuoc = chuoi_kham.don_thuoc_chuoi_kham.all().last()
             danh_sach_thuoc = don_thuoc.ke_don.all()
     
             serializer = KeDonThuocSerializer(danh_sach_thuoc, many=True, context={'request': request})
