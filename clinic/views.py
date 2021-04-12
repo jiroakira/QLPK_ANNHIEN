@@ -116,6 +116,11 @@ def getSubName(name):
     subName = "".join(lstChar)
     return subName
 
+user_login_required = user_passes_test(lambda user: user.is_staff or user.has_perm('clinic.general_view'), login_url='/dang_nhap/')
+
+def staff_user_required(view_func):
+    decorated_view_func = login_required(user_login_required(view_func))
+    return decorated_view_func
 
 @login_required(login_url='/dang_nhap/')
 def index(request):
@@ -177,11 +182,10 @@ def index(request):
 
     data = {
         'user': request.user,
-        'danh_sach_benh_nhan': danh_sach_benh_nhan,
+        'danh_sach_benh_nhan': danh_sach_benh_nhan[:10],
         'lich_hen_chua_xac_nhan': danh_sach_lich_hen_chua_xac_nhan,
         'upcoming_events': upcoming_events[:6],
         'past_events': past_events[:6],
-        # 'today_events': today_events,
         'ds_bac_si': ds_bac_si,
         'danh_sach_dich_vu': danh_sach_dich_vu,
         'nguoi_dung': nguoi_dung,
@@ -879,8 +883,10 @@ def store_ke_don(request):
 
         now = datetime.now()
         date_time = now.strftime("%m%d%y%H%M%S")
+
         try:
             chuoi_kham = ChuoiKham.objects.get(id=id_chuoi_kham)
+
         except ChuoiKham.DoesNotExist:
             repsonse = {
                 "status": 404,
@@ -893,6 +899,7 @@ def store_ke_don(request):
             subName = getSubName(user.ho_ten)
             ma_don_thuoc = subName + '-' + date_time
             trang_thai = TrangThaiDonThuoc.objects.get_or_create(trang_thai="Chờ Thanh Toán")[0]
+
             don_thuoc = DonThuoc.objects.get_or_create(benh_nhan=user, bac_si_ke_don=request.user, trang_thai=trang_thai, ma_don_thuoc=ma_don_thuoc, chuoi_kham = chuoi_kham)[0]
         except User.DoesNotExist:
             repsonse = {
@@ -909,7 +916,9 @@ def store_ke_don(request):
             if thuoc.kha_dung and int(so_luong) > 0:
                 ke_don_thuoc = KeDonThuoc(don_thuoc=don_thuoc, thuoc=thuoc, so_luong=i['obj']['so_luong'], cach_dung=i['obj']['duong_dung'], ghi_chu=i['obj']['ghi_chu'], bao_hiem=i['obj']['bao_hiem'])
                 bulk_create_data.append(ke_don_thuoc)
+                
             elif thuoc.kha_dung and int(so_luong) < 0:
+                don_thuoc.delete()
                 repsonse = {
                     "status": 404,
                     "message": f"Vui lòng kiểm tra lại số lượng thuốc kê đơn",
@@ -922,7 +931,6 @@ def store_ke_don(request):
                 }
                 return HttpResponse(json.dumps(repsonse), content_type='application/json; charset=utf-8')
                 
-
         KeDonThuoc.objects.bulk_create(bulk_create_data)
 
         from actstream import action
