@@ -330,7 +330,8 @@ var KTDatatableRemoteAjaxDemo = function() {
                         return row.tong_tien
                     }
                 }
-            }, {
+            }, 
+            {% comment %} {
                 field: 'thoi_gian_tao',
                 title: 'Thời Gian Tạo',
                 template: function(row) {
@@ -342,7 +343,8 @@ var KTDatatableRemoteAjaxDemo = function() {
                         return date.toLocaleDateString('vi-VN')
                     }
                 }
-            }],
+            } {% endcomment %}
+            ],
         });
 
         var el_2 = $('#kt_datatable_sub_lam_sang')
