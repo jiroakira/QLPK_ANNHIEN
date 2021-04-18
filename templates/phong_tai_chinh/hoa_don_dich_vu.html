@@ -41,16 +41,6 @@
             <div class="card card-custom overflow-hidden">
                 <!-- begin: Invoice-->
                 <div class="" id="hoa_don_dich_vu">
-
-                    {% comment %} <div class="row justify-content-center py-8 px-8 py-md-27 px-md-0">
-                        <div class="col-md-9">
-                            <div class="d-flex justify-content-between pb-10 pb-md-20 flex-column flex-md-row">
-                                {{ mau_hoa_don|safe }}
-                            </div>
-                            
-                        </div>
-                    </div> {% endcomment %}
-
                     <div class="row justify-content-center py-4 px-4 py-md-27 px-md-0">
                         <div id='mau_hoa_don'>
                             {{mau_hoa_don.noi_dung|safe}}
@@ -216,6 +206,8 @@
     var lstData = [];
     var lstCheckbox = {};
     var list_data_2 = [];
+
+    var check_da_thanh_toan = "{{ check_da_thanh_toan|safe }}"
 
     function insertAt(array, index, elements) {
         array.splice(index, 0, elements);
@@ -660,148 +652,296 @@
         });
     })
 
-    $(document).ready(function(){
-        var data_ten_mau = '';
-        var data_benh_nhan = '';
-        var data_so_dien_thoai = '';
-        var data_dia_chi = '';
-        var data_ten_dich_vu = '';
-        var data_tong_tien = '';
-        var data_tong_tien_bao_hiem = '';
-        var data_thanh_tien = '';
-        var data_nguoi_thuc_hien = '';
-        var data_giam_gia = ''
-        var ten_mau_hoa_don = "{{ mau_hoa_don.ten_mau|safe }}";
-        var thoi_gian_thanh_toan = "{{ thoi_gian_thanh_toan|safe }}";
-        var benh_nhan = "{{ benh_nhan|safe }}";
-        var so_dien_thoai = "{{ so_dien_thoai|safe }}";
-        var dia_chi = "{{ dia_chi|safe }}";
-        var danh_sach_dich_vu = {{ danh_sach_dich_vu|safe }};
-        var danh_sach_bao_hiem = {{ danh_sach_bao_hiem|safe }};
-        var danh_sach_gia_tien = {{ danh_sach_gia_tien|safe }};
-        var tong_tien = "{{ tong_tien|safe }}";
-        var tong_tien_bao_hiem = "{{ tong_tien_bao_hiem|safe }}";
-        var thanh_tien = "{{ thanh_tien|safe }}";
-        var nguoi_thuc_hien = "{{ nguoi_thuc_hien|safe }}";
+    if (check_da_thanh_toan == 'True') {
+        $(document).ready(function(){
+            var data_ten_mau = '';
+            var data_benh_nhan = '';
+            var data_so_dien_thoai = '';
+            var data_dia_chi = '';
+            var data_ten_dich_vu = '';
+            var data_tong_tien = '';
+            var data_tong_tien_bao_hiem = '';
+            var data_thanh_tien = '';
+            var data_nguoi_thuc_hien = '';
+            var data_giam_gia = ''
+            var ten_mau_hoa_don = "{{ mau_hoa_don.ten_mau|safe }}";
+            var thoi_gian_thanh_toan = "{{ thoi_gian_thanh_toan|safe }}";
+            var benh_nhan = "{{ benh_nhan|safe }}";
+            var so_dien_thoai = "{{ so_dien_thoai|safe }}";
+            var dia_chi = "{{ dia_chi|safe }}";
+            var danh_sach_dich_vu = {{ danh_sach_dich_vu|safe }};
+            var danh_sach_bao_hiem = {{ danh_sach_bao_hiem|safe }};
+            var danh_sach_gia_tien = {{ danh_sach_gia_tien|safe }};
+            var tong_tien = "{{ tong_tien|safe }}";
+            var tong_tien_bao_hiem = "{{ tong_tien_bao_hiem|safe }}";
+        
+            var nguoi_thuc_hien = "{{ nguoi_thuc_hien|safe }}";
+            var tien_phai_thanh_toan = "{{ tien_phai_thanh_toan|safe }}"
+            var discount = "{{ discount|safe }}"
 
 
-        $('table tbody tr').each(function(){
-            if($(this).find('td').eq(0).text() == '{ten_mau_hoa_don}'){
-                console.log($(this).html());
-                var innerHtml = $(this).html();
-                var start_tr = '<tr>';
-                var end_tr = '</tr>';
-                var c = start_tr + innerHtml + end_tr;
+            $('table tbody tr').each(function(){
+                if($(this).find('td').eq(0).text() == '{ten_mau_hoa_don}'){
+                    console.log($(this).html());
+                    var innerHtml = $(this).html();
+                    var start_tr = '<tr>';
+                    var end_tr = '</tr>';
+                    var c = start_tr + innerHtml + end_tr;
 
-                data_ten_mau += c.replace(/{ten_mau_hoa_don}/, ten_mau_hoa_don);
+                    data_ten_mau += c.replace(/{ten_mau_hoa_don}/, ten_mau_hoa_don);
 
-                $(this).replaceWith(data_ten_mau);
-            }
-
-            if($(this).find('td').eq(0).text() == '{thoi_gian_thanh_toan}'){
-                console.log($(this).html());
-                var innerHtml = $(this).html();
-                var start_tr = '<tr>';
-                var end_tr = '</tr>';
-                var c = start_tr + innerHtml + end_tr;
-
-                data_benh_nhan += c.replace(/{thoi_gian_thanh_toan}/, thoi_gian_thanh_toan).replace(/{benh_nhan}/, benh_nhan);
-
-                $(this).replaceWith(data_benh_nhan);
-            }
-
-            if($(this).find('td').eq(1).text() == '{so_dien_thoai}'){
-                console.log($(this).html())
-                var innerHtml = $(this).html()
-                var start_tr = '<tr>'
-                var end_tr = '</tr>'
-                var c = start_tr + innerHtml + end_tr
-
-                data_so_dien_thoai += c.replace(/{so_dien_thoai}/, so_dien_thoai)
-
-                $(this).replaceWith(data_so_dien_thoai)
-            }
-
-            if($(this).find('td').eq(1).text() == '{dia_chi}'){
-                console.log($(this).html())
-                var innerHtml = $(this).html()
-                var start_tr = '<tr>'
-                var end_tr = '</tr>'
-                var c = start_tr + innerHtml + end_tr
-
-                data_dia_chi += c.replace(/{dia_chi}/, dia_chi)
-
-                $(this).replaceWith(data_dia_chi)
-            }
-
-            if($(this).find('td').eq(0).text() == '{ten_dich_vu}'){
-                console.log($(this).html())
-                var innerHtml = $(this).html()
-                var start_tr = '<tr>'
-                var end_tr = '</tr>'
-                var c = start_tr + innerHtml + end_tr
-                for (var i=0; i<danh_sach_dich_vu.length; i++) {
-
-                    data_ten_dich_vu += c.replace(/{ten_dich_vu}/, danh_sach_dich_vu[i]).replace(/{bao_hiem}/, danh_sach_bao_hiem[i]).replace(/{gia_tien}/, danh_sach_gia_tien[i]).replace(/{thanh_tien}/, danh_sach_gia_tien[i])
+                    $(this).replaceWith(data_ten_mau);
                 }
 
-                $(this).replaceWith(data_ten_dich_vu)
-            }
+                if($(this).find('td').eq(0).text() == '{thoi_gian_thanh_toan}'){
+                    console.log($(this).html());
+                    var innerHtml = $(this).html();
+                    var start_tr = '<tr>';
+                    var end_tr = '</tr>';
+                    var c = start_tr + innerHtml + end_tr;
 
-            if($(this).find('td').eq(3).text() == '{tong_tien}'){
-                console.log($(this).html())
-                var innerHtml = $(this).html()
-                var start_tr = '<tr>'
-                var end_tr = '</tr>'
-                var c = start_tr + innerHtml + end_tr
-                data_tong_tien += c.replace(/{tong_tien}/, tong_tien)
-                $(this).replaceWith(data_tong_tien)
-            }
+                    data_benh_nhan += c.replace(/{thoi_gian_thanh_toan}/, thoi_gian_thanh_toan).replace(/{benh_nhan}/, benh_nhan);
 
-            if($(this).find('td').eq(3).text() == '{tong_tien_bao_hiem}'){
-                console.log($(this).html())
-                var innerHtml = $(this).html()
-                var start_tr = '<tr>'
-                var end_tr = '</tr>'
-                var c = start_tr + innerHtml + end_tr
-                data_tong_tien_bao_hiem += c.replace(/{tong_tien_bao_hiem}/, tong_tien_bao_hiem)
-                $(this).replaceWith(data_tong_tien_bao_hiem)
-            }
+                    $(this).replaceWith(data_benh_nhan);
+                }
 
-            if($(this).find('td').eq(3).text() == '{tien_thanh_toan}'){
-                console.log($(this).html())
-                var innerHtml = $(this).html()
-                var start_tr = '<tr>'
-                var end_tr = '</tr>'
-                var c = start_tr + innerHtml + end_tr
-                data_thanh_tien += c.replace(/{tien_thanh_toan}/, thanh_tien)
-                $(this).replaceWith(data_thanh_tien)
-            }
+                if($(this).find('td').eq(1).text() == '{so_dien_thoai}'){
+                    console.log($(this).html())
+                    var innerHtml = $(this).html()
+                    var start_tr = '<tr>'
+                    var end_tr = '</tr>'
+                    var c = start_tr + innerHtml + end_tr
 
-            if($(this).find('td').eq(2).text() == '{nguoi_thanh_toan}'){
-                console.log($(this).html())
-                var innerHtml = $(this).html()
-                var start_tr = '<tr>'
-                var end_tr = '</tr>'
-                var c = start_tr + innerHtml + end_tr
-                data_nguoi_thuc_hien += c.replace(/{nguoi_thanh_toan}/, nguoi_thuc_hien)
-                $(this).replaceWith(data_nguoi_thuc_hien)
-            }
+                    data_so_dien_thoai += c.replace(/{so_dien_thoai}/, so_dien_thoai)
 
-            if($(this).find('td').eq(3).text() == '{giam_gia}'){
-                console.log($(this).html())
-                var innerHtml = $(this).html()
-                var start_tr = '<tr>'
-                var end_tr = '</tr>'
-                var c = start_tr + innerHtml + end_tr
-                data_giam_gia += c.replace(/{giam_gia}/, 'Không Áp Dụng')
-                $(this).replaceWith(data_giam_gia)
-            }
+                    $(this).replaceWith(data_so_dien_thoai)
+                }
+
+                if($(this).find('td').eq(1).text() == '{dia_chi}'){
+                    console.log($(this).html())
+                    var innerHtml = $(this).html()
+                    var start_tr = '<tr>'
+                    var end_tr = '</tr>'
+                    var c = start_tr + innerHtml + end_tr
+
+                    data_dia_chi += c.replace(/{dia_chi}/, dia_chi)
+
+                    $(this).replaceWith(data_dia_chi)
+                }
+
+                if($(this).find('td').eq(0).text() == '{ten_dich_vu}'){
+                    console.log($(this).html())
+                    var innerHtml = $(this).html()
+                    var start_tr = '<tr>'
+                    var end_tr = '</tr>'
+                    var c = start_tr + innerHtml + end_tr
+                    for (var i=0; i<danh_sach_dich_vu.length; i++) {
+
+                        data_ten_dich_vu += c.replace(/{ten_dich_vu}/, danh_sach_dich_vu[i]).replace(/{bao_hiem}/, danh_sach_bao_hiem[i]).replace(/{gia_tien}/, danh_sach_gia_tien[i]).replace(/{thanh_tien}/, danh_sach_gia_tien[i])
+                    }
+
+                    $(this).replaceWith(data_ten_dich_vu)
+                }
+
+                if($(this).find('td').eq(3).text() == '{tong_tien}'){
+                    console.log($(this).html())
+                    var innerHtml = $(this).html()
+                    var start_tr = '<tr>'
+                    var end_tr = '</tr>'
+                    var c = start_tr + innerHtml + end_tr
+                    data_tong_tien += c.replace(/{tong_tien}/, tong_tien)
+                    $(this).replaceWith(data_tong_tien)
+                }
+
+                if($(this).find('td').eq(3).text() == '{tong_tien_bao_hiem}'){
+                    console.log($(this).html())
+                    var innerHtml = $(this).html()
+                    var start_tr = '<tr>'
+                    var end_tr = '</tr>'
+                    var c = start_tr + innerHtml + end_tr
+                    data_tong_tien_bao_hiem += c.replace(/{tong_tien_bao_hiem}/, tong_tien_bao_hiem)
+                    $(this).replaceWith(data_tong_tien_bao_hiem)
+                }
+
+                if($(this).find('td').eq(3).text() == '{tien_thanh_toan}'){
+                    console.log($(this).html())
+                    var innerHtml = $(this).html()
+                    var start_tr = '<tr>'
+                    var end_tr = '</tr>'
+                    var c = start_tr + innerHtml + end_tr
+                    data_thanh_tien += c.replace(/{tien_thanh_toan}/, tien_phai_thanh_toan)
+                    $(this).replaceWith(data_thanh_tien)
+                }
+
+                if($(this).find('td').eq(2).text() == '{nguoi_thanh_toan}'){
+                    console.log($(this).html())
+                    var innerHtml = $(this).html()
+                    var start_tr = '<tr>'
+                    var end_tr = '</tr>'
+                    var c = start_tr + innerHtml + end_tr
+                    data_nguoi_thuc_hien += c.replace(/{nguoi_thanh_toan}/, nguoi_thuc_hien)
+                    $(this).replaceWith(data_nguoi_thuc_hien)
+                }
+
+                if($(this).find('td').eq(3).text() == '{giam_gia}'){
+                    console.log($(this).html())
+                    var innerHtml = $(this).html()
+                    var start_tr = '<tr>'
+                    var end_tr = '</tr>'
+                    var c = start_tr + innerHtml + end_tr
+                    data_giam_gia += c.replace(/{giam_gia}/, discount)
+                    $(this).replaceWith(data_giam_gia)
+                }
+                
+            });
             
         });
-        
-    });
+    } else {
+        $(document).ready(function(){
+            var data_ten_mau = '';
+            var data_benh_nhan = '';
+            var data_so_dien_thoai = '';
+            var data_dia_chi = '';
+            var data_ten_dich_vu = '';
+            var data_tong_tien = '';
+            var data_tong_tien_bao_hiem = '';
+            var data_thanh_tien = '';
+            var data_nguoi_thuc_hien = '';
+            var data_giam_gia = ''
+            var ten_mau_hoa_don = "{{ mau_hoa_don.ten_mau|safe }}";
+            var thoi_gian_thanh_toan = "{{ thoi_gian_thanh_toan|safe }}";
+            var benh_nhan = "{{ benh_nhan|safe }}";
+            var so_dien_thoai = "{{ so_dien_thoai|safe }}";
+            var dia_chi = "{{ dia_chi|safe }}";
+            var danh_sach_dich_vu = {{ danh_sach_dich_vu|safe }};
+            var danh_sach_bao_hiem = {{ danh_sach_bao_hiem|safe }};
+            var danh_sach_gia_tien = {{ danh_sach_gia_tien|safe }};
+            var tong_tien = "{{ tong_tien|safe }}";
+            var tong_tien_bao_hiem = "{{ tong_tien_bao_hiem|safe }}";
+            var thanh_tien = "{{ thanh_tien|safe }}";
+            var nguoi_thuc_hien = "{{ nguoi_thuc_hien|safe }}";
 
+
+            $('table tbody tr').each(function(){
+                if($(this).find('td').eq(0).text() == '{ten_mau_hoa_don}'){
+                    console.log($(this).html());
+                    var innerHtml = $(this).html();
+                    var start_tr = '<tr>';
+                    var end_tr = '</tr>';
+                    var c = start_tr + innerHtml + end_tr;
+
+                    data_ten_mau += c.replace(/{ten_mau_hoa_don}/, ten_mau_hoa_don);
+
+                    $(this).replaceWith(data_ten_mau);
+                }
+
+                if($(this).find('td').eq(0).text() == '{thoi_gian_thanh_toan}'){
+                    console.log($(this).html());
+                    var innerHtml = $(this).html();
+                    var start_tr = '<tr>';
+                    var end_tr = '</tr>';
+                    var c = start_tr + innerHtml + end_tr;
+
+                    data_benh_nhan += c.replace(/{thoi_gian_thanh_toan}/, thoi_gian_thanh_toan).replace(/{benh_nhan}/, benh_nhan);
+
+                    $(this).replaceWith(data_benh_nhan);
+                }
+
+                if($(this).find('td').eq(1).text() == '{so_dien_thoai}'){
+                    console.log($(this).html())
+                    var innerHtml = $(this).html()
+                    var start_tr = '<tr>'
+                    var end_tr = '</tr>'
+                    var c = start_tr + innerHtml + end_tr
+
+                    data_so_dien_thoai += c.replace(/{so_dien_thoai}/, so_dien_thoai)
+
+                    $(this).replaceWith(data_so_dien_thoai)
+                }
+
+                if($(this).find('td').eq(1).text() == '{dia_chi}'){
+                    console.log($(this).html())
+                    var innerHtml = $(this).html()
+                    var start_tr = '<tr>'
+                    var end_tr = '</tr>'
+                    var c = start_tr + innerHtml + end_tr
+
+                    data_dia_chi += c.replace(/{dia_chi}/, dia_chi)
+
+                    $(this).replaceWith(data_dia_chi)
+                }
+
+                if($(this).find('td').eq(0).text() == '{ten_dich_vu}'){
+                    console.log($(this).html())
+                    var innerHtml = $(this).html()
+                    var start_tr = '<tr>'
+                    var end_tr = '</tr>'
+                    var c = start_tr + innerHtml + end_tr
+                    for (var i=0; i<danh_sach_dich_vu.length; i++) {
+
+                        data_ten_dich_vu += c.replace(/{ten_dich_vu}/, danh_sach_dich_vu[i]).replace(/{bao_hiem}/, danh_sach_bao_hiem[i]).replace(/{gia_tien}/, danh_sach_gia_tien[i]).replace(/{thanh_tien}/, danh_sach_gia_tien[i])
+                    }
+
+                    $(this).replaceWith(data_ten_dich_vu)
+                }
+
+                if($(this).find('td').eq(3).text() == '{tong_tien}'){
+                    console.log($(this).html())
+                    var innerHtml = $(this).html()
+                    var start_tr = '<tr>'
+                    var end_tr = '</tr>'
+                    var c = start_tr + innerHtml + end_tr
+                    data_tong_tien += c.replace(/{tong_tien}/, tong_tien)
+                    $(this).replaceWith(data_tong_tien)
+                }
+
+                if($(this).find('td').eq(3).text() == '{tong_tien_bao_hiem}'){
+                    console.log($(this).html())
+                    var innerHtml = $(this).html()
+                    var start_tr = '<tr>'
+                    var end_tr = '</tr>'
+                    var c = start_tr + innerHtml + end_tr
+                    data_tong_tien_bao_hiem += c.replace(/{tong_tien_bao_hiem}/, tong_tien_bao_hiem)
+                    $(this).replaceWith(data_tong_tien_bao_hiem)
+                }
+
+                if($(this).find('td').eq(3).text() == '{tien_thanh_toan}'){
+                    console.log($(this).html())
+                    var innerHtml = $(this).html()
+                    var start_tr = '<tr>'
+                    var end_tr = '</tr>'
+                    var c = start_tr + innerHtml + end_tr
+                    data_thanh_tien += c.replace(/{tien_thanh_toan}/, thanh_tien)
+                    $(this).replaceWith(data_thanh_tien)
+                }
+
+                if($(this).find('td').eq(2).text() == '{nguoi_thanh_toan}'){
+                    console.log($(this).html())
+                    var innerHtml = $(this).html()
+                    var start_tr = '<tr>'
+                    var end_tr = '</tr>'
+                    var c = start_tr + innerHtml + end_tr
+                    data_nguoi_thuc_hien += c.replace(/{nguoi_thanh_toan}/, nguoi_thuc_hien)
+                    $(this).replaceWith(data_nguoi_thuc_hien)
+                }
+
+                if($(this).find('td').eq(3).text() == '{giam_gia}'){
+                    console.log($(this).html())
+                    var innerHtml = $(this).html()
+                    var start_tr = '<tr>'
+                    var end_tr = '</tr>'
+                    var c = start_tr + innerHtml + end_tr
+                    data_giam_gia += c.replace(/{giam_gia}/, 'Không Áp Dụng')
+                    $(this).replaceWith(data_giam_gia)
+                }
+                
+            });
+            
+        });
+
+    }
+
+    
 </script>
 {% endblock scripts %}
 

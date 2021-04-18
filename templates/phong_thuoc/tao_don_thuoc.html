@@ -173,6 +173,9 @@
                         <a href="javascript:;" class="btn btn-primary font-weight-bolder" id="get-table-data">
                             <i class="la la-plus"></i>Kê Đơn Thuốc
                         </a>
+                        <a href="javascript:;" class="btn btn-primary font-weight-bolder" id="printDonThuoc">
+                            In Đơn Thuốc
+                        </a>
                         <!--end::Button-->
                     </div>
                 </div>
@@ -184,6 +187,11 @@
     <!-- end::Entry -->
 </div>
 <!-- end::Content -->
+
+<div id='divDonThuoc' style="display: none;">
+{{ mau_hoa_don.noi_dung|safe }}
+</div>
+
 
 {% endblock content %}
 
@@ -202,8 +210,27 @@
 "use strict";
 // Class definition
 
+function printDiv() 
+{
+
+  var divToPrint=document.getElementById('divDonThuoc');
+
+  var newWin=window.open('','Print-Window');
+
+  newWin.document.open();
+
+  newWin.document.write('<html><body onload="window.print()">'+divToPrint.innerHTML+'</body></html>');
+
+  newWin.document.close();
+
+  setTimeout(function(){newWin.close();},10);
+
+}
+
 var KTDatatableRecordSelectionDemo = function() {
     // Private functions
+
+    var keDonHtml = ''
 
     var options = {
         // datasource definition
@@ -217,8 +244,8 @@ var KTDatatableRecordSelectionDemo = function() {
             },
             pageSize: 10,
             serverPaging: true,
-            // serverFiltering: true,
-            // serverSorting: true,
+            serverFiltering: true,
+            serverSorting: true,
         },
 
         // layout definition
@@ -245,9 +272,6 @@ var KTDatatableRecordSelectionDemo = function() {
         }, {
             field: 'ten_thuoc',
             title: 'Tên thuốc',
-            template: function(row) {
-                return '<a href id=' + '"' + row.id + '"' + ' data-title="This is my tooltip content for:'+row.ten_thuoc+'" data-toggle="tooltip" data-trigger="hover">'+row.ten_thuoc+'</a>'
-            }
         }, {
             field: 'loai_thuoc',
             title: 'Loại',
@@ -273,7 +297,7 @@ var KTDatatableRecordSelectionDemo = function() {
     var localSelectorDemo = function() {
         // enable extension
         options.extensions = {
-            // boolean or object (extension options)
+
             checkbox: true,
         };
 
@@ -306,16 +330,6 @@ var KTDatatableRecordSelectionDemo = function() {
                     $('#kt_datatable_group_action_form').collapse('hide');
                 }
             });
-
-        //datatable.on('mouseenter', 'tbody tr', function(){
-        //    alert($(this).data());
-        //    $(this).find('[data-toggle="tooltip"]').tooltip({
-        //        delay: 300,
-        //        title: $(this).data().obj.Country,
-        //        html: true,
-        //    });
-//
-        //})
 
         $('#kt_datatable_fetch_modal').on('show.bs.modal', function(e) {
             var ids = datatable.rows('.datatable-row-active').
@@ -368,11 +382,7 @@ var KTDatatableRecordSelectionDemo = function() {
                 // datatable.checkbox() access to extension methods
                 var ids = datatable.checkbox().getSelectedId();
                 var count = ids.length;
-                // console.log(datatable.checkbox())
-                // console.log(datatable.checkbox().selectedRows)
 
-                // var lst_ids = datatable.checkbox().selectedRows;
-                // console.log(datatable.getRecord(lst_ids).getColumn('Country').getValue())
                 $('#kt_datatable_selected_records_2').html(count);
 
                 if (count > 0) {
@@ -382,24 +392,13 @@ var KTDatatableRecordSelectionDemo = function() {
                 }
             });
 
-        datatable.on('mouseenter', 'tbody tr', function(){
-            // alert($(this).data());
-            $(this).find('[data-toggle="tooltip"]').tooltip({
-                delay: 300,
-
-                title: "<em>Tooltip</em> <u>with</u> <b>HTML</b>",
-                html: true,
-            });
-
-        })
-
         var lstData = [];
         var lstCheckbox = {};
         var lstQuantity = {};
         var lstUsage = {};
         var lstNote = {};
+        var benh_nhan = ''
 
-        
         $('#selectOption').change(function(){
             if($(this).val() === "vang_lai"){
                 $('#khach_vang_lai').show()
@@ -427,6 +426,62 @@ var KTDatatableRecordSelectionDemo = function() {
             postData(user_id, ten_khach_vang_lai); 
         })
 
+        $('#printDonThuoc').on('click', function() {
+            console.log(getPostData())
+            var ten_khach_vang_lai = $("#ten_khach_vang_lai").val()
+            lstCheckbox            = {};
+            lstQuantity            = {};
+            lstUsage               = {};
+            lstNote                = {};
+            getCheckbox();
+            getInputQuantity();
+            getInputUsage();
+            getInputNote();
+            var data_thuoc = getPostData();
+            var data_thoi_gian = ''
+            var data_nguoi_thuc_hien = ''
+            var thoi_gian_thanh_toan = "{{ thoi_gian_thanh_toan|safe }}"
+            var nguoi_thanh_toan = "{{nguoi_thanh_toan|safe}}"
+
+            $('#divDonThuoc tbody tr').each(function() {
+                if ($(this).find('td').eq(0).text() == '{thoi_gian_thanh_toan}'){
+                    var innerHtml = $(this).html()
+                    var start_tr = '<tr>'
+                    var end_tr = '</tr>'
+                    var c = start_tr + innerHtml + end_tr
+     
+                    data_thoi_gian += c.replace(/{thoi_gian_thanh_toan}/, thoi_gian_thanh_toan)
+
+                    $(this).replaceWith(data_thoi_gian) 
+                }
+
+                if ($(this).find('td').eq(1).text() == '{nguoi_thanh_toan}'){
+                    var innerHtml = $(this).html()
+                    var start_tr = '<tr>'
+                    var end_tr = '</tr>'
+                    var c = start_tr + innerHtml + end_tr
+
+                    data_nguoi_thuc_hien += c.replace(/{nguoi_thanh_toan}/, nguoi_thanh_toan)
+
+                    $(this).replaceWith(data_nguoi_thuc_hien) 
+                }
+
+                if ($(this).find('td').eq(0).text() == '{ten_thuoc}'){
+                    var innerHtml = $(this).html()
+                    var start_tr = '<tr>'
+                    var end_tr = '</tr>'
+                    var c = start_tr + innerHtml + end_tr
+
+                    for (var i=0; i < data_thuoc.length; i++) {
+                        keDonHtml += c.replace(/{ten_thuoc}/, data_thuoc[i].obj.ten_thuoc).replace(/{so_luong}/, data_thuoc[i].obj.so_luong).replace(/{cach_su_dung}/, data_thuoc[i].obj.ghi_chu)
+                    }
+
+                    $(this).replaceWith(keDonHtml) 
+                }
+            })
+            
+            printDiv()
+        })
     
         datatable.on('click', 'tbody input[type="checkbox"]', function () {
             $(this).toggleClass('selected');
@@ -440,9 +495,6 @@ var KTDatatableRecordSelectionDemo = function() {
                 // console.log(objList)
                 lstData.push(trVals)
                 // $('#kt_datatable_3 tbody').empty();
-
-                console.log(lstData)
-
                 $(trVals).each(function () {
                     $('#kt_datatable_3 tbody').append(`
                         <tr class="${trVals.obj.id}" data-id = "${trVals.obj.id}" name="true" >
@@ -485,6 +537,7 @@ var KTDatatableRecordSelectionDemo = function() {
                             </td>
                         </tr>
                     `);
+
                 })
 
             } else {
@@ -659,6 +712,8 @@ var KTDatatableRecordSelectionDemo = function() {
             $('#kt_datatable_fetch_display_2').empty();
         });
     };
+
+
 
     return {
         // public functions
