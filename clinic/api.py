@@ -940,8 +940,9 @@ class DanhSachHoaDonThuoc(APIView):
         now = timezone.localtime(timezone.now())
         tomorrow = now + timedelta(1)
         today_end = tomorrow.replace(hour=0, minute=0, second=0)
-        trang_thai = TrangThaiDonThuoc.objects.get_or_create(trang_thai = "Chờ Thanh Toán")[0]
-        danh_sach_don_thuoc = DonThuoc.objects.select_related('benh_nhan').filter(trang_thai=trang_thai, thoi_gian_tao__lt=today_end)
+        trang_thai_cho_thanh_toan = TrangThaiDonThuoc.objects.get_or_create(trang_thai = "Chờ Thanh Toán")[0]
+        trang_thai_da_thanh_toan = TrangThaiDonThuoc.objects.get_or_create(trang_thai = "Đã Thanh Toán")[0]
+        danh_sach_don_thuoc = DonThuoc.objects.select_related('benh_nhan').filter(Q(trang_thai=trang_thai_cho_thanh_toan) | Q(trang_thai=trang_thai_da_thanh_toan)).filter(thoi_gian_tao__lt=today_end)
         serializer = HoaDonThuocSerializerSimple(danh_sach_don_thuoc, many=True, context={'request': request})
         data = serializer.data
         response_data = {
@@ -983,8 +984,9 @@ class DanhSachThanhToanLamSang(APIView):
         now = timezone.localtime(timezone.now())
         tomorrow = now + timedelta(1)
         today_end = tomorrow.replace(hour=0, minute=0, second=0)
-        trang_thai = TrangThaiLichHen.objects.get_or_create(ten_trang_thai = "Chờ Thanh Toán Lâm Sàng")[0]
-        danh_sach_lam_sang = LichHenKham.objects.select_related('benh_nhan').filter(trang_thai = trang_thai, thoi_gian_tao__lt=today_end)
+        trang_thai_cho_thanh_toan = TrangThaiLichHen.objects.get_or_create(ten_trang_thai = "Chờ Thanh Toán Lâm Sàng")[0]
+        trang_thai_da_thanh_toan = TrangThaiLichHen.objects.get_or_create(ten_trang_thai = "Đã Thanh Toán Lâm Sàng")[0]
+        danh_sach_lam_sang = LichHenKham.objects.select_related('benh_nhan').filter(Q(trang_thai = trang_thai_cho_thanh_toan) | Q(trang_thai = trang_thai_da_thanh_toan)).filter(thoi_gian_tao__lt=today_end)
         serializer = LichHenKhamSerializer(danh_sach_lam_sang, many=True, context={'request': request})
         data = serializer.data
         response_data = {

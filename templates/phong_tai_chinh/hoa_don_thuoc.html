@@ -103,7 +103,9 @@
     {% endif %}
 </div>
 <!--end::Content-->
-
+{% if check_da_thanh_toan == True %}
+<div></div>
+{% else %}
 <div class="d-flex flex-column-fluid mt-10 mb-10">
     <div class='container'>
         <!-- begin::Card-->
@@ -123,6 +125,8 @@
         </div>
     </div>
 </div>
+{% endif%}
+
 {% endblock content %}
 
 {% block scripts %}

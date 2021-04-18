@@ -808,11 +808,9 @@ class ChuoiKham(models.Model):
         return id_don_thuoc
 
     def check_da_thanh_toan(self):
-        if self.hoa_don_dich_vu is not None:
-            if self.hoa_don_dich_vu.tong_tien is not None:
-                return True
-            else:
-                return False
+        da_thanh_toan = TrangThaiChuoiKham.objects.filter(trang_thai_chuoi_kham='Đã Thanh Toán').first()
+        if self.trang_thai == da_thanh_toan:
+            return True
         else:
             return False
 
