@@ -208,25 +208,13 @@ var KTDatatableRemoteAjaxDemo = function() {
                 source: {
                     read: {
                         method: "GET",
-                        url: HOST_URL + '/router/api/danh_sach_thuoc/',
-                        // sample custom headers
-                        // headers: {'x-my-custom-header': 'some value', 'x-test-header': 'the value'},
-                        map: function(raw) {
-                            // sample data mapping
-                            var dataSet = raw;
-                            if (typeof raw.data !== 'undefined') {
-                                dataSet = raw.data;
-                            }
-                            globalData = null;
-                            globalData = dataSet;
-                            return dataSet;
-                        },
+                        url: HOST_URL + '/api/thuoc/',
                     },
                 },
                 pageSize: 10,
-                serverPaging: false,
-                //serverFiltering: true,
-                //serverSorting: true,
+                serverPaging: true,
+                serverFiltering: true,
+                serverSorting: true,
             },
  
             // layout definition
@@ -248,10 +236,9 @@ var KTDatatableRemoteAjaxDemo = function() {
             // columns definition
             columns: [{
                 field: 'ma_thuoc',
-                title: 'Stt',
+                title: 'Mã Thuốc',
                 width:50,
                 autoHide: false,
-                sortable: 'asc',
             }, {
                 field: 'ten_thuoc',
                 title: 'Tên Thuốc',
@@ -370,7 +357,7 @@ var KTDatatableRemoteAjaxDemo = function() {
             },],
  
         });
- 
+        
         $('#excelExport').on('click', function(){
             $('#kt_datatable').excelexportjs({
                 containerid: "kt_datatable",

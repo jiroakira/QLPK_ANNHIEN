@@ -295,6 +295,11 @@ class DichVuKhamListCreateAPIView(generics.ListCreateAPIView):
     serializer_class = DichVuKhamSerializerFormatted
     pagination_class = CustomPagination
 
+class ThuocListCreateAPIView(generics.ListCreateAPIView):
+    queryset = Thuoc.objects.all()
+    serializer_class = ThuocSerializer
+    pagination_class = CustomPagination
+
 
 class PhongChucNangViewSet(viewsets.ModelViewSet):
     def list(self, request):
@@ -919,8 +924,9 @@ class DanhSachHoaDonDichVu(APIView):
         now = timezone.localtime(timezone.now())
         tomorrow = now + timedelta(1)
         today_end = tomorrow.replace(hour=0, minute=0, second=0)
-        trang_thai = TrangThaiChuoiKham.objects.get_or_create(trang_thai_chuoi_kham="Chờ Thanh Toán")[0]
-        danh_sach_chuoi_kham = ChuoiKham.objects.select_related('benh_nhan').filter(trang_thai=trang_thai, thoi_gian_tao__lt=today_end)
+        trang_thai_cho_thanh_toan = TrangThaiChuoiKham.objects.get_or_create(trang_thai_chuoi_kham="Chờ Thanh Toán")[0]
+        trang_thai_da_thanh_toan = TrangThaiChuoiKham.objects.get_or_create(trang_thai_chuoi_kham="Đã Thanh Toán")[0]
+        danh_sach_chuoi_kham = ChuoiKham.objects.select_related('benh_nhan').filter(Q(trang_thai=trang_thai_cho_thanh_toan) | Q(trang_thai=trang_thai_da_thanh_toan)).filter(thoi_gian_tao__lt=today_end)
         serializer = HoaDonChuoiKhamSerializerSimple(danh_sach_chuoi_kham, many=True, context={'request': request})
         data = serializer.data
         response_data = {
@@ -1195,6 +1201,11 @@ class DanhSachBenhNhan(APIView):
         data = serializer.data
         
         return Response(data)
+    
+class DanhSachBenhNhanListCreateAPIView(generics.ListCreateAPIView):
+    queryset = User.objects.filter(chuc_nang=1)
+    serializer_class = UserSerializer
+    pagination_class = CustomPagination
 
 from datetime import datetime, timedelta
 
@@ -1861,9 +1872,6 @@ class DanhSachVatTu(APIView):
             'data' : serializer.data
         }
         return Response(response)
-        
-        
-#------ MINH Update--------
 
 class UserUpdateInfo(APIView):
     def get(self, request, format=None):
@@ -2951,10 +2959,10 @@ class DanhSachThuocNhapDichVu(APIView):
         range_end   = self.request.query_params.get('range_end', None)
         start = datetime.strptime(range_start, "%d-%m-%Y")
 
+        list_xuat_hang = []
         if range_end == '': 
             end = start + timedelta(1)
             danh_sach_nhap_hang = NhapHang.objects.filter(thoi_gian_tao__lte=end, thoi_gian_tao__gte=start).exclude(bao_hiem=True).values('thuoc__ten_thuoc').annotate(so_luong = Sum('so_luong')).annotate(c = Count('thuoc__id')).annotate(id=F('thuoc__id')).annotate(bao_hiem=F('bao_hiem'))
-            list_xuat_hang = []
 
         else:
             end = datetime.strptime(range_end, "%d-%m-%Y")
@@ -2963,7 +2971,7 @@ class DanhSachThuocNhapDichVu(APIView):
                 end = end + timedelta(1)
 
             danh_sach_nhap_hang = NhapHang.objects.filter(thoi_gian_tao__lte=end, thoi_gian_tao__gte=start).exclude(bao_hiem=True).values('thuoc__ten_thuoc').annotate(so_luong = Sum('so_luong')).annotate(c = Count('thuoc__id')).annotate(id=F('thuoc__id')).annotate(bao_hiem=F('bao_hiem'))
-            list_xuat_hang = []
+            
 
         for i in danh_sach_nhap_hang:
             list_xuat_hang.append(i)
@@ -2998,3 +3006,108 @@ class DanhSachThuocXuatDichVu(APIView):
         }
 
         return Response(response)
+
+class GetDanhSachPhanKhoaCuaChuoiKham(APIView):
+    def get(self, request, format=None):
+        id_chuoi_kham = self.request.query_params.get('id_chuoi_kham')
+
+        chuoi_kham = get_object_or_404(ChuoiKham, id=id_chuoi_kham)
+        danh_sach_phan_khoa = chuoi_kham.phan_khoa_kham.all()
+        
+        
+        list_data = []
+        for phan_khoa in danh_sach_phan_khoa:
+            dict_ = {}
+            nested_dict = {}
+            pcn_dict = {}
+            pcn_dict['id'] = phan_khoa.dich_vu_kham.phong_chuc_nang.id
+            pcn_dict['bac_si_phu_trach'] = phan_khoa.dich_vu_kham.phong_chuc_nang.bac_si_phu_trach
+            pcn_dict['thoi_gian_tao'] = phan_khoa.dich_vu_kham.phong_chuc_nang.thoi_gian_tao.strftime("%d/%m/%y %H:%M:%S") 
+            pcn_dict['thoi_gian_cap_nhat'] = phan_khoa.dich_vu_kham.phong_chuc_nang.thoi_gian_cap_nhat.strftime("%d/%m/%y %H:%M:%S")
+            pcn_dict['ten_phong_chuc_nang'] = phan_khoa.dich_vu_kham.phong_chuc_nang.ten_phong_chuc_nang
+            pcn_dict['slug'] = phan_khoa.dich_vu_kham.phong_chuc_nang.slug
+
+            nested_dict['id'] = phan_khoa.dich_vu_kham.id
+            nested_dict['don_gia'] = "{:,}".format(int(phan_khoa.dich_vu_kham.don_gia))
+            nested_dict['don_gia_bhyt'] = "{:,}".format(int(phan_khoa.dich_vu_kham.don_gia_bhyt))
+            nested_dict['phong_chuc_nang'] = pcn_dict
+            nested_dict['bao_hiem_dich_vu'] = str(phan_khoa.dich_vu_kham.bao_hiem)
+            
+            nested_dict['ma_dvkt'] = phan_khoa.dich_vu_kham.ma_dvkt
+            nested_dict['stt'] = phan_khoa.dich_vu_kham.stt
+            nested_dict['ten_dvkt'] = phan_khoa.dich_vu_kham.ten_dvkt
+            nested_dict['ma_gia'] = phan_khoa.dich_vu_kham.ma_gia
+            nested_dict['quyet_dinh'] = phan_khoa.dich_vu_kham.quyet_dinh
+            nested_dict['cong_bo'] = phan_khoa.dich_vu_kham.cong_bo
+            nested_dict['ma_cosokcb'] = phan_khoa.dich_vu_kham.ma_cosokcb
+            nested_dict['ten_dich_vu'] = phan_khoa.dich_vu_kham.ten_dich_vu
+            nested_dict['tyle_tt'] = phan_khoa.dich_vu_kham.tyle_tt
+            nested_dict['chi_so'] = phan_khoa.dich_vu_kham.chi_so
+            nested_dict['html'] = phan_khoa.dich_vu_kham.html
+            nested_dict['khoa'] = phan_khoa.dich_vu_kham.khoa
+            nested_dict['nhom_chi_phi'] = phan_khoa.dich_vu_kham.nhom_chi_phi
+            nested_dict['bao_hiem'] = phan_khoa.bao_hiem
+
+            dict_['obj'] = nested_dict
+            list_data.append(dict_)
+            
+
+        response = {
+            'data': list_data
+        }
+        return Response(response)
+
+class XemLaiBenhNhanDaKhamChuyenKhoaAPIView(APIView):
+    def get(self, request, format=None):
+        range_start = self.request.query_params.get('range_start', None)
+        range_end   = self.request.query_params.get('range_end', None)
+        start = datetime.strptime(range_start, "%d-%m-%Y")
+        list_filtered = []
+        
+        if range_end == '':
+            end = start + timedelta(1)
+        else:
+            end = datetime.strptime(range_end, "%d-%m-%Y")
+            if range_start == range_end:
+                end = end + timedelta(1)
+            
+        danh_sach_benh_nhan = request.user.ket_qua_bac_si_chuyen_khoa.all().filter(thoi_gian_tao__gte=start, thoi_gian_tao__lte=end).values("bac_si_chuyen_khoa__ho_ten", "phan_khoa_kham__benh_nhan__id", "phan_khoa_kham__benh_nhan__ho_ten", "phan_khoa_kham__benh_nhan__so_dien_thoai").annotate(count=Count('phan_khoa_kham__benh_nhan__id'))
+        
+        for i in danh_sach_benh_nhan:
+            if i['count'] != 0:
+                list_filtered.append(i)
+
+        response = {
+            'data': list_filtered
+        }
+
+        return Response(response)
+
+class XemLaiBenhNhanLamSangAPIView(APIView):
+    def get(self, request, format=None):
+        range_start = self.request.query_params.get('range_start', None)
+        range_end   = self.request.query_params.get('range_end', None)
+        start = datetime.strptime(range_start, "%d-%m-%Y")
+        list_filtered = []
+
+        if range_end == '':
+            end = start + timedelta(1)
+        else:
+            end = datetime.strptime(range_end, "%d-%m-%Y")
+            if range_start == range_end:
+                end = end + timedelta(1)
+
+        trang_thai_hoan_thanh = TrangThaiChuoiKham.objects.filter(trang_thai_chuoi_kham="Hoàn Thành").first()
+        trang_thai_dang_thuc_hien = TrangThaiChuoiKham.objects.filter(trang_thai_chuoi_kham="Đang Thực Hiện").first()
+        trang_thai_dung_kham = TrangThaiChuoiKham.objects.filter(trang_thai_chuoi_kham="Dừng Khám").first()
+        danh_sach_benh_nhan = request.user.bac_si_chuoi_kham.all().filter(Q(trang_thai=trang_thai_dang_thuc_hien) | Q(trang_thai=trang_thai_hoan_thanh) | Q(trang_thai=trang_thai_dung_kham)).filter(thoi_gian_tao__gte=start, thoi_gian_tao__lte=end).values('bac_si_dam_nhan__ho_ten', 'benh_nhan__id', 'benh_nhan__ho_ten', 'benh_nhan__so_dien_thoai').annotate(count=Count('benh_nhan__id'))
+        
+        for i in danh_sach_benh_nhan:
+            if i['count'] != 0:
+                list_filtered.append(i)
+
+        response = {
+            'data': list_filtered
+        }
+        return Response(response)
+

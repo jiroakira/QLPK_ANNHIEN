@@ -163,7 +163,7 @@ var KTDatatableRemoteAjaxDemo = function() {
                 type: 'remote',
                 source: {
                     read: {
-                        url: HOST_URL + '/router/api/dich_vu/',
+                        url: HOST_URL + '/api/dich_vu_kham/',
                         method: 'GET',
                         // sample custom headers
                         // headers: {'x-my-custom-header': 'some value', 'x-test-header': 'the value'},
@@ -179,10 +179,10 @@ var KTDatatableRemoteAjaxDemo = function() {
                         },
                     },
                 },
-                // pageSize: 10,
+                pageSize: 10,
                 serverPaging: true,
-                // serverFiltering: true,
-                //serverSorting: true,
+                serverFiltering: true,
+                serverSorting: true,
             },
 
             // layout definition
@@ -192,9 +192,9 @@ var KTDatatableRemoteAjaxDemo = function() {
             },
 
             // column sorting
-            //sortable: true,
+            sortable: true,
 
-            //pagination: true,
+            pagination: true,
 
             search: {
                 input: $('#kt_datatable_search_query'),
@@ -205,7 +205,6 @@ var KTDatatableRemoteAjaxDemo = function() {
             columns: [{
                 field: 'id',
                 title: 'STT',
-                sortable: 'asc',
                 width: 30,
                 type: 'number',
                 selector: false,

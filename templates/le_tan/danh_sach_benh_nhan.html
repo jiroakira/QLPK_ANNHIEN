@@ -525,8 +525,8 @@ var KTDatatableRemoteAjaxDemo = function() {
                 },
                 pageSize: 10,
                 serverPaging: true,
-                // serverFiltering: true,
-                //serverSorting: true,
+                serverFiltering: true,
+                serverSorting: true,
             },
 
             // layout definition
@@ -550,7 +550,6 @@ var KTDatatableRemoteAjaxDemo = function() {
             {
                 field: 'id',
                 title: 'STT',
-                sortable: 'asc',
                 width: 30,
                 type: 'number',
                 selector: false,

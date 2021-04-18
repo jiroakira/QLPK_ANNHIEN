@@ -14,15 +14,15 @@
                 <!--begin::Page Heading-->
                 <div class="d-flex align-items-baseline flex-wrap mr-5">
                     <!--begin::Page Title-->
-                    <h5 class="text-dark font-weight-bold my-1 mr-5">Thêm mới dịch vụ khám</h5>
+                    <h5 class="text-dark font-weight-bold my-1 mr-5">Thêm mới thuốc</h5>
                     <!--end::Page Title-->
                     <!--begin::Breadcrumb-->
                     <ul class="breadcrumb breadcrumb-transparent breadcrumb-dot font-weight-bold p-0 my-2 font-size-sm">
                         <li class="breadcrumb-item">
-                            <a href="{% url 'danh_sach_dich_vu_kham' %}" class="text-muted">Danh Sách Dịch Vụ Khám</a>
+                            <a href="{% url 'danh_sach_thuoc_phong_tai_chinh' %}" class="text-muted">Danh Sách Thuốc</a>
                         </li>
                         <li class="breadcrumb-item">
-                            <a href="javascript:;" class="text-muted">Thêm Mới Excel</a>
+                            <a href="javascript:;" class="text-muted">Thêm Mới Thuốc Excel</a>
                         </li>
                     </ul>
                     <!--end::Breadcrumb-->
@@ -39,70 +39,58 @@
         <!--begin::Container-->
         <div class="container">
             <!--begin::Card-->
-            
-    
-                {% comment %} <div class="card-body">
-                    <div class="form-group row">
-                        <label class="col-lg-3 col-form-label text-lg-right">Chọn File Excel: </label>
-                        <div class="col-lg-9">
-                            <input type="file" id="fileUploader" name="fileUploader" accept=".xls, .xlsx">
-                            
-                            <button id="getData" class="btn btn-light-primary">Tải lên</button>
-                          
-                        </div>
-                    </div>
-                </div> {% endcomment %}
-        
-            <!--end::Card-->
-
-            <!--begin::Card-->
             <div class="card card-custom">
-                <div class="card-header flex-wrap border-0 pt-6 pb-0">
-                    <div class="card-title form-group row">
-                        {% comment %} <h3 class="card-label">HTML Table 
-                        <span class="d-block text-muted pt-2 font-size-sm">Datatable initialized from HTML table</span></h3> {% endcomment %}
-                        {% comment %} <form action="{% url "import_dich_vu_ky_thuat" %}" method="post" enctype="multipart/form-data"> {% endcomment %}
-                            
-                            {% comment %} <label class="col-lg-3 col-form-label text-lg-right">Chọn File Excel: </label> {% endcomment %}
-                            <div class="col-lg-9">
-                                <input type="file"
-                                    id="excel_file_to_upload"
-                                    title="Upload excel file"
-                                    name="excel_file"
-                                    style="border: 1px solid black; padding: 5px;"
-                                    required="required",
-                                    accept=".xls, .xlsx">
+                <div class="card-header flex-wrap border-0 pt-5 pb-1">
+                    <div class="row justify-content-center col-10">
+                        <div class="form-group col-6 pl-0">
+                            <div class="custom-file">
+                            <input type="file" class="custom-file-input" id="excel_file_to_upload"/>
+                            <label class="custom-file-label" for="customFile">Chọn File Excel</label>
                             </div>
-                            <div class="col-lg-3">
-                                <input type="submit" id='previewBtn'
-                                    value="Upload"
-                                    style="cursor: pointer;">
-                            </div>
-                        </form>
-                    </div>
-                    <div class="card-toolbar">
-                        <!--begin::Dropdown-->
+                        </div>
+                        <div class="form-group col-2" >
+                            <input class="btn btn-primary font-weight-bolder" type="submit" id='previewBtn'
+                                value="Tải lên"
+                                style="cursor: pointer;"/>
+                        </div>
+
+                        <div class="form-group row col-4">
+                            <label class="col-3 col-form-label">Dịch Vụ</label>
+                            <span class="switch">
+                                <label>
+                                <input id='dich_vu_switch' type="checkbox" checked="checked" name="select"/>
+                                <span></span>
+                                </label>
+                            </span>
+                        </div>
                         
+                    
+                    </div>
+                    <div class="row justify-content-center col-2">
+                        <!--begin::Dropdown-->
+                        <div class="form-group ">
+                            <a href="javascript:;" id="confirmImport" class="btn btn-primary font-weight-bolder">
+                            <span class="svg-icon svg-icon-md">
+                                <!--begin::Svg Icon | path:/metronic/theme/html/demo1/dist/assets/media/svg/icons/Design/Flatten.svg-->
+                                <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="24px" height="24px" viewBox="0 0 24 24" version="1.1">
+                                    <g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+                                        <rect x="0" y="0" width="24" height="24" />
+                                        <circle fill="#000000" cx="9" cy="15" r="6" />
+                                        <path d="M8.8012943,7.00241953 C9.83837775,5.20768121 11.7781543,4 14,4 C17.3137085,4 20,6.6862915 20,10 C20,12.2218457 18.7923188,14.1616223 16.9975805,15.1987057 C16.9991904,15.1326658 17,15.0664274 17,15 C17,10.581722 13.418278,7 9,7 C8.93357256,7 8.86733422,7.00080962 8.8012943,7.00241953 Z" fill="#000000" opacity="0.3" />
+                                    </g>
+                                </svg>
+                                <!--end::Svg Icon-->
+                            </span>Xác Nhận</a>
+                        </div>
                         <!--begin::Button-->
-                        <a href="javascript:;" id="confirmImport" class="btn btn-primary font-weight-bolder">
-                        <span class="svg-icon svg-icon-md">
-                            <!--begin::Svg Icon | path:/metronic/theme/html/demo1/dist/assets/media/svg/icons/Design/Flatten.svg-->
-                            <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="24px" height="24px" viewBox="0 0 24 24" version="1.1">
-                                <g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
-                                    <rect x="0" y="0" width="24" height="24" />
-                                    <circle fill="#000000" cx="9" cy="15" r="6" />
-                                    <path d="M8.8012943,7.00241953 C9.83837775,5.20768121 11.7781543,4 14,4 C17.3137085,4 20,6.6862915 20,10 C20,12.2218457 18.7923188,14.1616223 16.9975805,15.1987057 C16.9991904,15.1326658 17,15.0664274 17,15 C17,10.581722 13.418278,7 9,7 C8.93357256,7 8.86733422,7.00080962 8.8012943,7.00241953 Z" fill="#000000" opacity="0.3" />
-                                </g>
-                            </svg>
-                            <!--end::Svg Icon-->
-                        </span>Xác Nhận</a>
+                        
                         <!--end::Button-->
                     </div>
                 </div>
                 <div class="card-body">
                     <!--begin: Search Form-->
                     <!--begin::Search Form-->
-                    <div class="mb-7">
+                    <div class="mb-5">
                         <div class="row align-items-center">
                             <div class="col-lg-9 col-xl-8">
                                 <div class="row align-items-center">
@@ -151,7 +139,7 @@ $(document).ajaxStart(function() {
     KTApp.blockPage({
         overlayColor: '#000000',
         state: 'primary',
-        message: 'Processing...'
+        message: 'Đang xử lý...'
     });
 })
 
@@ -292,7 +280,7 @@ var KTDatatableHtmlTableDemo = function() {
 
             formData.append("excel_file", excel_file)
             formData.append('csrfmiddlewaretoken', '{{ csrf_token }}')
-
+            
             $.ajax({
                 type: "POST",
                 url: "{% url 'import_thuoc' %}",
@@ -317,31 +305,60 @@ var KTDatatableHtmlTableDemo = function() {
             var excel_file = $("#excel_file_to_upload")[0].files[0]
             var formData = new FormData()
 
+            var dich_vu = $('#dich_vu_switch:checked').val()
+
             formData.append("excel_file", excel_file)
             formData.append('csrfmiddlewaretoken', '{{ csrf_token }}')
 
-            $.ajax({
-                type: "POST",
-                url: "{% url 'store_thuoc_excel' %}",
-                data: formData,
-                cache: false,
-                processData: false,
-                contentType: false,
-                success: function(response){
-                    if (response.status == 200){
-                        toastr.success(response.message, "Thành Công")
-                        setTimeout(function () {
-                            window.location.href = response.url; //redirect về danh sách dịch vụ khám
-                        }, 1500);
-                    } else if (response.status == 404) {
-                        toastr.warning(response.message, "Thất Bại")
+            if (dich_vu == 'on') {
+                $.ajax({
+                    type: "POST",
+                    url: "{% url 'store_thuoc_dich_vu_excel' %}",
+                    data: formData,
+                    cache: false,
+                    processData: false,
+                    contentType: false,
+                    success: function(response){
+                        if (response.status == 200){
+                            toastr.success(response.message, "Thành Công")
+                            setTimeout(function () {
+                                window.location.href = response.url; //redirect về danh sách dịch vụ khám
+                            }, 1500);
+                        } else if (response.status == 404) {
+                            toastr.warning(response.message, "Thất Bại")
+                        }
+                    },
+                    error: function(response){
+                        toastr.warning("Không lưu được dữ liệu, vui lòng kiểm tra lại", "Lỗi")
+                        console.log("error")
                     }
-                },
-                error: function(response){
-                    toastr.warning("Không lưu được dữ liệu, vui lòng kiểm tra lại", "Lỗi")
-                    console.log("error")
-                }
-            })
+                })
+            } else {
+                $.ajax({
+                    type: "POST",
+                    url: "{% url 'store_thuoc_excel' %}",
+                    data: formData,
+                    cache: false,
+                    processData: false,
+                    contentType: false,
+                    success: function(response){
+                        if (response.status == 200){
+                            toastr.success(response.message, "Thành Công")
+                            setTimeout(function () {
+                                window.location.href = response.url; //redirect về danh sách dịch vụ khám
+                            }, 1500);
+                        } else if (response.status == 404) {
+                            toastr.warning(response.message, "Thất Bại")
+                        }
+                    },
+                    error: function(response){
+                        toastr.warning("Không lưu được dữ liệu, vui lòng kiểm tra lại", "Lỗi")
+                        console.log("error")
+                    }
+                })
+            }
+
+            
         })
     }
 

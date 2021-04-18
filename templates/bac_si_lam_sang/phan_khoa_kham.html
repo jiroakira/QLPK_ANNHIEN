@@ -466,37 +466,6 @@ var KTDatatableRecordSelectionDemo = function() {
                     $('#kt_datatable_group_action_form').collapse('hide');
                 }
             });
-
-        datatable.on('mouseenter', 'tbody tr', function(){
-            // alert($(this).data());
-            $(this).find('[data-toggle="tooltip"]').tooltip({
-                delay: 300,
-                title: $(this).data().obj.Country,
-                html: true,
-            });
-
-        })
-
-        $('#kt_datatable_fetch_modal').on('show.bs.modal', function(e) {
-            var ids = datatable.rows('.datatable-row-active').
-            nodes().
-            find('.checkbox > [type="checkbox"]').
-            map(function(i, chk) {
-                return $(chk).val();
-            });
-            console.log(ids);
-        
-            var c = document.createDocumentFragment();
-            for (var i = 0; i < ids.length; i++) {
-                var li = document.createElement('li');
-                li.setAttribute('data-id', ids[i]);
-                li.innerHTML = 'Selected record ID: ' + ids[i];
-                c.appendChild(li);
-            }
-            $('#kt_datatable_fetch_display').append(c);
-        }).on('hide.bs.modal', function(e) {
-            $('#kt_datatable_fetch_display').empty();
-        });
     };
 
     var serverSelectorDemo = function() {
@@ -604,9 +573,7 @@ var KTDatatableRecordSelectionDemo = function() {
                 }
             });
         }
-
-
-    
+        
         datatable.on('click', 'tbody input[type="checkbox"]', function () {
             $(this).toggleClass('selected');
             // console.log($(this).val())
@@ -714,8 +681,6 @@ var KTDatatableRecordSelectionDemo = function() {
                 type: "POST",
                 url: "{% url 'store_phan_khoa' %}",
                 data: {
-                    // here data should be a string so that
-                    // in your views.py you can fetch the value using get('data')
                     'data': JSON.stringify(getPostData(user_id)),
                     'csrfmiddlewaretoken': csrftoken,
                     'user': user_id,
@@ -727,12 +692,12 @@ var KTDatatableRecordSelectionDemo = function() {
                     if (response.status == 200) {
                         toastr.success(response.message, "Thành Công")
                         setTimeout(function () {
-                            window.location.href = response.url; //redirect về danh sách chờ lâm sàng
+                            window.location.href = response.url;
                         }, 2000);
                     } else if (response.status == 404) {
                         toastr.warning(response.message, "Lỗi")
                     }
-                     //sau 2 giây (1000 = 1s)
+
                 },
                 error: function() {
                     toastr.warning("Phân Khoa Không Thành Công", "Lỗi")                                                                                                                         
