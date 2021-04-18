@@ -251,6 +251,8 @@ class PhanKhoaKhamDichVuSerializer(serializers.ModelSerializer):
 
 class PhongChucNangSerializerSimple(serializers.ModelSerializer):
     bac_si_phu_trach = UserSerializer()
+    thoi_gian_tao = serializers.CharField(source='get_thoi_gian_tao')
+    thoi_gian_cap_nhat = serializers.CharField(source='get_thoi_gian_cap_nhat')
     class Meta:
         model = PhongChucNang
         fields = "__all__"
@@ -502,10 +504,12 @@ class DanhSachBacSiSerializer(serializers.ModelSerializer):
 # END
 class DichVuKhamSerializerFormatted(serializers.ModelSerializer):
     don_gia = serializers.CharField(source='get_don_gia')
+    don_gia_bhyt = serializers.CharField(source='get_don_gia_bhyt')
     phong_chuc_nang = PhongChucNangSerializerSimple()
+    bao_hiem_dich_vu = serializers.CharField(source='bao_hiem')
     class Meta:
         model = DichVuKham
-        fields = '__all__'
+        exclude = ('bao_hiem',)
 
 class DichVuKhamSerializer(serializers.ModelSerializer):
     phong_chuc_nang = PhongChucNangSerializerSimple()
@@ -911,3 +915,25 @@ class NhapHangSerializer(serializers.ModelSerializer):
     class Meta:
         model = NhapHang
         fields= '__all__' 
+
+class DichVuKhamPhanKhoaSerializer(serializers.ModelSerializer):
+    phong_chuc_nang = serializers.CharField(source='get_ten_phong_chuc_nang')
+   
+    class Meta:
+        model = DichVuKham
+        fields = (
+            'id', 
+            'ten_dvkt', 
+            'ma_dvkt',
+            'phong_chuc_nang',
+        )
+
+class DanhSachPhanKhoaSerializer(serializers.ModelSerializer):
+    dich_vu_kham = DichVuKhamPhanKhoaSerializer()
+    class Meta:
+        model = PhanKhoaKham
+        fields = (
+            'id',
+            'dich_vu_kham',
+            'bao_hiem',
+        )

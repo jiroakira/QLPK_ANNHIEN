@@ -53,12 +53,10 @@ class NhomThau(models.Model):
         return self.ten_nhom_thau
 
 class Thuoc(models.Model):
-
     PHAM_VI = (
         ("1", "Thuốc trong phạm vi hưởng BHYT"),
         ("2", "Thuốc ngoài phạm vi hưởng BHTY"),
     )
-
     TYPE_CHOICES_LOAI_THUOC = (
         ('1', 'Tân Dược'),
         ('2', 'Chế phẩm YHCT'),
@@ -74,12 +72,12 @@ class Thuoc(models.Model):
 
     id = models.AutoField(primary_key=True)
     stt = models.CharField(max_length=50, null=True, blank=True)
+    nhom_thuoc = models.ForeignKey("NhomThuoc", on_delete=models.CASCADE, null=True, blank=True, related_name='nhom_thuoc')
     ma_thuoc = models.CharField(max_length=50, blank=True, null=True)
     ma_hoat_chat = models.CharField(max_length=15, null=True, blank=True, verbose_name="Mã hoạt chất")
     ten_hoat_chat = models.CharField(max_length=255, null=True, blank=True, verbose_name="Tên hoạt chất")
     duong_dung = models.CharField(max_length=255, null=True, blank=True, verbose_name="Đường dùng")
     # duong_dung = models.ForeignKey(DuongDungThuoc, on_delete=models.SET_NULL, null=True, blank=True)
-
     ham_luong = models.CharField(max_length=255, null=True, blank=True, verbose_name="Hàm lượng")
     ten_thuoc = models.CharField(max_length=255, null=True, blank=True, verbose_name="Tên thuốc")    
     # ma_thuoc = models.CharField(max_length=200, null=True, blank=True, verbose_name="Mã thuốc") # mã thuốc được sử dụng khi tồn tại 2 loại thuốc giống nhau nhưng khác công ty
@@ -175,13 +173,26 @@ class Thuoc(models.Model):
         return don_gia_tt
 
     def get_so_luong_kha_dung(self):
-        so_luong_kha_dung = "{:,}".format(self.so_luong_kha_dung)
+        if self.so_luong_kha_dung is not None:
+            so_luong_kha_dung = "{:,}".format(self.so_luong_kha_dung)
+        else:
+            so_luong_kha_dung = 0
         return so_luong_kha_dung
-# def get_sentinel_user():
-#     return User.objects.get_or_create(ho_ten='deleted')[0]
 
-def get_sentinel_thuoc():
-    return Thuoc.objects.get_or_create(ten_thuoc='deleted')[0]
+class NhomThuoc(models.Model):
+    ma_nhom = models.CharField(max_length=255, null=True, blank=True)
+    ten_nhom = models.CharField(max_length=255, null=True, blank=True)
+
+    thoi_gian_tao = models.DateTimeField(editable=False, null=True, blank=True, auto_now_add=True)
+    thoi_gian_cap_nhat = models.DateTimeField(null=True, blank=True, auto_now=True)
+    objects = models.Manager()
+
+    class Meta:
+        verbose_name = 'Nhóm Thuốc'
+        verbose_name_plural = 'Nhóm Thuốc'
+
+    def __str__(self):
+        return self.ten_nhom
 
 class GiaThuoc(models.Model):
     """ Bảng Giá sẽ lưu trữ tất cả giá của thuốc"""
@@ -219,12 +230,12 @@ def get_default_trang_thai_don_thuoc():
     return TrangThaiDonThuoc.objects.get_or_create(trang_thai="Đang Chờ")[0]
 
 class DonThuoc(models.Model):
-    chuoi_kham = models.ForeignKey("clinic.ChuoiKham", on_delete=models.SET_NULL, related_name="don_thuoc_chuoi_kham", null=True, blank=True)
-    benh_nhan = models.ForeignKey("clinic.User", on_delete=models.SET_NULL, related_name="don_thuoc", null=True, blank=True)
+    chuoi_kham = models.ForeignKey("clinic.ChuoiKham", on_delete=models.CASCADE, related_name="don_thuoc_chuoi_kham", null=True, blank=True)
+    benh_nhan = models.ForeignKey("clinic.User", on_delete=models.CASCADE, related_name="don_thuoc", null=True, blank=True)
     benh_nhan_vang_lai = models.CharField(max_length=255, null=True, blank=True)
-    bac_si_ke_don = models.ForeignKey("clinic.User", on_delete=models.SET_NULL, related_name="bac_si_ke_don", null=True, blank=True)
+    bac_si_ke_don = models.ForeignKey("clinic.User", on_delete=models.CASCADE, related_name="bac_si_ke_don", null=True, blank=True)
     ma_don_thuoc = models.CharField(max_length=50, unique=True)
-    trang_thai = models.ForeignKey(TrangThaiDonThuoc, on_delete=models.SET_NULL, null=True)
+    trang_thai = models.ForeignKey(TrangThaiDonThuoc, on_delete=models.CASCADE, null=True)
     ly_do_chinh_sua = models.TextField(null=True, blank=True)
 
     thoi_gian_tao = models.DateTimeField(editable=False, null=True, blank=True)
@@ -247,6 +258,15 @@ class DonThuoc(models.Model):
             self.thoi_gian_tao = timezone.now()
         self.thoi_gian_cap_nhat = timezone.now()
         return super(DonThuoc, self).save(*args, **kwargs)
+
+    @property
+    def check_tphtdt(self):
+        tphtdt = False
+        danh_sach_ke_don = self.ke_don.all()
+        for i in danh_sach_ke_don:
+            if i.thuoc.check_loai_thuoc:
+                tphtdt = True
+        return tphtdt
 
 class LichSuTrangThaiDonThuoc(models.Model):
     don_thuoc = models.ForeignKey(DonThuoc, on_delete=models.CASCADE)
@@ -287,6 +307,28 @@ class KeDonThuoc(models.Model):
         gia_ban = self.thuoc.don_gia_tt
         tong_tien = int(gia_ban) * self.so_luong
         return tong_tien
+
+    def get_thanh_tien(self):
+        gia_thuoc = self.thuoc.don_gia_tt
+        so_luong = self.so_luong
+        thanh_tien = so_luong * int(gia_thuoc)
+        thanh_tien = "{:,}".format(int(thanh_tien))
+        return thanh_tien
+    
+    def get_tong_tien(self):
+        gia_thuoc = self.thuoc.don_gia_tt
+        so_luong = self.so_luong
+        thanh_tien = so_luong * int(gia_thuoc)
+        return int(thanh_tien)
+
+    def get_tong_tien_bao_hiem(self):
+        if self.bao_hiem:
+            gia_thuoc = self.thuoc.don_gia_tt
+            so_luong = self.so_luong
+            thanh_tien = so_luong * int(gia_thuoc)
+            return int(thanh_tien)
+        else:
+            return 0
 
     def get_tt_nguon_khac(self):
         return 0

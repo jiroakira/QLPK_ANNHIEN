@@ -62,6 +62,8 @@ class HoaDonChuoiKham(models.Model):
     chuoi_kham = models.OneToOneField("clinic.ChuoiKham", on_delete=models.CASCADE, null=True, related_name='hoa_don_dich_vu')
     ma_hoa_don = models.CharField(max_length=255, null=True, blank=True, unique=True)
     tong_tien = models.DecimalField(decimal_places=3, max_digits=10, null=True, blank=True)
+    discount = models.IntegerField(null=True, blank=True)
+
     thoi_gian_tao = models.DateTimeField(editable=False, null=True, blank=True)
     thoi_gian_cap_nhat = models.DateTimeField(null=True, blank=True)
 
