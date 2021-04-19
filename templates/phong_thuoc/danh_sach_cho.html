@@ -77,8 +77,8 @@
                                             <label class="mr-3 mb-0 d-none d-md-block">Trạng Thái:</label>
                                             <select class="form-control" id="kt_datatable_search_status">
                                                 <option value="">Tất Cả</option>
-                                                {% for trang_thai in trang_thai %}
-                                                    <option value="{{ trang_thai.id }}">{{ trang_thai.trang_thai_don_thuoc }}</option>
+                                                {% for t in trang_thai %}
+                                                    <option value="{{ t.id }}">{{ t.trang_thai }}</option>
                                                 {% endfor %}
                                             </select>
                                         </div>
