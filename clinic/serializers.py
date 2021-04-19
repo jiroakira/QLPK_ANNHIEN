@@ -25,7 +25,7 @@ from .models import (
     BacSi,
     TinhTrangPhongKham, Ward, send_func_room_info,
 )
-from medicine.models import DonThuoc, KeDonThuoc, NhomVatTu, VatTu
+from medicine.models import DonThuoc, KeDonThuoc, NhomVatTu, TrangThaiDonThuoc, VatTu
 from django.contrib.auth.models import Group, Permission
 
 User = get_user_model()
@@ -218,11 +218,16 @@ class HoaDonThuocSerializer(serializers.ModelSerializer):
     class Meta:
         model = HoaDonThuoc
         fields = '__all__'
-        
+
+class TrangThaiDonThuocSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = TrangThaiDonThuoc
+        fields = ('id', 'trang_thai')
 
 class HoaDonThuocSerializerSimple(serializers.ModelSerializer):
     benh_nhan = UserSerializer()
     bac_si_ke_don = UserSerializer()
+    trang_thai = TrangThaiDonThuocSerializer()
     # don_thuoc = DonThuocSerializer()
     class Meta:
         model = DonThuoc
