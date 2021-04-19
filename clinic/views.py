@@ -1165,8 +1165,11 @@ def hoa_don_dich_vu(request, **kwargs):
     if check_da_thanh_toan == True:
         hoa_don_dich_vu = chuoi_kham.hoa_don_dich_vu
         tong_tien_hoa_don = hoa_don_dich_vu.tong_tien
-        discount = hoa_don_dich_vu.discount
-        tien_giam_gia = int(tong_tien_hoa_don) * (int(discount) / 100)
+        if hoa_don_dich_vu.discount is not None:
+            discount = hoa_don_dich_vu.discount
+            tien_giam_gia = int(tong_tien_hoa_don) * (int(discount) / 100)
+        else:
+            tien_giam_gia = 0
 
         ma_hoa_don = hoa_don_dich_vu.ma_hoa_don
         danh_sach_phan_khoa = chuoi_kham.phan_khoa_kham.all()
