@@ -362,6 +362,7 @@ var KTDatatableRecordSelectionDemo = function() {
 
         $('#printPhanKhoa').on('click', function() {
             var data_bac_si = ''
+            var data_bac_si_chi_dinh = ''
             var bac_si_chi_dinh = "{{ bac_si_chi_dinh|safe }}"
             var data_so_dien_thoai = ''
             var data_dia_chi = ''
@@ -422,6 +423,18 @@ var KTDatatableRecordSelectionDemo = function() {
                     data_thoi_gian += c.replace(/{thoi_gian}/, thoi_gian)
 
                     $(this).replaceWith(data_thoi_gian)
+                }
+
+                if($(this).find('td').eq(1).text() == '{bac_si_chi_dinh}'){
+                    console.log($(this).html())
+                    var innerHtml = $(this).html()
+                    var start_tr = '<tr>'
+                    var end_tr = '</tr>'
+                    var c = start_tr + innerHtml + end_tr
+
+                    data_bac_si_chi_dinh += c.replace(/{bac_si_chi_dinh}/, bac_si_chi_dinh)
+
+                    $(this).replaceWith(data_bac_si_chi_dinh)
                 }
 
             })

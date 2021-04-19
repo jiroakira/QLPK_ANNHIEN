@@ -178,9 +178,7 @@
                             </div>
                             <div class="col-lg-6">
                                 <label>Ngày sinh</label>
-                                {% comment %} <input class="form-control" id="inputNgaySinhModal" type="text" /> {% endcomment %}
-                                {% comment %} {{ form.ngay_sinh|attr:"class:form-control"|attr:"name:ngay_sinh"|attr:"id:kt_datepicker_3"|attr:"readonly:readonly"|attr:"placeholder:Chọn ngày sinh"}} {% endcomment %}
-                                <input type="text" class="form-control" id="kt_datepicker_3" name="ngay_sinh" readonly="readonly" placeholder="Chọn ngày sinh"/>
+                                <input type="text" class="form-control" id="inputNgaySinhModal" name="ngay_sinh" placeholder="Chọn ngày sinh"/>
                                 <span class="form-text text-muted">Nhập ngày sinh dạng: 
                                 <code>ngày/tháng/năm</code></span>
                             </div>
@@ -413,13 +411,18 @@ var KTDatatableRemoteAjaxDemo = function() {
             arrows = {
                 leftArrow: '<i class="la la-angle-right"></i>',
                 rightArrow: '<i class="la la-angle-left"></i>'
-            }
+            };
         } else {
             arrows = {
                 leftArrow: '<i class="la la-angle-left"></i>',
                 rightArrow: '<i class="la la-angle-right"></i>'
-            }
-        }
+            };
+        };
+
+        $("#inputNgaySinhModal").inputmask("31/12/9999", {
+            "placeholder": "dd/mm/yyyy",
+            autoUnmask: false
+        });
 
         $('#kt_datepicker_3').datepicker({
             rtl: KTUtil.isRTL(),
@@ -825,7 +828,7 @@ var KTDatatableRemoteAjaxDemo = function() {
             formData.append('password', $("#inputPasswordModal").val())
             formData.append('cmnd_cccd', $("#inputCmtModal").val())
             formData.append('dia_chi', $("#inputDiaChiModal").val())
-            formData.append('ngay_sinh', $("#kt_datepicker_3").val())
+            formData.append('ngay_sinh', $("#inputNgaySinhModal").val())
             formData.append('gioi_tinh', gioi_tinh)
             formData.append('dan_toc', $("#inputDanTocModal").val())
             formData.append('ma_so_bao_hiem', $("#inputMaSoBaoHiemModal").val())
