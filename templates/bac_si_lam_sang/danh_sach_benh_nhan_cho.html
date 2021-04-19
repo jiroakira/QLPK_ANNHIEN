@@ -269,39 +269,24 @@ var KTDatatableModal = function() {
                     }
                 }
             }, {
-                field: 'trang_thai',
+                field: 'trang_thai.id',
                 title: 'Trạng Thái',
+                textAlign: 'center',
                 // callback function support for column rendering
                 template: function(row) {
                     var status = {
                         1: {
-                            'title': 'Đã Thanh Toán LS',
-                            'class': ' label-light-success'
-                        },
-                        5: {
-                            'title': 'Đã đặt trước',
-                            'class': ' label-light-success'
-                        },
-                        2: {
-                            'title': 'Xác Nhận',
-                            'class': ' label-light-primary'
-                        },
-                        3: {
-                            'title': 'Success',
-                            'class': ' label-light-success'
-                        },
-                        12: {
-                            'title': 'Đã Thanh Toán LS',
-                            'class': ' label-light-success'
-                        },
-                        6: {
-                            'title': 'Danger',
-                            'class': ' label-light-danger'
-                        },
-                        7: {
-                            'title': 'Warning',
+                            'title': 'Chờ Thanh Toán LS',
                             'class': ' label-light-warning'
                         },
+                        2: {
+                            'title': 'Đã Thanh Toán LS',
+                            'class': ' label-light-success'
+                        },
+                        7: {
+                            'title': 'Đã Thanh Toán DV',
+                            'class': ' label-light-primary'
+                        },                        
                     };
                     return '<span class="label label-lg font-weight-bold' + status[row.trang_thai.id].class + ' label-inline">' + status[row.trang_thai.id].title + '</span>';
                 },

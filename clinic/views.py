@@ -1333,6 +1333,15 @@ def hoa_don_thuoc(request, **kwargs):
     thanh_toan_thuc_pham_cn_str = "{:,}".format(int(thanh_toan_thuc_pham_cn))
     nguoi_thuc_hien = request.user.ho_ten
 
+    if don_thuoc.benh_nhan is not None:
+        ten_benh_nhan = f"Họ tên: {benh_nhan.ho_ten}"
+        so_dien_thoai = f"SĐT: {benh_nhan.get_so_dien_thoai()}"
+        dia_chi = f"Đ/C: {benh_nhan.get_dia_chi()}"
+    else:
+        ten_benh_nhan = f"Họ tên: {don_thuoc.benh_nhan_vang_lai}"
+        so_dien_thoai = f"SĐT: Không có"
+        dia_chi = f'Đ/C: Không có'
+
     data = { 
         'phong_chuc_nang': phong_chuc_nang,
         'don_thuoc': don_thuoc,
@@ -1340,9 +1349,9 @@ def hoa_don_thuoc(request, **kwargs):
         'mau_hoa_don_thuoc': mau_hoa_don_thuoc,
         'mau_hoa_don_tphtdt': mau_hoa_don_tphtdt,
         'thoi_gian_thanh_toan': f"{thoi_gian_thanh_toan.strftime('%H:%m')} Ngày {thoi_gian_thanh_toan.strftime('%d')} Tháng {thoi_gian_thanh_toan.strftime('%m')} Năm {thoi_gian_thanh_toan.strftime('%Y')}",
-        'benh_nhan': f"Họ tên: {benh_nhan.ho_ten}",
-        'so_dien_thoai': f"SĐT: {benh_nhan.get_so_dien_thoai()}",
-        'dia_chi': f"Đ/C: {benh_nhan.get_dia_chi()}",
+        'benh_nhan': ten_benh_nhan,
+        'so_dien_thoai': so_dien_thoai,
+        'dia_chi': dia_chi,
         'danh_sach_thuoc': ds_thuoc,
         'danh_sach_thuc_pham_chuc_nang': ds_thuc_pham_chuc_nang,
         'danh_sach_bao_hiem_thuoc': danh_sach_bao_hiem_thuoc,
