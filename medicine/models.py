@@ -275,6 +275,22 @@ class DonThuoc(models.Model):
         else:
             return False
 
+    @property
+    def check_cho_thanh_toan(self):
+        cho_thanh_toan = TrangThaiDonThuoc.objects.filter(trang_thai='Chờ Thanh Toán').first()
+        if self.trang_thai == cho_thanh_toan:
+            return True
+        else:
+            return False
+    
+    @property
+    def check_hoan_thanh(self):
+        hoan_thanh = TrangThaiDonThuoc.objects.filter(trang_thai='Hoàn Thành').first()
+        if self.trang_thai == hoan_thanh:
+            return True
+        else:
+            return False
+
 class LichSuTrangThaiDonThuoc(models.Model):
     don_thuoc = models.ForeignKey(DonThuoc, on_delete=models.CASCADE)
     trang_thai_don_thuoc = models.ForeignKey(TrangThaiDonThuoc, on_delete=models.CASCADE)

@@ -522,9 +522,18 @@ class PhanKhoaKhamSerializer(serializers.ModelSerializer):
     benh_nhan = UserSerializer()
     bac_si_lam_sang = UserSerializer()
     dich_vu_kham = DichVuKhamSerializer()
+    trang_thai = TrangThaiKhoaKhamSerializer()
     class Meta:
         model = PhanKhoaKham
-        fields = ('id','chuoi_kham', 'benh_nhan', 'bac_si_lam_sang', 'thoi_gian_bat_dau', 'thoi_gian_ket_thuc', 'dich_vu_kham')
+        fields = (
+            'id','chuoi_kham', 
+            'benh_nhan', 
+            'bac_si_lam_sang', 
+            'thoi_gian_bat_dau', 
+            'thoi_gian_ket_thuc', 
+            'dich_vu_kham',
+            'trang_thai'
+        )
 
 class ChuoiKhamSerializer(serializers.ModelSerializer):
     phan_khoa_kham = PhanKhoaKhamSerializer(many=True)

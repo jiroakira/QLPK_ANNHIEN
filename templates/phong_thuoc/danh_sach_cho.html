@@ -217,7 +217,7 @@ var KTDatatableRemoteAjaxDemo = function() {
                         },
                         3: {
                             'title': 'Hoàn Thành',
-                            'class': ' label-light-primary'
+                            'class': ' label-light-success'
                         },
                         4: {
                             'title': 'Chờ Thanh Toán',
@@ -253,7 +253,7 @@ var KTDatatableRemoteAjaxDemo = function() {
 		});
 
 		$('#kt_datatable_search_status').on('change', function() {
-            datatable.search($(this).val().toLowerCase(), 'Status');
+            datatable.search($(this).val().toLowerCase(), 'trang_thai');
         });
 
         $('#kt_datatable_search_type').on('change', function() {

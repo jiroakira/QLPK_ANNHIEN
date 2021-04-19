@@ -769,7 +769,7 @@ def phong_chuyen_khoa(request, *args, **kwargs):
     if request.user.has_perm(f'clinic.{codename_perm}'):
         phong_chuc_nang_detail = PhongChucNang.objects.get(id=id_phong_chuc_nang)
         phong_chuc_nang = PhongChucNang.objects.all()
-        trang_thai = TrangThaiChuoiKham.objects.all()
+        trang_thai = TrangThaiKhoaKham.objects.all()
         data = {
             'phong_chuc_nang': phong_chuc_nang,
             'trang_thai': trang_thai,
@@ -849,6 +849,8 @@ def store_phan_khoa(request):
             }
             return HttpResponse(json.dumps(response), content_type='application/json; charset=utf-8')
         
+        trang_thai_phan_khoa = TrangThaiKhoaKham.objects.get_or_create(trang_thai_khoa_kham='Chờ Khám')[0]
+
         for i in data:
             if i['obj']['bao_hiem'] == "True":
                 bao_hiem = True
@@ -856,7 +858,17 @@ def store_phan_khoa(request):
             priority = index + 1
             dich_vu = DichVuKham.objects.only('id').filter(id=i['obj']['id']).first()
             bac_si = request.user
-            bulk_create_data.append(PhanKhoaKham(benh_nhan=user, dich_vu_kham=dich_vu, bao_hiem=i['obj']['bao_hiem'], bac_si_lam_sang=bac_si, chuoi_kham=chuoi_kham, priority=priority))
+            bulk_create_data.append(
+                PhanKhoaKham(
+                    benh_nhan=user, 
+                    dich_vu_kham=dich_vu, 
+                    bao_hiem=i['obj']['bao_hiem'], 
+                    bac_si_lam_sang=bac_si, 
+                    chuoi_kham=chuoi_kham,
+                    priority=priority,
+                    trang_thai=trang_thai_phan_khoa
+                    )
+                )
 
         hoa_don = HoaDonChuoiKham.objects.create(chuoi_kham=chuoi_kham, ma_hoa_don=ma_hoa_don, bao_hiem = bao_hiem)
 
@@ -1034,8 +1046,11 @@ def upload_files_chuyen_khoa(request):
         if ket_luan == '':
             HttpResponse({'status': 404, 'message': 'Kết Luận Không Được Để Trống'})
 
-        chuoi_kham = ChuoiKham.objects.get(id=id_chuoi_kham)
+        chuoi_kham = get_object_or_404(ChuoiKham, id=id_chuoi_kham)
+        trang_thai = TrangThaiKhoaKham.objects.filter(trang_thai_khoa_kham='Hoàn Thành').first()
         phan_khoa = get_object_or_404(PhanKhoaKham, id=id_phan_khoa)
+        phan_khoa.trang_thai = trang_thai
+        phan_khoa.save()
         ket_qua_tong_quat = KetQuaTongQuat.objects.get_or_create(chuoi_kham=chuoi_kham)[0]
         ket_qua_chuyen_khoa = KetQuaChuyenKhoa.objects.create(phan_khoa_kham=phan_khoa, ket_qua_tong_quat=ket_qua_tong_quat, ma_ket_qua=ma_ket_qua, mo_ta=mo_ta, ket_luan=ket_luan)
 
@@ -1151,7 +1166,7 @@ def phong_tai_chinh_danh_sach_cho(request):
 @login_required(login_url='/dang_nhap/')
 def phong_thuoc_danh_sach_cho(request):
     phong_chuc_nang = PhongChucNang.objects.all()
-    trang_thai = TrangThaiDonThuoc.objects.all()
+    trang_thai = TrangThaiDonThuoc.objects.exclude(trang_thai='Hoàn Thành')
 
     data = {
         'phong_chuc_nang' : phong_chuc_nang,
@@ -1383,6 +1398,7 @@ def hoa_don_thuoc(request, **kwargs):
 def don_thuoc(request, **kwargs):
     id_don_thuoc = kwargs.get('id_don_thuoc')
     don_thuoc = get_object_or_404(DonThuoc, id=id_don_thuoc)
+
     danh_sach_thuoc = don_thuoc.ke_don.all()
     phong_chuc_nang = PhongChucNang.objects.all()
     ten_thuoc = [f'{i.thuoc.ten_thuoc}' for i in danh_sach_thuoc]
@@ -1956,10 +1972,12 @@ def dung_kham_chuyen_khoa(request):
         id_chuoi_kham = request.POST.get('id_chuoi_kham')
         id_phan_khoa = request.POST.get('id_phan_khoa')
         ly_do = request.POST.get('ly_do')
-        chuoi_kham = ChuoiKham.objects.get(id=id_chuoi_kham)
-        phan_khoa_kham = PhanKhoaKham.objects.get(id=id_phan_khoa)
+
+        chuoi_kham = get_object_or_404(ChuoiKham, id=id_chuoi_kham)
+        phan_khoa_kham = get_object_or_404(PhanKhoaKham, id=id_phan_khoa)
+
         trang_thai = TrangThaiChuoiKham.objects.get_or_create(trang_thai_chuoi_kham = "Dừng khám")[0]
-        trang_thai_phan_khoa = TrangThaiKhoaKham.objects.get_or_create(trang_thai_khoa_kham = "Dừng khám")[0]
+        trang_thai_phan_khoa = TrangThaiKhoaKham.objects.get_or_create(trang_thai_khoa_kham = "Dừng Khám")[0]
         chuoi_kham.trang_thai = trang_thai
         chuoi_kham.save()
         phan_khoa_kham.trang_thai = trang_thai_phan_khoa
@@ -3776,7 +3794,11 @@ def store_ket_qua_xet_nghiem(request):
         list_data = json.loads(data)
 
         chuoi_kham = ChuoiKham.objects.filter(id=id_chuoi_kham).first()
+        
+        hoan_thanh = TrangThaiKhoaKham.objects.filter(trang_thai_khoa_kham='Hoàn Thành').first()
         phan_khoa_kham = PhanKhoaKham.objects.filter(id=id_phan_khoa).first()
+        phan_khoa_kham.trang_thai = hoan_thanh
+        phan_khoa_kham.save()
 
         ket_qua_tong_quat = KetQuaTongQuat.objects.get_or_create(chuoi_kham=chuoi_kham)[0]
         ket_qua_chuyen_khoa = KetQuaChuyenKhoa.objects.create(
@@ -3835,7 +3857,10 @@ def store_ket_qua_chuyen_khoa_html(request):
             }
             return HttpResponse(json.dumps(response), content_type="application/json, charset=utf-8")
         
+        hoan_thanh = TrangThaiKhoaKham.objects.filter(trang_thai_khoa_kham='Hoàn Thành').first()
         phan_khoa = PhanKhoaKham.objects.filter(id=id_phan_khoa).first()
+        phan_khoa.trang_thai = hoan_thanh
+        phan_khoa.save()
         chuoi_kham = ChuoiKham.objects.filter(id=id_chuoi_kham).first()
 
         ket_qua_tong_quat = KetQuaTongQuat.objects.get_or_create(chuoi_kham=chuoi_kham)[0]
