@@ -68,14 +68,13 @@
 
     {% if don_thuoc.check_tphtdt %}
     <!--begin::Entry-->
-    <div class="d-flex flex-column-fluid">
+    <div class="d-flex flex-column-fluid mt-5">
         <!--begin::Container-->
         <div class="container">
             <!-- begin::Card-->
             <div class="card card-custom overflow-hidden">
                 <!-- begin: Invoice-->
                 <div class="card-body p-0">
-
                     <div class="row justify-content-center py-8 px-8 py-md-27 px-md-0">
                         <div class="col-md-12" id='hoa_don_thuc_pham_ho_tro_dieu_tri'>
                             {{mau_hoa_don_tphtdt.noi_dung|safe}}
@@ -88,8 +87,7 @@
                 <div class="row justify-content-center py-8 px-8 py-md-10 px-md-0">
                     <div class="col-md-9">
                         <div class="d-flex justify-content-between">
-                            <button type="button" class="btn btn-light-primary font-weight-bold" onclick="printDiv('hoa_don_thuoc')">In Hóa Đơn</button>
-                            
+                            <button type="button" class="btn btn-light-primary font-weight-bold" onclick="printDiv('hoa_don_thuc_pham_ho_tro_dieu_tri')">In Hóa Đơn</button>
                         </div>
                     </div>
                 </div>
@@ -104,9 +102,8 @@
 </div>
 <!--end::Content-->
 {% if check_da_thanh_toan == True %}
-<div></div>
 {% else %}
-<div class="d-flex flex-column-fluid mt-10 mb-10">
+<div class="d-flex flex-column-fluid mt-5 mb-5">
     <div class='container'>
         <!-- begin::Card-->
         <div class="card card-custom overflow-hidden">

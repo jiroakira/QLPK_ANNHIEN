@@ -2395,12 +2395,13 @@ class DanhSachHoaDonThuocBaoHiem(APIView):
         return Response(response)
 class DanhSachBenhNhanChoLamSang(APIView):
     def get(self, request, format=None):
-        trang_thai = TrangThaiLichHen.objects.get_or_create(ten_trang_thai = "Đã Thanh Toán Lâm Sàng")[0] 
+        trang_thai_lam_sang = TrangThaiLichHen.objects.get_or_create(ten_trang_thai = "Đã Thanh Toán Lâm Sàng")[0] 
+        trang_thai_dich_vu = TrangThaiLichHen.objects.get_or_create(ten_trang_thai = "Đã Thanh Toán Dịch Vụ")[0] 
         now = timezone.localtime(timezone.now())
         tomorrow = now + timedelta(1)
         today_end = tomorrow.replace(hour=0, minute=0, second=0)
 
-        lich_hen = LichHenKham.objects.filter(trang_thai=trang_thai, thoi_gian_bat_dau__lte=today_end)
+        lich_hen = LichHenKham.objects.filter(Q(trang_thai=trang_thai_lam_sang)| Q(trang_thai=trang_thai_dich_vu)).filter(thoi_gian_bat_dau__lte=today_end)
         serializer = LichHenKhamSerializer(lich_hen, many=True, context={'request':request})
         response = {
             "error": False,
