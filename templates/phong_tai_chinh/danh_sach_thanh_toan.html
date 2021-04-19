@@ -779,7 +779,6 @@ var KTDatatableRemoteAjaxDemo = function() {
             }, {
                 field: 'bac_si_ke_don.ho_ten',
                 title: 'Bác Sĩ',
-
             }, {
                 field: 'thoi_gian_tao',
                 title: 'Thời Gian Tạo',
@@ -826,25 +825,7 @@ var KTDatatableRemoteAjaxDemo = function() {
                         {% endif %}
                     `;
                 },
-            }, 
-            //{
-            //    field: 'HoaDonTPCN',
-            //    title: 'Hóa Đơn TPCN',
-            //    sortable: false,
-            //    width: 125,
-            //    overflow: 'visible',
-            //    autoHide: false,
-            //    textAlign: 'center',
-            //    template: function(row) {
-            //        return `
-            //            {% if perms.clinic.can_checkout_medicine_receipt %}
-            //            <a href="/phong_tai_chinh/hoa_don_tpcn/${row.id}" class="btn btn-sm btn-clean mr-2" title="Hóa Đơn Thuốc">
-            //                Hóa Đơn
-            //            </a>
-            //            {% endif %}
-            //        `;
-            //    },
-            //}
+            },
             ],
 
         });
@@ -858,11 +839,7 @@ var KTDatatableRemoteAjaxDemo = function() {
             datatable.search($(this).val().toLowerCase(), 'trang_thai');
         });
 
-        //$('#kt_datatable_search_type').on('change', function() {
-        //    datatable.search($(this).val().toLowerCase(), 'Type');
-        //});
-
-        $('#kt_datatable_search_status, #kt_datatable_search_type').selectpicker();
+        $('#kt_datatable_search_status').selectpicker();
     };
 
     var _initDatatable = function () {
