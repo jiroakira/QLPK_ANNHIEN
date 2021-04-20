@@ -126,8 +126,9 @@
                                     <div class="d-flex align-items-center">
                                         <label class="mr-3 mb-0 d-none d-md-block text-center">Trạng Thái</label>
                                         <select class="form-control" id="kt_datatable_search_status">
-                                            <option value="1">Chờ Thanh Toán</option>
-                                            <option value="2">Đã Thanh Toán</option>
+                                            <option value="">Tất Cả Trạng Thái</option>
+                                            <option value="False">Chờ Thanh Toán</option>
+                                            <option value="True">Đã Thanh Toán</option>
                                         </select>
                                     </div>
                                 </div>
@@ -279,6 +280,18 @@ var KTDatatableRemoteAjaxDemo = function() {
                 title: 'Lý Do Khám',
                 autoHide: false,
             }, {
+                field: 'thoi_gian_bat_dau',
+                title: 'Thời Gian Hẹn',
+                template: function(row) {
+                    var date = new Date(Date.parse(row.thoi_gian_bat_dau))
+
+                    if(!row.thoi_gian_bat_dau){
+                        return '<span class="label font-weight-bold label-lg ' + 'label-light-info' + ' label-inline">' + 'Không Có Thời Gian' + '</span>';
+                    } else {
+                        return date.toLocaleString('vi-VN')
+                    }
+                }
+            }, {
                 field: 'thoi_gian_tao',
                 title: 'Thời Gian Tạo',
                 template: function(row) {
@@ -291,21 +304,25 @@ var KTDatatableRemoteAjaxDemo = function() {
                     }
                 }
             }, {
-                field: 'trang_thai',
+                field: 'trang_thai_thanh_toan',
                 title: 'Trạng Thái',
-                // callback function support for column rendering
                 template: function(row) {
-                    var trang_thai = {
-                        1: {
-                            'title': 'Chờ Thanh Toán LS',
-                            'class': ' label-light-warning'
-                        },
-                        2: {
-                            'title': 'Đã Thanh Toán LS',
-                            'class': ' label-light-success'
-                        },
-                    };
-                    return '<span class="label font-weight-bold label-lg ' + trang_thai[row.trang_thai.id].class + ' label-inline">' + trang_thai[row.trang_thai.id].title + '</span>';
+                    // var trang_thai = {
+                    //     1: {
+                    //         'title': 'Chờ Thanh Toán LS',
+                    //         'class': ' label-light-warning'
+                    //     },
+                    //     2: {
+                    //         'title': 'Đã Thanh Toán LS',
+                    //         'class': ' label-light-success'
+                    //     },
+                    // };
+                    // return '<span class="label font-weight-bold label-lg ' + trang_thai[row.trang_thai.id].class + ' label-inline">' + trang_thai[row.trang_thai.id].title + '</span>';
+                    if (row.trang_thai_thanh_toan == "True") {
+                        return '<span class="label font-weight-bold label-lg label-light-success label-inline">' + 'Đã Thanh Toán LS' + '</span>';
+                    } else if (row.trang_thai_thanh_toan == "False") {
+                        return '<span class="label font-weight-bold label-lg label-light-warning label-inline">' + 'Chờ Thanh Toán LS' + '</span>';
+                    }
                 },
             }, {
                 field: 'Actions',
@@ -316,14 +333,22 @@ var KTDatatableRemoteAjaxDemo = function() {
                 autoHide: false,
                 textAlign: 'center',
                 template: function(row) {
-                    
-                    return `
-                        {% if perms.finance.can_checkout_clinical_receipt %}
-                        <a href="javascript:;" class="btn btn-sm btn-clean mr-2 btn-thanh-toan" data-ten="${row.benh_nhan.ho_ten}" data-id="${row.id}" data-time="${row.thoi_gian_tao}" data-phone="${row.benh_nhan.so_dien_thoai}" data-address="${row.benh_nhan.dia_chi}" title="Edit details">
-                            Thanh toán
-                        </a>
-                        {% endif %}
-                    `;
+                    if (row.trang_thai_thanh_toan == 'True') {
+                        return `
+                            <a href="javascript:;" class="btn btn-sm btn-clean mr-2 btn-thanh-toan" data-ten="${row.benh_nhan.ho_ten}" data-id="${row.id}" data-time="${row.thoi_gian_tao}" data-phone="${row.benh_nhan.so_dien_thoai}" data-address="${row.benh_nhan.dia_chi}" title="Edit details">
+                                Xem Lại
+                            </a>
+                        `
+                    } else if (row.trang_thai_thanh_toan == 'False') {
+                        return `
+                            {% if perms.finance.can_checkout_clinical_receipt %}
+                            <a href="javascript:;" class="btn btn-sm btn-clean mr-2 btn-thanh-toan" data-ten="${row.benh_nhan.ho_ten}" data-id="${row.id}" data-time="${row.thoi_gian_tao}" data-phone="${row.benh_nhan.so_dien_thoai}" data-address="${row.benh_nhan.dia_chi}" title="Edit details">
+                                Thanh toán
+                            </a>
+                            {% endif %}
+                        `;
+
+                    }
                 },
             }],
 
@@ -335,7 +360,8 @@ var KTDatatableRemoteAjaxDemo = function() {
 		});
 
 		$('#kt_datatable_search_status').on('change', function() {
-            datatable.search($(this).val().toLowerCase(), 'trang_thai.id');
+            datatable.search($(this).val(), 'trang_thai_thanh_toan');
+            // $('#kt_datatable').KTDatatable('destroy');
         });
 
         datatable.on('click', '.btn-thanh-toan', function(){
@@ -610,9 +636,6 @@ var KTDatatableRemoteAjaxDemo = function() {
                 selector: false,
                 textAlign: 'center',
             }, {
-                field: 'hoa_don.ma_hoa_don',
-                title: 'Mã Hóa Đơn',
-            }, {
                 field: 'benh_nhan.ho_ten',
                 title: 'Bệnh Nhân',
                 
@@ -633,45 +656,15 @@ var KTDatatableRemoteAjaxDemo = function() {
                     }
                 }
             }, {
-                field: 'trang_thai.id',
+                field: 'trang_thai_thanh_toan',
                 title: 'Trạng Thái',
                 // callback function support for column rendering
                 template: function(row) {
-                    var status = {
-                        1: {
-                            'title': 'Chờ Thanh Toán',
-                            'class': ' label-light-warning'
-                        },
-                        2: {
-                            'title': 'Đã Thanh Toán',
-                            'class': ' label-light-success'
-                        },
-                        3: {
-                            'title': 'Canceled',
-                            'class': ' label-light-success'
-                        },
-                        5: {
-                            'title': 'Chờ Thanh Toán',
-                            'class': ' label-light-warning'
-                        },
-                        4: {
-                            'title': 'Info',
-                            'class': ' label-light-info'
-                        },
-                        6: {
-                            'title': 'Danger',
-                            'class': ' label-light-danger'
-                        },
-                        7: {
-                            'title': 'Warning',
-                            'class': ' label-light-warning'
-                        },
-                        8: {
-                            'title': 'Chờ Thanh Toán',
-                            'class': ' label-light-warning'
-                        },
-                    };
-                    return '<span class="label font-weight-bold label-lg ' + status[row.trang_thai.id].class + ' label-inline">' + status[row.trang_thai.id].title + '</span>';
+                    if (row.trang_thai_thanh_toan == "True") {
+                        return '<span class="label font-weight-bold label-lg label-light-success label-inline">' + 'Đã Thanh Toán' + '</span>';
+                    } else if (row.trang_thai_thanh_toan == "False") {
+                        return '<span class="label font-weight-bold label-lg label-light-warning label-inline">' + 'Chờ Thanh Toán' + '</span>';
+                    }
                 },
             }, {
                 field: 'Actions',
@@ -700,7 +693,7 @@ var KTDatatableRemoteAjaxDemo = function() {
 		});
 
 		$('#kt_datatable_search_status').on('change', function() {
-            datatable.search($(this).val().toLowerCase(), 'trang_thai.id');
+            datatable.search($(this).val(), 'trang_thai_thanh_toan');
         });
 
         //$('#kt_datatable_search_type').on('change', function() {
@@ -792,21 +785,15 @@ var KTDatatableRemoteAjaxDemo = function() {
                     }
                 }
             }, {
-                field: 'trang_thai.id',
+                field: 'trang_thai_thanh_toan',
                 title: 'Trạng Thái',
                 // callback function support for column rendering
                 template: function(row) {
-                    var status = {
-                        1: {
-                            'title': 'Chờ Thanh Toán',
-                            'class': ' label-light-warning'
-                        },
-                        2: {
-                            'title': 'Đã Thanh Toán',
-                            'class': ' label-light-primary'
-                        },
-                    };
-                    return '<span class="label font-weight-bold label-lg ' + status[row.trang_thai.id].class + ' label-inline">' + status[row.trang_thai.id].title + '</span>';
+                    if (row.trang_thai_thanh_toan == "True") {
+                        return '<span class="label font-weight-bold label-lg label-light-success label-inline">' + 'Đã Thanh Toán' + '</span>';
+                    } else if (row.trang_thai_thanh_toan == "False") {
+                        return '<span class="label font-weight-bold label-lg label-light-warning label-inline">' + 'Chờ Thanh Toán' + '</span>';
+                    }
                 },
             }, {
                 field: 'HoaDonThuoc',
@@ -836,7 +823,7 @@ var KTDatatableRemoteAjaxDemo = function() {
 		});
 
 		$('#kt_datatable_search_status').on('change', function() {
-            datatable.search($(this).val().toLowerCase(), 'trang_thai.id');
+            datatable.search($(this).val(), 'trang_thai_thanh_toan');
         });
 
         $('#kt_datatable_search_status').selectpicker();

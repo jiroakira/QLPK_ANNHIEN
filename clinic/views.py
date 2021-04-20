@@ -842,6 +842,7 @@ def store_phan_khoa(request):
             trang_thai = TrangThaiChuoiKham.objects.get_or_create(trang_thai_chuoi_kham="Chờ Thanh Toán")[0]
             chuoi_kham = ChuoiKham.objects.get_or_create(bac_si_dam_nhan=request.user, benh_nhan=user, trang_thai=trang_thai, lich_hen = lich_hen, ma_lk=ma_lk)[0]
             chuoi_kham.save()
+
         except LichHenKham.DoesNotExist:
             response = {
                 'status' : 404,
@@ -924,6 +925,7 @@ def store_ke_don(request):
             trang_thai = TrangThaiDonThuoc.objects.get_or_create(trang_thai="Chờ Thanh Toán")[0]
 
             don_thuoc = DonThuoc.objects.get_or_create(benh_nhan=user, bac_si_ke_don=request.user, trang_thai=trang_thai, ma_don_thuoc=ma_don_thuoc, chuoi_kham = chuoi_kham)[0]
+        
         except User.DoesNotExist:
             repsonse = {
                 "status": 404,
@@ -1047,7 +1049,7 @@ def upload_files_chuyen_khoa(request):
             HttpResponse({'status': 404, 'message': 'Kết Luận Không Được Để Trống'})
 
         chuoi_kham = get_object_or_404(ChuoiKham, id=id_chuoi_kham)
-        trang_thai = TrangThaiKhoaKham.objects.filter(trang_thai_khoa_kham='Hoàn Thành').first()
+        trang_thai = TrangThaiKhoaKham.objects.get_or_create(trang_thai_khoa_kham='Đã Tải Lên Kết Quả')[0]
         phan_khoa = get_object_or_404(PhanKhoaKham, id=id_phan_khoa)
         phan_khoa.trang_thai = trang_thai
         phan_khoa.save()
@@ -1709,7 +1711,7 @@ def nhap(id, so_luong):
 class ThanhToanHoaDonThuocToggle(APIView):
     def get(self, request, format=None):
         id_don_thuoc    = request.GET.get('id', None)
-        don_thuoc       = DonThuoc.objects.get(id = id_don_thuoc)
+        don_thuoc       = get_object_or_404(DonThuoc, id=id_don_thuoc)
         danh_sach_thuoc = don_thuoc.ke_don.all()
         tong_tien       = request.GET.get('tong_tien', None)
         bao_hiem = False
@@ -1720,15 +1722,13 @@ class ThanhToanHoaDonThuocToggle(APIView):
         # try:
         for instance in danh_sach_thuoc:    
             id_thuoc = instance.thuoc.id
-        
             so_luong = instance.so_luong
     
             if instance.bao_hiem == True:
                 bao_hiem = True
-            # thuoc = Thuoc.objects.get(id=id_thuoc)
-            # ten_thuoc = thuoc.ten_thuoc
 
             xuat(request, id=id_thuoc, so_luong=so_luong)
+
         trang_thai = TrangThaiDonThuoc.objects.get_or_create(trang_thai="Đã Thanh Toán")[0]
         don_thuoc.trang_thai=trang_thai
         don_thuoc.save()
@@ -1756,7 +1756,7 @@ class ThanhToanHoaDonThuocToggle(APIView):
 class ThanhToanHoaDonDichVuToggle(APIView):
     def get(self, request, format=None):
         ma_hoa_don      = request.GET.get('ma_hoa_don', None)
-        hoa_don_dich_vu = HoaDonChuoiKham.objects.get(ma_hoa_don = ma_hoa_don)
+        hoa_don_dich_vu = get_object_or_404(HoaDonChuoiKham, ma_hoa_don=ma_hoa_don)
         tong_tien       = request.GET.get('tong_tien', None)
         discount        = request.GET.get('discount', None)
         hoa_don_dich_vu.tong_tien = tong_tien
@@ -3325,7 +3325,10 @@ def upload_ket_qua_chuyen_khoa(request):
             HttpResponse({'status': 404, 'message': 'Kết Luận Không Được Để Trống'})
 
         chuoi_kham = ChuoiKham.objects.filter(id=id_chuoi_kham).first()
+        trang_thai = TrangThaiKhoaKham.objects.get_or_create(trang_thai_khoa_kham='Đã Tải Lên Kết Quả')[0]
         phan_khoa = PhanKhoaKham.objects.filter(id=id_phan_khoa).first()
+        phan_khoa.trang_thai = trang_thai
+        phan_khoa.save()
         ket_qua_tong_quat = KetQuaTongQuat.objects.get_or_create(chuoi_kham=chuoi_kham)[0]
         ket_qua_chuyen_khoa = KetQuaChuyenKhoa.objects.create(
             ket_qua_tong_quat=ket_qua_tong_quat, 
@@ -3795,9 +3798,9 @@ def store_ket_qua_xet_nghiem(request):
 
         chuoi_kham = ChuoiKham.objects.filter(id=id_chuoi_kham).first()
         
-        hoan_thanh = TrangThaiKhoaKham.objects.filter(trang_thai_khoa_kham='Hoàn Thành').first()
+        trang_thai = TrangThaiKhoaKham.objects.get_or_create(trang_thai_khoa_kham='Đã Tải Lên Kết Quả')[0]
         phan_khoa_kham = PhanKhoaKham.objects.filter(id=id_phan_khoa).first()
-        phan_khoa_kham.trang_thai = hoan_thanh
+        phan_khoa_kham.trang_thai = trang_thai
         phan_khoa_kham.save()
 
         ket_qua_tong_quat = KetQuaTongQuat.objects.get_or_create(chuoi_kham=chuoi_kham)[0]
@@ -3857,9 +3860,9 @@ def store_ket_qua_chuyen_khoa_html(request):
             }
             return HttpResponse(json.dumps(response), content_type="application/json, charset=utf-8")
         
-        hoan_thanh = TrangThaiKhoaKham.objects.filter(trang_thai_khoa_kham='Hoàn Thành').first()
+        trang_thai = TrangThaiKhoaKham.objects.get_or_create(trang_thai_khoa_kham='Đã Tải Lên Kết Quả')[0]
         phan_khoa = PhanKhoaKham.objects.filter(id=id_phan_khoa).first()
-        phan_khoa.trang_thai = hoan_thanh
+        phan_khoa.trang_thai = trang_thai
         phan_khoa.save()
         chuoi_kham = ChuoiKham.objects.filter(id=id_chuoi_kham).first()
 
@@ -6105,3 +6108,13 @@ def hoa_don_lam_sang(request, **kwargs):
 
         }
         return render(request, 'phong_tai_chinh/hoa_don_lam_sang.html', context=data)
+
+@login_required(login_url='/dang_nhap/')
+def hoa_don_lam_sang(request):
+    mau_hoa_don = MauPhieu.objects.filter(codename='hoa_don_lam_sang').first()
+    
+    context = {
+        'mau_hoa_don': mau_hoa_don
+    }
+
+    return render(request, 'phong_tai_chinh/hoa_don_lam_sang.html', context)

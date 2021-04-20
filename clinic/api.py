@@ -923,10 +923,10 @@ class DanhSachHoaDonDichVu(APIView):
     def get(self, request, format=None):
         now = timezone.localtime(timezone.now())
         tomorrow = now + timedelta(1)
+        today_start = now.replace(hour=0, minute=0, second=0)
         today_end = tomorrow.replace(hour=0, minute=0, second=0)
-        trang_thai_cho_thanh_toan = TrangThaiChuoiKham.objects.get_or_create(trang_thai_chuoi_kham="Chờ Thanh Toán")[0]
-        trang_thai_da_thanh_toan = TrangThaiChuoiKham.objects.get_or_create(trang_thai_chuoi_kham="Đã Thanh Toán")[0]
-        danh_sach_chuoi_kham = ChuoiKham.objects.select_related('benh_nhan').filter(Q(trang_thai=trang_thai_cho_thanh_toan) | Q(trang_thai=trang_thai_da_thanh_toan)).filter(thoi_gian_tao__lt=today_end)
+
+        danh_sach_chuoi_kham = ChuoiKham.objects.select_related('benh_nhan').filter(thoi_gian_tao__lt=today_end, thoi_gian_tao__gte=today_start)
         serializer = HoaDonChuoiKhamSerializerSimple(danh_sach_chuoi_kham, many=True, context={'request': request})
         data = serializer.data
         response_data = {
@@ -939,10 +939,10 @@ class DanhSachHoaDonThuoc(APIView):
     def get(self, request, format=None):
         now = timezone.localtime(timezone.now())
         tomorrow = now + timedelta(1)
+        today_start = now.replace(hour=0, minute=0, second=0)
         today_end = tomorrow.replace(hour=0, minute=0, second=0)
-        trang_thai_cho_thanh_toan = TrangThaiDonThuoc.objects.get_or_create(trang_thai = "Chờ Thanh Toán")[0]
-        trang_thai_da_thanh_toan = TrangThaiDonThuoc.objects.get_or_create(trang_thai = "Đã Thanh Toán")[0]
-        danh_sach_don_thuoc = DonThuoc.objects.select_related('benh_nhan').filter(Q(trang_thai=trang_thai_cho_thanh_toan) | Q(trang_thai=trang_thai_da_thanh_toan)).filter(thoi_gian_tao__lt=today_end)
+
+        danh_sach_don_thuoc = DonThuoc.objects.select_related('benh_nhan').filter(thoi_gian_tao__gte=today_start, thoi_gian_tao__lt=today_end)
         serializer = HoaDonThuocSerializerSimple(danh_sach_don_thuoc, many=True, context={'request': request})
         data = serializer.data
         response_data = {
@@ -982,13 +982,14 @@ class DanhSachDonThuocDaKe(APIView):
 
 class DanhSachThanhToanLamSang(APIView):
     def get(self, request, format=None):
+
         now = timezone.localtime(timezone.now())
         tomorrow = now + timedelta(1)
+        today_start = now.replace(hour=0, minute=0, second=0)
         today_end = tomorrow.replace(hour=0, minute=0, second=0)
-        trang_thai_cho_thanh_toan = TrangThaiLichHen.objects.get_or_create(ten_trang_thai = "Chờ Thanh Toán Lâm Sàng")[0]
-        trang_thai_da_thanh_toan = TrangThaiLichHen.objects.get_or_create(ten_trang_thai = "Đã Thanh Toán Lâm Sàng")[0]
-        danh_sach_lam_sang = LichHenKham.objects.select_related('benh_nhan').filter(Q(trang_thai = trang_thai_cho_thanh_toan) | Q(trang_thai = trang_thai_da_thanh_toan)).filter(thoi_gian_tao__lt=today_end)
-        serializer = LichHenKhamSerializer(danh_sach_lam_sang, many=True, context={'request': request})
+        danh_sach_lich_hen = LichHenKham.objects.select_related('benh_nhan').filter(thoi_gian_tao__gte=today_start, thoi_gian_tao__lt=today_end)
+        
+        serializer = LichHenKhamSerializer(danh_sach_lich_hen, many=True, context={'request': request})
         data = serializer.data
         response_data = {
             'error': False, 
@@ -1651,7 +1652,7 @@ class DanhSachBenhNhanTheoPhongChucNang(APIView):
         for dich_vu in danh_sach_dich_vu:
             for phan_khoa in dich_vu.phan_khoa_dich_vu.all():
                 if phan_khoa is not None:
-                    if phan_khoa.trang_thai is not None and (phan_khoa.trang_thai.trang_thai_khoa_kham == 'Chờ Khám' or phan_khoa.trang_thai.trang_thai_khoa_kham == 'Đang Thực Hiện' or phan_khoa.trang_thai.trang_thai_khoa_kham == 'Hoàn Thành' or phan_khoa.trang_thai.trang_thai_khoa_kham == 'Dừng Khám'):
+                    if phan_khoa.trang_thai is not None and (phan_khoa.trang_thai.trang_thai_khoa_kham == 'Chờ Khám' or phan_khoa.trang_thai.trang_thai_khoa_kham == 'Đang Thực Hiện' or phan_khoa.trang_thai.trang_thai_khoa_kham == 'Hoàn Thành' or phan_khoa.trang_thai.trang_thai_khoa_kham == 'Đã Tải Lên Kết Quả' or phan_khoa.trang_thai.trang_thai_khoa_kham == 'Dừng Khám'):
                         danh_sach_phan_khoa.add(phan_khoa)
         
         serializer = PhanKhoaKhamSerializer(danh_sach_phan_khoa, many=True, context={'request': request})

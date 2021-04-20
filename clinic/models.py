@@ -617,7 +617,6 @@ class LichHenKham(models.Model):
         ('kham_suc_khoe', 'Khám Sức Khỏe')
     )
 
-
     ma_lich_hen = models.CharField(max_length=15, null=True, blank=True)
     benh_nhan = models.ForeignKey(User, on_delete=models.CASCADE, related_name="benh_nhan_hen_kham")
     nguoi_phu_trach = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, related_name="nguoi_phu_trach")
@@ -654,7 +653,16 @@ class LichHenKham(models.Model):
             ma_lich_hen = "LH" + date_time
             self.ma_lich_hen = ma_lich_hen
         return super(LichHenKham, self).save(*args, **kwargs)
-    # objects = LichHenKhamManager()
+    
+    def check_thanh_toan(self):
+        hoa_don_lam_sang = self.hoa_don_lam_sang.all().last()
+        if hoa_don_lam_sang is not None:
+            if hoa_don_lam_sang.tong_tien is not None:
+                return True
+            else:
+                return False
+        else:
+            return False
 
 class LichSuTrangThaiLichHen(models.Model):
     lich_hen_kham = models.ForeignKey(LichHenKham, on_delete=models.CASCADE, related_name="lich_hen")
@@ -814,6 +822,15 @@ class ChuoiKham(models.Model):
         else:
             return False
 
+    def check_thanh_toan(self):
+        hoa_don_dich_vu = self.hoa_don_dich_vu
+        if hoa_don_dich_vu is not None:
+            if hoa_don_dich_vu.tong_tien is not None:
+                return True
+            else:
+                return False
+        else:
+            return False
 
 class PhanKhoaKham(models.Model):
     benh_nhan = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)
