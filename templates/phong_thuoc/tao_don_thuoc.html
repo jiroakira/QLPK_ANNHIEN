@@ -162,9 +162,15 @@
                     </div>
                     <div class="form-group" id="thongTinBenhNhan"></div>
                      
-                    <div class="form-group mt-3" style="display: none" id="khach_vang_lai">
-                        <label>Nhập tên người mua </label>
-                        <input type="text" class="form-control" id="ten_khach_vang_lai" />
+                    <div class="form-group mt-3 row" style="display: none" id="khach_vang_lai">
+                        <div class="col-lg-9">
+                            <label>Nhập tên người mua </label>
+                            <input type="text" class="form-control" id="ten_khach_vang_lai" />
+                        </div>
+                        <div class="col-lg-3">
+                            <label>Số điện thoại người mua </label>
+                            <input type="text" class="form-control" id="so_dien_thoai_khach" />
+                        </div>
                     </div>
                 </div>
                 <div class="card-footer">
@@ -197,14 +203,6 @@
 
 {% block scripts %}
 
-
-<!--begin::Global Theme Bundle(used by all pages)-->
-<script src="{% static 'assets/plugins/global/plugins.bundle9cd7.js' %} "></script>
-<script src="{% static 'assets/plugins/custom/prismjs/prismjs.bundle9cd7.js' %} "></script>
-<script src="{% static 'assets/js/scripts.bundle9cd7.js' %} "></script>
-<!--end::Global Theme Bundle-->
-
-<!--begin::Custom Javascripts(used by this page)-->
 <script>
 
 "use strict";
@@ -212,18 +210,17 @@
 
 function printDiv() 
 {
+    var divToPrint=document.getElementById('divDonThuoc');
 
-  var divToPrint=document.getElementById('divDonThuoc');
+    var newWin=window.open('','Print-Window');
 
-  var newWin=window.open('','Print-Window');
+    newWin.document.open();
 
-  newWin.document.open();
+    newWin.document.write('<html><body onload="window.print()">'+divToPrint.innerHTML+'</body></html>');
 
-  newWin.document.write('<html><body onload="window.print()">'+divToPrint.innerHTML+'</body></html>');
+    newWin.document.close();
 
-  newWin.document.close();
-
-  setTimeout(function(){newWin.close();},10);
+    setTimeout(function(){newWin.close();},10);
 
 }
 
@@ -401,47 +398,48 @@ var KTDatatableRecordSelectionDemo = function() {
 
         $('#selectOption').change(function(){
             if($(this).val() === "vang_lai"){
-                $('#khach_vang_lai').show()
-                $('#benh_nhan_pk').hide()
-                $('#selectBenhNhan').prop('selectedIndex', 0)
+                $('#khach_vang_lai').show();
+                $('#benh_nhan_pk').hide();
+                $('#selectBenhNhan').prop('selectedIndex', 0);
             }else{
-                $('#benh_nhan_pk').show()
-                $('#khach_vang_lai').hide()
-                $('#ten_khach_vang_lai').val('')
+                $('#benh_nhan_pk').show();
+                $('#khach_vang_lai').hide();
+                $('#ten_khach_vang_lai').val('');
             }
         })
 
         $('#get-table-data').on('click', function (){
-            var user_id            = $('#selectBenhNhan').val();
-            var ten_khach_vang_lai = $("#ten_khach_vang_lai").val()
-            lstCheckbox            = {};
-            lstQuantity            = {};
-            lstUsage               = {};
-            lstNote                = {};
+            var user_id             = $('#selectBenhNhan').val();
+            var ten_khach_vang_lai  = $("#ten_khach_vang_lai").val();
+            var so_dien_thoai_khach = $("#so_dien_thoai_khach").val();
+            lstCheckbox             = {};
+            lstQuantity             = {};
+            lstUsage                = {};
+            lstNote                 = {};
             getCheckbox();
             getInputQuantity();
             getInputUsage();
             getInputNote();
             getPostData();
-            postData(user_id, ten_khach_vang_lai); 
+            postData(user_id, ten_khach_vang_lai, so_dien_thoai_khach); 
         })
 
         $('#printDonThuoc').on('click', function() {
-            console.log(getPostData())
-            var ten_khach_vang_lai = $("#ten_khach_vang_lai").val()
-            lstCheckbox            = {};
-            lstQuantity            = {};
-            lstUsage               = {};
-            lstNote                = {};
+            var ten_khach_vang_lai  = $("#ten_khach_vang_lai").val();
+            var so_dien_thoai_khach = $("#so_dien_thoai_khach").val();
+            lstCheckbox             = {};
+            lstQuantity             = {};
+            lstUsage                = {};
+            lstNote                 = {};
             getCheckbox();
             getInputQuantity();
             getInputUsage();
             getInputNote();
             var data_thuoc = getPostData();
-            var data_thoi_gian = ''
-            var data_nguoi_thuc_hien = ''
-            var thoi_gian_thanh_toan = "{{ thoi_gian_thanh_toan|safe }}"
-            var nguoi_thanh_toan = "{{nguoi_thanh_toan|safe}}"
+            var data_thoi_gian = '';
+            var data_nguoi_thuc_hien = '';
+            var thoi_gian_thanh_toan = "{{ thoi_gian_thanh_toan|safe }}";
+            var nguoi_thanh_toan = "{{nguoi_thanh_toan|safe}}";
 
             $('#divDonThuoc tbody tr').each(function() {
                 if ($(this).find('td').eq(0).text() == '{thoi_gian_thanh_toan}'){
@@ -480,7 +478,7 @@ var KTDatatableRecordSelectionDemo = function() {
                 }
             })
             
-            printDiv()
+            printDiv();
         })
     
         datatable.on('click', 'tbody input[type="checkbox"]', function () {
@@ -562,10 +560,11 @@ var KTDatatableRecordSelectionDemo = function() {
             }
         })
 
-        function postData(user_id, ten_khach_vang_lai){
-            var user_id = user_id
-            var ten_khach_vang_lai = ten_khach_vang_lai
-            var checkBoxObj = lstCheckbox;
+        function postData(user_id, ten_khach_vang_lai, so_dien_thoai_khach){
+            var user_id             = user_id;
+            var ten_khach_vang_lai  = ten_khach_vang_lai;
+            var so_dien_thoai_khach = so_dien_thoai_khach;
+            var checkBoxObj         = lstCheckbox;
 
             var csrftoken = jQuery("[name=csrfmiddlewaretoken]").val();
 
@@ -608,6 +607,7 @@ var KTDatatableRecordSelectionDemo = function() {
                     'csrfmiddlewaretoken': csrftoken,
                     'user_id': user_id,
                     'ten_khach_vang_lai' : ten_khach_vang_lai,
+                    'so_dien_thoai_khach' : so_dien_thoai_khach,
                 },
                 dataType: 'json',
                 safe: false,

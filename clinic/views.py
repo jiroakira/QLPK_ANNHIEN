@@ -4272,19 +4272,18 @@ def store_don_thuoc_rieng(request):
         request_data = request.POST.get('data', None)
         user_id = request.POST.get('user_id', None)
         ten_khach_vang_lai = request.POST.get("ten_khach_vang_lai", None)
+        so_dien_thoai_khach = request.POST.get("so_dien_thoai_khach", None)
         # id_chuoi_kham = request.POST.get('id_chuoi_kham', None)
         data = json.loads(request_data)
 
-        print(user_id)
-        print(ten_khach_vang_lai)
         now = datetime.now()
         date_time = now.strftime("%m%d%y%H%M%S")
         
         bulk_create_data = []
         trang_thai = TrangThaiDonThuoc.objects.get_or_create(trang_thai="Chờ Thanh Toán")[0]
         if user_id == "":
-            user = ten_khach_vang_lai
-            subName = getSubName(user)
+            subName = getSubName(ten_khach_vang_lai)
+            user = ten_khach_vang_lai + '-' + str(so_dien_thoai_khach)
             ma_don_thuoc = subName + '-' + date_time
             don_thuoc = DonThuoc.objects.get_or_create(benh_nhan_vang_lai=user, bac_si_ke_don=request.user, trang_thai=trang_thai, ma_don_thuoc=ma_don_thuoc)[0]
             
