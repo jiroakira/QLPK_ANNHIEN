@@ -959,7 +959,8 @@ class DanhSachDonThuocPhongThuoc(APIView):
         # trang_thai = TrangThaiDonThuoc.objects.filter(Q(trang_thai = "Chờ Thanh Toán") | Q(trang_thai = "Đã Thanh Toán"))
         trang_thai = TrangThaiDonThuoc.objects.get_or_create(trang_thai = "Đã Thanh Toán")[0]
         trang_thai_cho = TrangThaiDonThuoc.objects.get_or_create(trang_thai = "Chờ Thanh Toán")[0]
-        danh_sach_don_thuoc = DonThuoc.objects.filter(Q(trang_thai=trang_thai) | Q(trang_thai=trang_thai_cho)).filter(thoi_gian_tao__lt=today_end)
+        trang_thai_hoan_thanh = TrangThaiDonThuoc.objects.get_or_create(trang_thai = "Hoàn Thành")[0]
+        danh_sach_don_thuoc = DonThuoc.objects.filter(Q(trang_thai=trang_thai) | Q(trang_thai=trang_thai_cho) | Q(trang_thai=trang_thai_hoan_thanh)).filter(thoi_gian_tao__lt=today_end)
         serializer = HoaDonThuocSerializerSimple(danh_sach_don_thuoc, many=True, context={'request': request})
         data = serializer.data
         response_data = {

@@ -1168,7 +1168,7 @@ def phong_tai_chinh_danh_sach_cho(request):
 @login_required(login_url='/dang_nhap/')
 def phong_thuoc_danh_sach_cho(request):
     phong_chuc_nang = PhongChucNang.objects.all()
-    trang_thai = TrangThaiDonThuoc.objects.exclude(trang_thai='Hoàn Thành')
+    trang_thai = TrangThaiDonThuoc.objects.all()
 
     data = {
         'phong_chuc_nang' : phong_chuc_nang,
