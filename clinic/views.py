@@ -1414,7 +1414,8 @@ def don_thuoc(request, **kwargs):
     phong_chuc_nang = PhongChucNang.objects.all()
 
     mau_hoa_don = MauPhieu.objects.filter(codename='don_thuoc').first()
-    mau_hoa_don_thuc_pham_cn = MauPhieu.objects.filter(codename='don_thuoc').first()
+    mau_hoa_don_thuc_pham_cn = MauPhieu.objects.filter(codename='don_thuoc_ho_tro_dieu_tri').first()
+
     nguoi_thanh_toan = request.user.ho_ten
     thoi_gian_thanh_toan = datetime.now()
 
@@ -1435,10 +1436,15 @@ def don_thuoc(request, **kwargs):
         'id_don_thuoc': id_don_thuoc,
         'phong_chuc_nang' : phong_chuc_nang,
         'ten_thuoc': ds_thuoc,
+        'ten_thuoc_cn': ds_thuc_pham_chuc_nang,
         'so_luong': danh_sach_so_luong_thuoc,
+        'so_luong_thuoc_cn': danh_sach_so_luong_thuc_pham_cn,
         'duong_dung': danh_sach_duong_dung_thuoc,
+        'duong_dung_thuoc_cn': danh_sach_duong_dung_thuc_pham_cn,
         'ghi_chu': danh_sach_ghi_chu_thuoc,
+        'ghi_chu_thuoc_cn': danh_sach_ghi_chu_thuc_pham_cn,
         'mau_hoa_don': mau_hoa_don,
+        'mau_hoa_don_thuc_pham_cn': mau_hoa_don_thuc_pham_cn,
         'nguoi_thanh_toan': nguoi_thanh_toan,
         "thoi_gian_thanh_toan": f"{thoi_gian_thanh_toan.strftime('%H:%m')} Ngày {thoi_gian_thanh_toan.strftime('%d')} Tháng {thoi_gian_thanh_toan.strftime('%m')} Năm {thoi_gian_thanh_toan.strftime('%Y')}",
     }
