@@ -1,7 +1,7 @@
 from clinic.models import DuongDungThuoc, GoiThau, NhomChiPhi
 from datetime import time
 import decimal
-from finance.models import HoaDonVatTu
+from finance.models import HoaDonThuoc, HoaDonVatTu
 from django.db import models
 import uuid
 from django.utils import timezone
@@ -290,6 +290,14 @@ class DonThuoc(models.Model):
             return True
         else:
             return False
+
+    def check_thanh_toan(self):
+        checkout = False
+        try:
+            checkout = (self.hoa_don_thuoc is not None)
+        except HoaDonThuoc.DoesNotExist:
+            pass
+        return checkout
 
 class LichSuTrangThaiDonThuoc(models.Model):
     don_thuoc = models.ForeignKey(DonThuoc, on_delete=models.CASCADE)
