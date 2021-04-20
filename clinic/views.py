@@ -1290,8 +1290,7 @@ def hoa_don_thuoc(request, **kwargs):
 
     don_thuoc = get_object_or_404(DonThuoc, id=id_don_thuoc)
     danh_sach_thuoc = don_thuoc.ke_don.all()
-    check_da_thanh_toan = don_thuoc.check_da_thanh_toan()
-    print(check_da_thanh_toan)
+    check_da_thanh_toan = don_thuoc.check_thanh_toan()
 
     _danh_sach_thuoc = []
     _danh_sach_thuc_pham_chuc_nang = []
@@ -1324,8 +1323,8 @@ def hoa_don_thuoc(request, **kwargs):
     mau_hoa_don_thuoc = MauPhieu.objects.filter(codename='hoa_don_thuoc').first()
     mau_hoa_don_tphtdt = MauPhieu.objects.filter(codename='hoa_don_thuc_pham_ho_tro_dieu_tri').first()
 
-    thoi_gian_thanh_toan = datetime.now()
     benh_nhan = don_thuoc.benh_nhan
+    thoi_gian_thanh_toan = datetime.now()
     ds_thuoc = [f'{i.thuoc.ten_thuoc}' for i in _danh_sach_thuoc]
     ds_thuc_pham_chuc_nang = [f'{i.thuoc.ten_thuoc}' for i in _danh_sach_thuc_pham_chuc_nang]
     danh_sach_bao_hiem_thuoc = ['Áp Dụng' if i.bao_hiem else 'Không Áp Dụng' for i in _danh_sach_thuoc]
@@ -1402,24 +1401,43 @@ def don_thuoc(request, **kwargs):
     don_thuoc = get_object_or_404(DonThuoc, id=id_don_thuoc)
 
     danh_sach_thuoc = don_thuoc.ke_don.all()
+
+    _danh_sach_thuoc = []
+    _danh_sach_thuc_pham_chuc_nang = []
+
+    for thuoc_instance in danh_sach_thuoc:
+        if thuoc_instance.thuoc.check_loai_thuoc:
+            _danh_sach_thuc_pham_chuc_nang.append(thuoc_instance)
+        else:
+            _danh_sach_thuoc.append(thuoc_instance)
+
     phong_chuc_nang = PhongChucNang.objects.all()
-    ten_thuoc = [f'{i.thuoc.ten_thuoc}' for i in danh_sach_thuoc]
-    so_luong = [f'{i.so_luong}' for i in danh_sach_thuoc]
-    duong_dung = [f'{i.cach_dung}' for i in danh_sach_thuoc]
-    ghi_chu = [f'{i.ghi_chu}' for i in danh_sach_thuoc]
+
     mau_hoa_don = MauPhieu.objects.filter(codename='don_thuoc').first()
+    mau_hoa_don_thuc_pham_cn = MauPhieu.objects.filter(codename='don_thuoc').first()
     nguoi_thanh_toan = request.user.ho_ten
     thoi_gian_thanh_toan = datetime.now()
+
+    ds_thuoc = [f'{i.thuoc.ten_thuoc}' for i in _danh_sach_thuoc]
+    ds_thuc_pham_chuc_nang = [f'{i.thuoc.ten_thuoc}' for i in _danh_sach_thuc_pham_chuc_nang]
+    danh_sach_so_luong_thuoc = [f'{i.so_luong}' for i in _danh_sach_thuoc]
+    danh_sach_so_luong_thuc_pham_cn = [f'{i.so_luong}' for i in _danh_sach_thuc_pham_chuc_nang]
+    danh_sach_duong_dung_thuoc = [f'{i.cach_dung}' for i in _danh_sach_thuoc]
+    danh_sach_duong_dung_thuc_pham_cn = [f'{i.cach_dung}' for i in _danh_sach_thuc_pham_chuc_nang]
+    danh_sach_ghi_chu_thuoc = [f'{i.ghi_chu}' for i in _danh_sach_thuoc]
+    danh_sach_ghi_chu_thuc_pham_cn = [f'{i.ghi_chu}' for i in _danh_sach_thuc_pham_chuc_nang]
+    danh_sach_don_vi_tinh_thuoc = [f'{i.thuoc.don_vi_tinh}' for i in _danh_sach_thuoc]
+    danh_sach_don_vi_tinh_thuc_pham_cn = [f'{i.thuoc.don_vi_tinh}' for i in _danh_sach_thuc_pham_chuc_nang]
 
     data = {
         'danh_sach_thuoc': danh_sach_thuoc,
         'don_thuoc' : don_thuoc,
         'id_don_thuoc': id_don_thuoc,
         'phong_chuc_nang' : phong_chuc_nang,
-        'ten_thuoc': ten_thuoc,
-        'so_luong': so_luong,
-        'duong_dung': duong_dung,
-        'ghi_chu': ghi_chu,
+        'ten_thuoc': ds_thuoc,
+        'so_luong': danh_sach_so_luong_thuoc,
+        'duong_dung': danh_sach_duong_dung_thuoc,
+        'ghi_chu': danh_sach_ghi_chu_thuoc,
         'mau_hoa_don': mau_hoa_don,
         'nguoi_thanh_toan': nguoi_thanh_toan,
         "thoi_gian_thanh_toan": f"{thoi_gian_thanh_toan.strftime('%H:%m')} Ngày {thoi_gian_thanh_toan.strftime('%d')} Tháng {thoi_gian_thanh_toan.strftime('%m')} Năm {thoi_gian_thanh_toan.strftime('%Y')}",
@@ -5971,6 +5989,7 @@ def thay_doi_phan_khoa(request):
         subName = getSubName(benh_nhan.ho_ten)
         ma_hoa_don = "HD" + "-" + subName + '-' + date_time
 
+        trang_thai_phan_khoa = TrangThaiKhoaKham.objects.get_or_create(trang_thai_khoa_kham='Chờ Khám')[0]
         bulk_create_data = []
         for i in data:
             if i['obj']['bao_hiem'] == "True":
@@ -5980,7 +5999,17 @@ def thay_doi_phan_khoa(request):
             priority = index + 1
             dich_vu = DichVuKham.objects.only('id').filter(id=i['obj']['id']).first()
             bac_si = request.user
-            bulk_create_data.append(PhanKhoaKham(benh_nhan=benh_nhan, dich_vu_kham=dich_vu, bao_hiem=i['obj']['bao_hiem'], bac_si_lam_sang=bac_si, chuoi_kham=chuoi_kham, priority=priority))
+            bulk_create_data.append(
+                PhanKhoaKham(
+                    benh_nhan=benh_nhan, 
+                    dich_vu_kham=dich_vu, 
+                    bao_hiem=i['obj']['bao_hiem'], 
+                    bac_si_lam_sang=bac_si, 
+                    chuoi_kham=chuoi_kham, 
+                    priority=priority,
+                    trang_thai=trang_thai_phan_khoa,
+                    )
+                )
 
         hoa_don_chuoi_kham = chuoi_kham.hoa_don_dich_vu.delete()
         hoa_don = HoaDonChuoiKham.objects.create(chuoi_kham=chuoi_kham, ma_hoa_don=ma_hoa_don, bao_hiem = bao_hiem)

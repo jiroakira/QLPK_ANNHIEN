@@ -44,6 +44,11 @@
                         <!--begin::Button-->
                         <a href="#" id='btn_print' class="btn btn-primary font-weight-bolder btn-print mr-2">
                         <i class="la la-print"></i>In Đơn Thuốc</a>
+
+                        {% if don_thuoc.check_tphtdt %}
+                            <a href="#" id='btn_print_htdt' class="btn btn-primary font-weight-bolder btn-print mr-2">
+                            <i class="la la-print"></i>In Đơn Thuốc Hỗ Trợ ĐT</a>
+                        {% endif %}
                         <!--end::Button-->
 
                         {% if don_thuoc.check_hoan_thanh %}
