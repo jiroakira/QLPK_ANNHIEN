@@ -307,17 +307,7 @@ var KTDatatableRemoteAjaxDemo = function() {
                 field: 'trang_thai_thanh_toan',
                 title: 'Trạng Thái',
                 template: function(row) {
-                    // var trang_thai = {
-                    //     1: {
-                    //         'title': 'Chờ Thanh Toán LS',
-                    //         'class': ' label-light-warning'
-                    //     },
-                    //     2: {
-                    //         'title': 'Đã Thanh Toán LS',
-                    //         'class': ' label-light-success'
-                    //     },
-                    // };
-                    // return '<span class="label font-weight-bold label-lg ' + trang_thai[row.trang_thai.id].class + ' label-inline">' + trang_thai[row.trang_thai.id].title + '</span>';
+
                     if (row.trang_thai_thanh_toan == "True") {
                         return '<span class="label font-weight-bold label-lg label-light-success label-inline">' + 'Đã Thanh Toán LS' + '</span>';
                     } else if (row.trang_thai_thanh_toan == "False") {
@@ -335,7 +325,7 @@ var KTDatatableRemoteAjaxDemo = function() {
                 template: function(row) {
                     if (row.trang_thai_thanh_toan == 'True') {
                         return `
-                            <a href="javascript:;" class="btn btn-sm btn-clean mr-2 btn-thanh-toan" data-ten="${row.benh_nhan.ho_ten}" data-id="${row.id}" data-time="${row.thoi_gian_tao}" data-phone="${row.benh_nhan.so_dien_thoai}" data-address="${row.benh_nhan.dia_chi}" title="Edit details">
+                            <a href="/hoa_don_lam_sang/${row.id}/" id='xemLaiHoaDon' class="btn btn-sm btn-clean mr-2 btn-thanh-toan" data-ten="${row.benh_nhan.ho_ten}" data-id="${row.id}" data-time="${row.thoi_gian_tao}" data-phone="${row.benh_nhan.so_dien_thoai}" data-address="${row.benh_nhan.dia_chi}" title="Edit details">
                                 Xem Lại
                             </a>
                         `
