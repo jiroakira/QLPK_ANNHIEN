@@ -180,7 +180,7 @@
                             Nhập số phần trăm giảm giá
                         </label>
                         <div class="input-group">
-                            <input type="number" id="tien_giam" class="form-control" placeholder="Số phần trăm giảm giá" aria-describedby="basic-addon2" onwheel="return false;" min='0' oninput="this.value|=0" />
+                            <input type="number" id="discount" class="form-control" placeholder="Số phần trăm giảm giá" aria-describedby="basic-addon2" onwheel="return false;" min='0' max='100' oninput="this.value|=0" />
                             <div class="input-group-append"><span class="input-group-text">%</span></div>
                         </div>
                     </div>
@@ -195,6 +195,8 @@
 </div>
 <!--end::Modal-->
 
+<div id='newTableHtml' style="display: none;"></div>
+
 {% endblock content %}
 
 {% block scripts %}
@@ -203,6 +205,8 @@
 <script src="{% static 'assets/js/scripts.bundle9cd7.js' %} "></script>
 
 <script>
+    var tableHtml = `{{ mau_hoa_don.noi_dung|safe }}`
+
     var lstData = [];
     var lstCheckbox = {};
     var list_data_2 = [];
@@ -609,46 +613,166 @@
         };
 
         $('#btn_confirm_tien').on('click', function(){
-            var tien_giam = $('#tien_giam').val();
+            var discount = $('#discount').val();
             var thanh_tien_cu = $(this).data('thanh-tien');
             thanh_tien = Number(thanh_tien);
-            tien_giam = Number(tien_giam);
+            discount = Number(discount);
 
-            var tien_can_thanh_toan = thanh_tien * (1 - (tien_giam)/100);
-            var so_tien_giam = thanh_tien * ((tien_giam)/100);
+            var tien_can_thanh_toan = thanh_tien * (1 - (discount)/100);
+            var so_tien_giam = thanh_tien * ((discount)/100);
             var data_thanh_tien = '';
             var data_giam_gia = '';
 
             tien_can_thanh_toan = formatMoney(tien_can_thanh_toan);
             so_tien_giam = formatMoney(so_tien_giam);
 
-            $('#mau_hoa_don table tbody tr').each(function(){
-                if($(this).find('td').eq(3).text() == `${thanh_tien_cu}`){
-                    // console.log($(this).html())
-                    var innerHtml = $(this).html();
-                    var start_tr = '<tr>';
-                    var end_tr = '</tr>';
-                    var c = start_tr + innerHtml + end_tr;
-                    data_thanh_tien += c.replace(`${thanh_tien_cu}`, tien_can_thanh_toan);
-                    $(this).replaceWith(data_thanh_tien);
-                }
+            var tempTableHtml = tableHtml
 
-                if($(this).find('td').eq(3).text() == 'Không Áp Dụng'){
-                    // console.log($(this).html())
-                    var innerHtml = $(this).html();
-                    var start_tr = '<tr>';
-                    var end_tr = '</tr>';
-                    var c = start_tr + innerHtml + end_tr;
-                    data_giam_gia += c.replace('Không Áp Dụng', so_tien_giam);
-                    $(this).replaceWith(data_giam_gia);
-                }
-            });
-
-            $('#giam_gia_modal').modal('hide');
-
-            $('#btn-thanh-toan').attr('data-discount', tien_giam);
-
+            $("#newTableHtml").html(tempTableHtml)
             
+            $("#newTableHtml tbody tr").each(function() {
+                var data_ten_mau = '';
+                var data_benh_nhan = '';
+                var data_so_dien_thoai = '';
+                var data_dia_chi = '';
+                var data_ten_dich_vu = '';
+                var data_tong_tien = '';
+                var data_tong_tien_bao_hiem = '';
+                var data_thanh_tien = '';
+                var data_nguoi_thuc_hien = '';
+                var data_giam_gia = ''
+                var ten_mau_hoa_don = "{{ mau_hoa_don.ten_mau|safe }}";
+                var thoi_gian_thanh_toan = "{{ thoi_gian_thanh_toan|safe }}";
+                var benh_nhan = "{{ benh_nhan|safe }}";
+                var so_dien_thoai = "{{ so_dien_thoai|safe }}";
+                var dia_chi = "{{ dia_chi|safe }}";
+                var danh_sach_dich_vu = {{ danh_sach_dich_vu|safe }};
+                var danh_sach_bao_hiem = {{ danh_sach_bao_hiem|safe }};
+                var danh_sach_gia_tien = {{ danh_sach_gia_tien|safe }};
+                var tong_tien = "{{ tong_tien|safe }}";
+                var tong_tien_bao_hiem = "{{ tong_tien_bao_hiem|safe }}";
+                var thanh_tien = "{{ thanh_tien|safe }}";
+                var nguoi_thuc_hien = "{{ nguoi_thuc_hien|safe }}";
+
+                if($(this).find('td').eq(0).text() == '{ten_mau_hoa_don}'){
+                    console.log($(this).html());
+                    var innerHtml = $(this).html();
+                    var start_tr = '<tr>';
+                    var end_tr = '</tr>';
+                    var c = start_tr + innerHtml + end_tr;
+
+                    data_ten_mau += c.replace(/{ten_mau_hoa_don}/, ten_mau_hoa_don);
+
+                    $(this).replaceWith(data_ten_mau);
+                }
+
+                if($(this).find('td').eq(0).text() == '{thoi_gian_thanh_toan}'){
+                    console.log($(this).html());
+                    var innerHtml = $(this).html();
+                    var start_tr = '<tr>';
+                    var end_tr = '</tr>';
+                    var c = start_tr + innerHtml + end_tr;
+
+                    data_benh_nhan += c.replace(/{thoi_gian_thanh_toan}/, thoi_gian_thanh_toan).replace(/{benh_nhan}/, benh_nhan);
+
+                    $(this).replaceWith(data_benh_nhan);
+                }
+
+                if($(this).find('td').eq(1).text() == '{so_dien_thoai}'){
+                    console.log($(this).html())
+                    var innerHtml = $(this).html()
+                    var start_tr = '<tr>'
+                    var end_tr = '</tr>'
+                    var c = start_tr + innerHtml + end_tr
+
+                    data_so_dien_thoai += c.replace(/{so_dien_thoai}/, so_dien_thoai)
+
+                    $(this).replaceWith(data_so_dien_thoai)
+                }
+
+                if($(this).find('td').eq(1).text() == '{dia_chi}'){
+                    console.log($(this).html())
+                    var innerHtml = $(this).html()
+                    var start_tr = '<tr>'
+                    var end_tr = '</tr>'
+                    var c = start_tr + innerHtml + end_tr
+
+                    data_dia_chi += c.replace(/{dia_chi}/, dia_chi)
+
+                    $(this).replaceWith(data_dia_chi)
+                }
+
+                if($(this).find('td').eq(0).text() == '{ten_dich_vu}'){
+                    console.log($(this).html())
+                    var innerHtml = $(this).html()
+                    var start_tr = '<tr>'
+                    var end_tr = '</tr>'
+                    var c = start_tr + innerHtml + end_tr
+                    for (var i=0; i<danh_sach_dich_vu.length; i++) {
+
+                        data_ten_dich_vu += c.replace(/{ten_dich_vu}/, danh_sach_dich_vu[i]).replace(/{bao_hiem}/, danh_sach_bao_hiem[i]).replace(/{gia_tien}/, danh_sach_gia_tien[i]).replace(/{thanh_tien}/, danh_sach_gia_tien[i])
+                    }
+
+                    $(this).replaceWith(data_ten_dich_vu)
+                }
+
+                if($(this).find('td').eq(3).text() == '{tong_tien}'){
+                    console.log($(this).html())
+                    var innerHtml = $(this).html()
+                    var start_tr = '<tr>'
+                    var end_tr = '</tr>'
+                    var c = start_tr + innerHtml + end_tr
+                    data_tong_tien += c.replace(/{tong_tien}/, tong_tien)
+                    $(this).replaceWith(data_tong_tien)
+                }
+
+                if($(this).find('td').eq(3).text() == '{tong_tien_bao_hiem}'){
+                    console.log($(this).html())
+                    var innerHtml = $(this).html()
+                    var start_tr = '<tr>'
+                    var end_tr = '</tr>'
+                    var c = start_tr + innerHtml + end_tr
+                    data_tong_tien_bao_hiem += c.replace(/{tong_tien_bao_hiem}/, tong_tien_bao_hiem)
+                    $(this).replaceWith(data_tong_tien_bao_hiem)
+                }
+
+                if($(this).find('td').eq(3).text() == '{tien_thanh_toan}'){
+                    console.log($(this).html())
+                    var innerHtml = $(this).html()
+                    var start_tr = '<tr>'
+                    var end_tr = '</tr>'
+                    var c = start_tr + innerHtml + end_tr
+                    data_thanh_tien += c.replace(/{tien_thanh_toan}/, tien_can_thanh_toan)
+                    $(this).replaceWith(data_thanh_tien)
+                }
+
+                if($(this).find('td').eq(2).text() == '{nguoi_thanh_toan}'){
+                    console.log($(this).html())
+                    var innerHtml = $(this).html()
+                    var start_tr = '<tr>'
+                    var end_tr = '</tr>'
+                    var c = start_tr + innerHtml + end_tr
+                    data_nguoi_thuc_hien += c.replace(/{nguoi_thanh_toan}/, nguoi_thuc_hien)
+                    $(this).replaceWith(data_nguoi_thuc_hien)
+                }
+
+                if($(this).find('td').eq(3).text() == '{giam_gia}'){
+                    console.log($(this).html())
+                    var innerHtml = $(this).html()
+                    var start_tr = '<tr>'
+                    var end_tr = '</tr>'
+                    var c = start_tr + innerHtml + end_tr
+                    data_giam_gia += c.replace(/{giam_gia}/, so_tien_giam)
+                    $(this).replaceWith(data_giam_gia)
+                }
+            })
+
+            var changedTable = $("#newTableHtml").html()
+            console.log(changedTable)
+            
+            $("#mau_hoa_don").html(changedTable)
+            $('#giam_gia_modal').modal('hide');
+            $('#btn-thanh-toan').attr('data-discount', discount);
         });
     })
 
@@ -793,6 +917,8 @@
                 }
                 
             });
+
+            
             
         });
     } else {
