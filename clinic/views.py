@@ -6110,11 +6110,24 @@ def hoa_don_lam_sang(request, **kwargs):
         return render(request, 'phong_tai_chinh/hoa_don_lam_sang.html', context=data)
 
 @login_required(login_url='/dang_nhap/')
-def hoa_don_lam_sang(request):
+def hoa_don_lam_sang(request, **kwargs):
     mau_hoa_don = MauPhieu.objects.filter(codename='hoa_don_lam_sang').first()
-    
+    id_lich_hen = kwargs.get('id')
+    lich_hen = get_object_or_404(LichHenKham, id=id_lich_hen)
+    benh_nhan = lich_hen.benh_nhan
+    thoi_gian_thanh_toan = datetime.now()
+    hoa_don_lam_sang = lich_hen.hoa_don_lam_sang.all().last()
+    tong_tien = hoa_don_lam_sang.tong_tien
+    nguoi_thanh_toan = request.user
+
     context = {
-        'mau_hoa_don': mau_hoa_don
+        'mau_hoa_don': mau_hoa_don,
+        'thoi_gian_thanh_toan': f"{thoi_gian_thanh_toan.strftime('%H:%m')} Ngày {thoi_gian_thanh_toan.strftime('%d')} Tháng {thoi_gian_thanh_toan.strftime('%m')} Năm {thoi_gian_thanh_toan.strftime('%Y')}",
+        'benh_nhan': f"Họ tên: {benh_nhan.ho_ten}",
+        'so_dien_thoai': f"SĐT: {benh_nhan.get_so_dien_thoai()}",
+        'dia_chi': f"Đ/C: {benh_nhan.get_dia_chi()}",
+        'tong_tien': "{:,}".format(int(tong_tien)),
+        'nguoi_thanh_toan': nguoi_thanh_toan.ho_ten
     }
 
     return render(request, 'phong_tai_chinh/hoa_don_lam_sang.html', context)
