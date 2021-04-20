@@ -955,12 +955,13 @@ class DanhSachDonThuocPhongThuoc(APIView):
     def get(self, request, format=None):
         now = timezone.localtime(timezone.now())
         tomorrow = now + timedelta(1)
+        today_start = now.replace(hour=0, minute=0, second=0)
         today_end = tomorrow.replace(hour=0, minute=0, second=0)
         # trang_thai = TrangThaiDonThuoc.objects.filter(Q(trang_thai = "Chờ Thanh Toán") | Q(trang_thai = "Đã Thanh Toán"))
         trang_thai = TrangThaiDonThuoc.objects.get_or_create(trang_thai = "Đã Thanh Toán")[0]
         trang_thai_cho = TrangThaiDonThuoc.objects.get_or_create(trang_thai = "Chờ Thanh Toán")[0]
         trang_thai_hoan_thanh = TrangThaiDonThuoc.objects.get_or_create(trang_thai = "Hoàn Thành")[0]
-        danh_sach_don_thuoc = DonThuoc.objects.filter(Q(trang_thai=trang_thai) | Q(trang_thai=trang_thai_cho) | Q(trang_thai=trang_thai_hoan_thanh)).filter(thoi_gian_tao__lt=today_end)
+        danh_sach_don_thuoc = DonThuoc.objects.filter(Q(trang_thai=trang_thai) | Q(trang_thai=trang_thai_cho) | Q(trang_thai=trang_thai_hoan_thanh)).filter(thoi_gian_tao__gte=today_start, thoi_gian_tao__lt=today_end)
         serializer = HoaDonThuocSerializerSimple(danh_sach_don_thuoc, many=True, context={'request': request})
         data = serializer.data
         response_data = {
