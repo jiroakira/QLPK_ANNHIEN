@@ -250,8 +250,8 @@ class HoaDonNhapHang(models.Model):
         return super(HoaDonNhapHang, self).save(*args, **kwargs)
 
 class NhapHang(models.Model):
-    hoa_don = models.ForeignKey(HoaDonNhapHang, on_delete=models.CASCADE, null=True, blank=True)
-    thuoc = models.ForeignKey("medicine.Thuoc", on_delete=models.CASCADE, null=True, blank=True)
+    hoa_don = models.ForeignKey(HoaDonNhapHang, on_delete=models.CASCADE, null=True, blank=True, related_name='hoa_don_nhap_hang')
+    thuoc = models.ForeignKey("medicine.Thuoc", on_delete=models.CASCADE, null=True, blank=True, related_name='nhap_hang_thuoc')
     so_luong = models.PositiveIntegerField(null=True, blank=True)
     bao_hiem = models.BooleanField(default=False)
 
@@ -274,7 +274,7 @@ class HoaDonXuatHang(models.Model):
     thoi_gian_cap_nhat = models.DateTimeField(null=True, blank=True)
 
     class Meta:
-        verbose_name = "Hóa Đơn Nhập Hàng"
+        verbose_name = "Hóa Đơn Xuất Hàng"
 
     def save(self, *args, **kwargs):
         if not self.id:

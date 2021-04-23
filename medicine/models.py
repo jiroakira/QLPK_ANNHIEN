@@ -85,9 +85,9 @@ class Thuoc(models.Model):
     so_dang_ky = models.CharField(max_length=50, null=True, blank=True, verbose_name="Số đăng ký")
     dong_goi = models.CharField(max_length=255, null=True, blank=True, verbose_name="Đóng gói")
     don_vi_tinh = models.CharField(max_length=255, null=True, blank=True, verbose_name="Đơn vị tính")
-    don_gia = models.CharField(max_length=255, null=True, verbose_name="Đơn giá")
-    don_gia_tt = models.CharField(max_length=255, null=True, verbose_name="Đơn giá thành tiền")
-    gia_bhyt = models.CharField(max_length=50, null=True, verbose_name="Giá bảo hiểm y tế")
+    don_gia = models.IntegerField(max_length=255, null=True, verbose_name="Đơn giá")
+    don_gia_tt = models.IntegerField(max_length=255, null=True, verbose_name="Đơn giá thành tiền")
+    gia_bhyt = models.IntegerField(max_length=50, null=True, verbose_name="Giá bảo hiểm y tế")
     so_lo = models.CharField(max_length=255, blank=True, null=True, verbose_name="Số Lô")
     so_luong_kha_dung = models.IntegerField(verbose_name="Số lượng khả dụng", null=True, blank=True) # Số lượng thuốc khả dụng sau khi đã bán hoặc trả lại thuốc 
     # Để kiểm soát và duy trì truy xuất nguồn gốc, số lô được chỉ định và cũng giúp kiểm tra thời hạn sử dụng và các vấn đề khác
@@ -178,6 +178,7 @@ class Thuoc(models.Model):
         else:
             so_luong_kha_dung = 0
         return so_luong_kha_dung
+
 
 class NhomThuoc(models.Model):
     ma_nhom = models.CharField(max_length=255, null=True, blank=True)
@@ -308,8 +309,7 @@ class LichSuTrangThaiDonThuoc(models.Model):
 
 class KeDonThuoc(models.Model):
     don_thuoc = models.ForeignKey(DonThuoc, on_delete=models.CASCADE, null=True, related_name="ke_don")
-    # bac_si_lam_sang = models.ForeignKey(User, on_delete=models.SET(get_sentinel_user), related_name="bac_si_lam_sang")
-    # benh_nhan = models.ForeignKey(User, on_delete=models.SET(get_sentinel_user), related_name="don_thuoc_benh_nhan")
+    
     thuoc = models.ForeignKey(Thuoc, on_delete=models.CASCADE, null=True, blank=True)
     cach_dung = models.TextField()
     so_luong = models.PositiveIntegerField()

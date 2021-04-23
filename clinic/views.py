@@ -1,7 +1,10 @@
 
 
+from medicine.serializers import ThuocSerializer
 import time
-from clinic.excelUtils import WriteToExcel, writeToExcelDichVu, writeToExcelThuoc
+
+from django.db.models.expressions import Func, OuterRef, Subquery
+from clinic.excelUtils import ExportExcelBaoCaoXNTThuoc, ExportExcelDSThuocSapHetDate, WriteToExcel, writeToExcelDichVu, writeToExcelThuoc
 from finance.models import (
     HoaDonChuoiKham, 
     HoaDonLamSang,
@@ -102,7 +105,8 @@ from django.urls import reverse
 import locale 
 from django.contrib.auth.models import Group, Permission
 from django.contrib.contenttypes.models import ContentType
-from datetime import datetime
+from datetime import date, datetime
+from dateutil.relativedelta import relativedelta
 
 format = '%m/%d/%Y %H:%M %p'
 
@@ -6165,3 +6169,130 @@ def hoa_don_lam_sang(request, **kwargs):
     }
 
     return render(request, 'phong_tai_chinh/hoa_don_lam_sang.html', context)
+
+def bao_cao_xuat_nhap_ton_thuoc_view(request):
+    phong_chuc_nang = PhongChucNang.objects.all()
+    context = {
+        'phong_chuc_nang': phong_chuc_nang
+    }
+
+    return render(request, 'phong_tai_chinh/bao_cao_xuat_nhap_ton_tong_hop_thuoc.html', context)
+
+def danh_sach_thuoc_sap_het_date_view(request):
+    phong_chuc_nang = PhongChucNang.objects.all()
+    context = {
+        'phong_chuc_nang': phong_chuc_nang
+    }
+    return render(request, 'phong_tai_chinh/bao_cao_thuoc_sap_het_date.html', context)
+
+@csrf_exempt
+def export_excel_danh_sach_xnt_tong_hop_thuoc(request):
+    if request.method == 'POST':
+        range_start = request.POST.get('startDate', None)
+        range_end   = request.POST.get('endDate', None)
+        start = datetime.strptime(range_start, "%d-%m-%Y")
+
+        _start = "".join(range_start.split('-'))
+        _end = "".join(range_end.split('-'))
+
+        if range_end == '':
+            end = start + timedelta(1)
+        else:
+            end = datetime.strptime(range_end, "%d-%m-%Y")
+            if range_start == range_end:
+                end = end + timedelta(1)
+
+        danh_sach_thuoc = Thuoc.objects.all()
+
+        medicines = danh_sach_thuoc.annotate(
+            so_luong_nhap = Subquery(
+                NhapHang.objects.filter(
+                    thuoc = OuterRef('pk'),
+                ).filter(thoi_gian_tao__gte=start, thoi_gian_tao__lt=end).values_list(
+                    Func(
+                        'so_luong',
+                        function='SUM',
+                    )
+                )
+            )
+        ).annotate(
+            so_luong_xuat = Subquery(
+                KeDonThuoc.objects.filter(
+                    thuoc = OuterRef('pk'),
+                ).filter(thoi_gian_tao__gte=start, thoi_gian_tao__lt=end).values_list(
+                    Func(
+                        'so_luong',
+                        function='SUM',
+                    )
+                )
+            )
+        ).annotate(
+            ton_dau_ky=models.Case(
+                models.When(Q(so_luong_nhap__isnull=True) & Q(so_luong_xuat__isnull=True), then=F('so_luong_kha_dung')),
+                models.When(so_luong_nhap__isnull=True, then=F('so_luong_kha_dung') + F('so_luong_xuat')),
+                models.When(so_luong_xuat__isnull=True, then=F('so_luong_kha_dung') - F('so_luong_nhap')),
+                default = F('so_luong_kha_dung') - F('so_luong_nhap') + F('so_luong_xuat'),
+                output_field=models.IntegerField(),
+            )
+        ).annotate(
+            ton_cuoi_ky=models.Case(
+                models.When(Q(so_luong_nhap__isnull=True) & Q(so_luong_xuat__isnull=True), then=F('ton_dau_ky')),
+                models.When(so_luong_nhap__isnull=True, then=F('ton_dau_ky') - F('so_luong_xuat')),
+                models.When(so_luong_xuat__isnull=True, then=F('ton_dau_ky') + F('so_luong_nhap')),
+                default = F('ton_dau_ky') + F('so_luong_nhap') - F('so_luong_xuat'),
+            )
+        ).annotate(
+            thanh_tien_nhap=F('so_luong_nhap') * F('don_gia')
+        ).annotate(
+            thanh_tien_xuat=F('so_luong_xuat') * F('don_gia_tt')
+        ).values(
+            'ma_thuoc',
+            'ten_thuoc',
+            'ten_hoat_chat',
+            'don_vi_tinh',
+            'ham_luong',
+            'cong_ty__ten_cong_ty',
+            'nuoc_sx',
+            'so_lo',
+            'han_su_dung',
+            'don_gia',
+            'don_gia_tt',
+            'gia_bhyt',      
+            'so_luong_nhap',
+            'so_luong_xuat',
+            'ton_dau_ky',
+            'thanh_tien_nhap',
+            'thanh_tien_xuat',
+            'ton_cuoi_ky',
+        )
+        
+        xlsx_data = ExportExcelBaoCaoXNTThuoc(list(medicines))
+        response = HttpResponse(
+            content_type='application/ms-excel'
+        )
+        response['Content-Disposition'] = f'attachment; filename="BCXNT_THUOC_TONGHOP({_start}-{_end}).xlsx"'
+        response.write(xlsx_data)
+       
+    else:
+        response = HttpResponse(json.dumps({'message': "It's not gonna happen"}), content_type='application/json; charset=utf-8')
+    return response
+
+@csrf_exempt
+def export_excel_danh_sach_thuoc_het_date(request):
+    if request.method == "POST":
+        num_of_months = request.POST.get('num_of_months')
+        num_of_months_later = date.today() + relativedelta(months=+int(num_of_months))
+
+        medicines = Thuoc.objects.filter(han_su_dung__lte=num_of_months_later)
+        serializer = ThuocSerializer(medicines, many=True)
+
+        xlsx_data = ExportExcelDSThuocSapHetDate(serializer.data)
+        response = HttpResponse(
+            content_type='application/ms-excel'
+        )
+        response['Content-Disposition'] = f'attachment; filename="DS_THUOC_SAP_HET_DATE.xlsx"'
+        response.write(xlsx_data)
+       
+    else:
+        response = HttpResponse(json.dumps({'message': "It's not gonna happen"}), content_type='application/json; charset=utf-8')
+    return response
