@@ -486,8 +486,6 @@ var KTDatatableRemoteAjaxDemo = function() {
 
     var _initDaterangepicker = function () {
 
-
-
         if ($('#kt_dashboard_daterangepicker').length == 0) {
             return;
         }
@@ -684,6 +682,7 @@ var KTDatatableRemoteAjaxDemo = function() {
                     } else {
                         var URL = window.URL || window.webkitURL;
                         var downloadUrl = URL.createObjectURL(blob);
+                        console.log(downloadUrl)
 
                         if (filename) {
                             // use HTML5 a[download] attribute to specify filename

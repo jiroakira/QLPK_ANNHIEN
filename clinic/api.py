@@ -1,4 +1,5 @@
-from clinic.pagination import CustomPagination
+from django.db.models.expressions import Func, OuterRef, Subquery
+from clinic.pagination import CustomPagination, PaginationHandlerMixin
 from finance.models import (
     HoaDonChuoiKham, 
     HoaDonThuoc, 
@@ -11,7 +12,7 @@ from rest_framework.parsers import FileUploadParser
 from rest_framework.parsers import MultiPartParser
 import json
 from medicine.models import CongTy, DonThuoc, KeDonThuoc, Thuoc, TrangThaiDonThuoc, VatTu
-from django.http.response import Http404, HttpResponse
+from django.http.response import Http404, HttpResponse, JsonResponse
 from rest_framework import views
 from rest_framework.views import APIView
 from clinic.models import (
@@ -57,6 +58,9 @@ from asgiref.sync import async_to_sync
 from rest_framework import generics
 from django.contrib.auth.models import Group
 from rest_framework import generics
+from datetime import date, datetime
+from dateutil.relativedelta import relativedelta
+
 
 User = get_user_model()
 
@@ -3119,3 +3123,108 @@ class XemLaiBenhNhanLamSangAPIView(APIView):
         }
         return Response(response)
 
+class XuatNhapTongThuocAPIView(APIView, PaginationHandlerMixin):
+    pagination_class = CustomPagination
+
+    def get(self, request, format=None):
+        range_start = self.request.query_params.get('range_start', None)
+        range_end   = self.request.query_params.get('range_end', None)
+        start = datetime.strptime(range_start, "%d-%m-%Y")
+
+        if range_end == '':
+            end = start + timedelta(1)
+        else:
+            end = datetime.strptime(range_end, "%d-%m-%Y")
+            if range_start == range_end:
+                end = end + timedelta(1)
+
+        danh_sach_thuoc = Thuoc.objects.all()
+
+        medicines = danh_sach_thuoc.annotate(
+            so_luong_nhap = Subquery(
+                NhapHang.objects.filter(
+                    thuoc = OuterRef('pk'),
+                ).filter(thoi_gian_tao__gte=start, thoi_gian_tao__lt=end).values_list(
+                    Func(
+                        'so_luong',
+                        function='SUM',
+                    )
+                )
+            )
+        ).annotate(
+            so_luong_xuat = Subquery(
+                KeDonThuoc.objects.filter(
+                    thuoc = OuterRef('pk'),
+                ).filter(thoi_gian_tao__gte=start, thoi_gian_tao__lt=end).values_list(
+                    Func(
+                        'so_luong',
+                        function='SUM',
+                    )
+                )
+            )
+        ).annotate(
+            ton_dau_ky=models.Case(
+                models.When(Q(so_luong_nhap__isnull=True) & Q(so_luong_xuat__isnull=True), then=F('so_luong_kha_dung')),
+                models.When(so_luong_nhap__isnull=True, then=F('so_luong_kha_dung') + F('so_luong_xuat')),
+                models.When(so_luong_xuat__isnull=True, then=F('so_luong_kha_dung') - F('so_luong_nhap')),
+                default = F('so_luong_kha_dung') - F('so_luong_nhap') + F('so_luong_xuat'),
+                output_field=models.IntegerField(),
+            )
+        ).annotate(
+            ton_cuoi_ky=models.Case(
+                models.When(Q(so_luong_nhap__isnull=True) & Q(so_luong_xuat__isnull=True), then=F('ton_dau_ky')),
+                models.When(so_luong_nhap__isnull=True, then=F('ton_dau_ky') - F('so_luong_xuat')),
+                models.When(so_luong_xuat__isnull=True, then=F('ton_dau_ky') + F('so_luong_nhap')),
+                default = F('ton_dau_ky') + F('so_luong_nhap') - F('so_luong_xuat'),
+            )
+        ).annotate(
+            thanh_tien_nhap=F('so_luong_nhap') * F('don_gia')
+        ).annotate(
+            thanh_tien_xuat=F('so_luong_xuat') * F('don_gia_tt')
+        ).values(
+            'ma_thuoc',
+            'ten_thuoc',
+            'ten_hoat_chat',
+            'don_vi_tinh',
+            'ham_luong',
+            'cong_ty__ten_cong_ty',
+            'nuoc_sx',
+            'so_lo',
+            'han_su_dung',
+            'don_gia',
+            'don_gia_tt',
+            'gia_bhyt',      
+            'so_luong_nhap',
+            'so_luong_xuat',
+            'ton_dau_ky',
+            'thanh_tien_nhap',
+            'thanh_tien_xuat',
+            'ton_cuoi_ky',
+        )
+        
+        page = self.paginate_queryset(medicines)
+
+        if page is not None:
+            serializer = self.get_paginated_response(page)
+            return Response(serializer.data)
+        else:
+            serializer = medicines
+        return Response(serializer)
+
+class DanhSachThuocSapHetHan(APIView, PaginationHandlerMixin):
+    pagination_class = CustomPagination
+    serializer_class = ThuocSerializer
+
+    def get(self, request, format=None):
+        num_of_months = self.request.query_params.get('num_of_months')
+        num_of_months_later = date.today() + relativedelta(months=+int(num_of_months))
+
+        medicines = Thuoc.objects.filter(han_su_dung__lte=num_of_months_later)
+
+        page = self.paginate_queryset(medicines)
+
+        if page is not None:
+            serializer = self.get_paginated_response(self.serializer_class(page, many=True).data)
+        else:
+            serializer = self.serializer_class(medicines, many=True)    
+        return Response(serializer.data)
