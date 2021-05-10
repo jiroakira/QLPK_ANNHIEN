@@ -72,7 +72,7 @@ class Thuoc(models.Model):
 
     id = models.AutoField(primary_key=True)
     stt = models.CharField(max_length=50, null=True, blank=True)
-    nhom_thuoc = models.ForeignKey("NhomThuoc", on_delete=models.CASCADE, null=True, blank=True, related_name='nhom_thuoc')
+    nhom_thuoc = models.ManyToManyField("NhomThuoc", related_name='nhom_thuoc')
     ma_thuoc = models.CharField(max_length=50, blank=True, null=True)
     ma_hoat_chat = models.CharField(max_length=15, null=True, blank=True, verbose_name="Mã hoạt chất")
     ten_hoat_chat = models.CharField(max_length=255, null=True, blank=True, verbose_name="Tên hoạt chất")
@@ -85,9 +85,9 @@ class Thuoc(models.Model):
     so_dang_ky = models.CharField(max_length=50, null=True, blank=True, verbose_name="Số đăng ký")
     dong_goi = models.CharField(max_length=255, null=True, blank=True, verbose_name="Đóng gói")
     don_vi_tinh = models.CharField(max_length=255, null=True, blank=True, verbose_name="Đơn vị tính")
-    don_gia = models.IntegerField(max_length=255, null=True, verbose_name="Đơn giá")
-    don_gia_tt = models.IntegerField(max_length=255, null=True, verbose_name="Đơn giá thành tiền")
-    gia_bhyt = models.IntegerField(max_length=50, null=True, verbose_name="Giá bảo hiểm y tế")
+    don_gia = models.IntegerField(null=True, verbose_name="Đơn giá")
+    don_gia_tt = models.IntegerField(null=True, verbose_name="Đơn giá thành tiền")
+    gia_bhyt = models.IntegerField(null=True, verbose_name="Giá bảo hiểm y tế")
     so_lo = models.CharField(max_length=255, blank=True, null=True, verbose_name="Số Lô")
     so_luong_kha_dung = models.IntegerField(verbose_name="Số lượng khả dụng", null=True, blank=True) # Số lượng thuốc khả dụng sau khi đã bán hoặc trả lại thuốc 
     # Để kiểm soát và duy trì truy xuất nguồn gốc, số lô được chỉ định và cũng giúp kiểm tra thời hạn sử dụng và các vấn đề khác
@@ -137,7 +137,10 @@ class Thuoc(models.Model):
 
     @property
     def kha_dung(self):
-        return self.so_luong_kha_dung > 0
+        if self.so_luong_kha_dung is not None:
+            return self.so_luong_kha_dung > 0
+        else:
+            return False
 
     @property
     def check_expiration(self):
@@ -178,6 +181,12 @@ class Thuoc(models.Model):
         else:
             so_luong_kha_dung = 0
         return so_luong_kha_dung
+
+    def get_bao_hiem(self):
+        if self.bao_hiem:
+            return "True"
+        else:
+            return "False"
 
 
 class NhomThuoc(models.Model):
