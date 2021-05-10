@@ -182,14 +182,15 @@ var KTDatatableRecordSelectionDemo = function() {
             type: 'remote',
             source: { 
                 read: {
-                    url: HOST_URL + '/router/api/danh_sach_thuoc/',
+                    url: HOST_URL + '/api/thuoc/',
                     method: 'GET',
                 },
             },
             pageSize: 10,
             serverPaging: true,
-            // serverFiltering: true,
-            // serverSorting: true,
+            serverFiltering: true,
+            serverSorting: false,
+            saveState: false,
         },
 
         // layout definition
@@ -216,9 +217,7 @@ var KTDatatableRecordSelectionDemo = function() {
         }, {
             field: 'ten_thuoc',
             title: 'Tên thuốc',
-            template: function(row) {
-                return '<a href id=' + '"' + row.id + '"' + ' data-title="This is my tooltip content for:'+row.ten_thuoc+'" data-toggle="tooltip" data-trigger="hover">'+row.ten_thuoc+'</a>'
-            }
+    
         }, {
             field: 'loai_thuoc',
             title: 'Loại',
@@ -248,7 +247,7 @@ var KTDatatableRecordSelectionDemo = function() {
         };
         options.search = {
             input: $('#kt_datatable_search_query_2'),
-            key: 'generalSearch'
+            key: 'search'
         };
 
         var datatable = $('#kt_datatable_2').KTDatatable(options);
@@ -283,16 +282,6 @@ var KTDatatableRecordSelectionDemo = function() {
                 }
             });
 
-        datatable.on('mouseenter', 'tbody tr', function(){
-            // alert($(this).data());
-            $(this).find('[data-toggle="tooltip"]').tooltip({
-                delay: 300,
-
-                title: "<em>Tooltip</em> <u>with</u> <b>HTML</b>",
-                html: true,
-            });
-
-        })
 
         var lstData = [];
         var lstCheckbox = {};
@@ -426,7 +415,7 @@ var KTDatatableRecordSelectionDemo = function() {
                     if (response.status == 200){
                         toastr.success(response.message, "Thành Công")
                         setTimeout(function () {
-                            window.history.back(); //redirect về danh sách chờ lâm sàng
+                            window.location.href = '/phong_tai_chinh/danh_sach_thuoc/'; //redirect về danh sách chờ lâm sàng
                         }, 1500);
                     }
 
