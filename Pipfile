@@ -25,6 +25,9 @@ openpyxl = "*"
 xlsxwriter = "*"
 django-guardian = "*"
 psycopg2-binary = "*"
+django-import-export = "*"
+django-activity-stream = "*"
+django-dbbackup = "*"
 
 [requires]
 python_version = "3.8"
