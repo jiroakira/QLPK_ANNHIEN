@@ -69,7 +69,7 @@ sqlparse==0.4.1
 tablib==3.0.0
 Twisted==21.2.0
 txaio==21.2.1
-urllib3==1.25.8
+urllib3==1.26.5
 webencodings==0.5.1
 websockets==8.1
 xlrd==2.0.1
