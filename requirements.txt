@@ -53,7 +53,7 @@ psycopg2-binary==2.8.6
 pyasn1==0.4.8
 pyasn1-modules==0.2.8
 pycparser==2.20
-PyJWT==2.0.1
+PyJWT==2.4.0
 pyOpenSSL==20.0.1
 pyparsing==2.4.6
 python-dateutil==2.8.1
