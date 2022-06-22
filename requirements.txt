@@ -41,7 +41,7 @@ lockfile==0.12.2
 Markdown==3.3.4
 MarkupPy==1.14
 msgpack==1.0.2
-numpy==1.20.2
+numpy==1.22.0
 odfpy==1.4.1
 openpyxl==3.0.7
 packaging==20.3
